@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema Taekwondo</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<h2>Cadastro</h2>
+<input id="cadEmail" placeholder="Email"><br>
+<input id="cadSenha" type="password" placeholder="Senha"><br>
+<input id="nome" placeholder="Nome"><br>
+<button onclick="cadastrar()">Cadastrar</button>
+
+<hr>
+
+<h2>Login</h2>
+<input id="loginEmail" placeholder="Email"><br>
+<input id="loginSenha" type="password" placeholder="Senha"><br>
+<button onclick="login()">Entrar</button>
+
+<script>
+  const firebaseConfig = {
+    // 🔴 COLE AQUI O firebaseConfig DO SEU PROJETO
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  function cadastrar() {
+    const email = cadEmail.value;
+    const senha = cadSenha.value;
+    const nome = document.getElementById("nome").value;
+
+    auth.createUserWithEmailAndPassword(email, senha)
+      .then(userCred => {
+        return db.collection("alunos").doc(userCred.user.uid).set({
+          nome: nome,
+          email: email,
+          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then(() => alert("Aluno cadastrado com sucesso!"))
+      .catch(err => alert(err.message));
+  }
+
+  function login() {
+    auth.signInWithEmailAndPassword(
+      loginEmail.value,
+      loginSenha.value
+    )
+    .then(() => alert("Login realizado"))
+    .catch(err => alert(err.message));
+  }
+</script>
+
+</body>
+</html>

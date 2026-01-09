@@ -13,7 +13,8 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #333; padding: 8px; text-align: left; }
     th { background-color: #f2f2f2; }
-    button { padding: 6px 12px; margin: 2px; cursor: pointer; }
+    input { width: 100px; padding: 4px; }
+    button { padding: 4px 8px; margin: 2px; cursor: pointer; }
   </style>
 </head>
 
@@ -28,6 +29,7 @@
       <th>Nome</th>
       <th>Email</th>
       <th>Faixa</th>
+      <th>Telefone</th>
       <th>Ações</th>
     </tr>
   </thead>
@@ -82,7 +84,7 @@
         tbody.innerHTML = "";
 
         if (snapshot.empty) {
-          tbody.innerHTML = "<tr><td colspan='4'>Nenhum aluno cadastrado</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='5'>Nenhum aluno cadastrado</td></tr>";
           return;
         }
 
@@ -93,9 +95,11 @@
           tr.innerHTML = `
             <td>${aluno.nome}</td>
             <td>${aluno.email}</td>
-            <td><input type="text" value="${aluno.faixa || ''}" id="faixa-${doc.id}" style="width:80px"></td>
+            <td><input type="text" value="${aluno.faixa || ''}" id="faixa-${doc.id}"></td>
+            <td><input type="text" value="${aluno.telefone || ''}" id="telefone-${doc.id}"></td>
             <td>
-              <button onclick="salvarFaixa('${doc.id}')">Salvar Faixa</button>
+              <button onclick="salvarAlteracoes('${doc.id}')">Salvar</button>
+              <button onclick="removerAluno('${doc.id}', '${aluno.nome}')">Remover</button>
             </td>
           `;
 
@@ -108,23 +112,43 @@
       });
   }
 
-  // Atualiza a faixa de um aluno
-  function salvarFaixa(alunoId) {
-    const faixaInput = document.getElementById(`faixa-${alunoId}`);
-    const novaFaixa = faixaInput.value.trim();
+  // Salvar alterações de faixa e telefone
+  function salvarAlteracoes(alunoId) {
+    const novaFaixa = document.getElementById(`faixa-${alunoId}`).value.trim();
+    const novoTelefone = document.getElementById(`telefone-${alunoId}`).value.trim();
 
-    if (!novaFaixa) {
-      alert("Informe a faixa antes de salvar.");
+    if (!novaFaixa || !novoTelefone) {
+      alert("Preencha faixa e telefone antes de salvar.");
       return;
     }
 
-    db.collection("alunos").doc(alunoId).update({ faixa: novaFaixa })
+    if (!confirm("Deseja realmente salvar essas alterações?")) return;
+
+    db.collection("alunos").doc(alunoId).update({
+      faixa: novaFaixa,
+      telefone: novoTelefone
+    })
+    .then(() => {
+      alert("Alterações salvas com sucesso!");
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao salvar alterações");
+    });
+  }
+
+  // Remover aluno
+  function removerAluno(alunoId, nome) {
+    if (!confirm(`Deseja realmente remover o aluno ${nome}?`)) return;
+
+    db.collection("alunos").doc(alunoId).delete()
       .then(() => {
-        alert("Faixa atualizada com sucesso!");
+        alert(`Aluno ${nome} removido com sucesso!`);
+        carregarAlunos();
       })
       .catch(err => {
         console.error(err);
-        alert("Erro ao atualizar faixa");
+        alert("Erro ao remover aluno");
       });
   }
 

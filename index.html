@@ -12,10 +12,27 @@
 
 <body>
 
-<h2>Cadastro</h2>
+<h2>Cadastro do Aluno</h2>
+
+<input id="nome" placeholder="Nome"><br>
+<input id="dataNascimento" type="date"><br>
+
+<select id="sexo">
+  <option value="">Sexo</option>
+  <option>Masculino</option>
+  <option>Feminino</option>
+</select><br>
+
+<input id="endereco" placeholder="Endereço"><br>
+<input id="telefone" placeholder="Telefone"><br>
+<input id="rg" placeholder="RG"><br>
+<input id="cpf" placeholder="CPF"><br>
+<input id="tipoSanguineo" placeholder="Tipo sanguíneo"><br>
+<input id="faixa" placeholder="Faixa"><br>
+
 <input id="cadEmail" placeholder="Email"><br>
 <input id="cadSenha" type="password" placeholder="Senha"><br>
-<input id="nome" placeholder="Nome"><br>
+
 <button onclick="cadastrar()">Cadastrar</button>
 
 <hr>
@@ -61,22 +78,35 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  function cadastrar() {
-    const email = cadEmail.value;
-    const senha = cadSenha.value;
-    const nome = document.getElementById("nome").value;
+  <script>
+function cadastrar() {
+  const email = cadEmail.value;
+  const senha = cadSenha.value;
 
-    auth.createUserWithEmailAndPassword(email, senha)
-      .then(userCred => {
-        return db.collection("alunos").doc(userCred.user.uid).set({
-          nome: nome,
-          email: email,
-          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      })
-      .then(() => alert("Aluno cadastrado com sucesso!"))
-      .catch(err => alert(err.message));
-  }
+  auth.createUserWithEmailAndPassword(email, senha)
+    .then(userCred => {
+      const uid = userCred.user.uid;
+
+      return db.collection("alunos").doc(uid).set({
+        nome: nome.value,
+        dataNascimento: dataNascimento.value,
+        sexo: sexo.value,
+        endereco: endereco.value,
+        telefone: telefone.value,
+        rg: rg.value,
+        cpf: cpf.value,
+        tipoSanguineo: tipoSanguineo.value,
+        faixa: faixa.value,
+        email: email,
+        perfil: "aluno",
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    })
+    .then(() => alert("Aluno cadastrado com sucesso!"))
+    .catch(err => alert(err.message));
+}
+</script>
+
 
   function login() {
     auth.signInWithEmailAndPassword(

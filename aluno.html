@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Área do Aluno</title>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -24,7 +25,7 @@
     apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
     authDomain: "sistema-taekwondo-1.firebaseapp.com",
     projectId: "sistema-taekwondo-1",
-    storageBucket: "sistema-taekwondo-1.appspot.com",
+    storageBucket: "sistema-taekwondo-1.firebasestorage.app",
     messagingSenderId: "635745416768",
     appId: "1:635745416768:web:58d23eca722878f047d1a5"
   };
@@ -42,12 +43,15 @@
 
     db.collection("alunos").doc(user.uid).get()
       .then(doc => {
-        if (!doc.exists) return;
+        if (!doc.exists) {
+          alert("Aluno não encontrado.");
+          return;
+        }
 
         const dados = doc.data();
-        nome.innerText = dados.nome;
-        email.innerText = dados.email;
-        faixa.innerText = dados.faixa;
+        document.getElementById("nome").innerText = dados.nome;
+        document.getElementById("email").innerText = dados.email;
+        document.getElementById("faixa").innerText = dados.faixa;
       });
   });
 

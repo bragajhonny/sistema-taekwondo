@@ -12,7 +12,7 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     input { margin-bottom: 10px; }
-    button { margin-left: 10px; }
+    button { margin-top: 10px; padding: 6px 12px; }
     ul { list-style-type: none; padding-left: 0; }
     li { margin-bottom: 5px; }
   </style>
@@ -25,13 +25,13 @@
 <h3>Meus Documentos</h3>
 
 <label>RG:</label>
-<input type="file" id="docRG"><button onclick="uploadDocumento('rg')">Enviar</button><br>
-
+<input type="file" id="docRG"><br>
 <label>Foto:</label>
-<input type="file" id="docFoto"><button onclick="uploadDocumento('foto')">Enviar</button><br>
-
+<input type="file" id="docFoto"><br>
 <label>Atestado:</label>
-<input type="file" id="docAtestado"><button onclick="uploadDocumento('atestado')">Enviar</button><br>
+<input type="file" id="docAtestado"><br>
+
+<button onclick="enviarTodosDocumentos()">Enviar Todos os Documentos</button>
 
 <h4>Documentos enviados:</h4>
 <ul id="listaDocumentos"></ul>
@@ -59,47 +59,59 @@
       window.location.href = "index.html";
       return;
     }
-
     alunoUID = user.uid;
     listarDocumentos();
   });
 
-  // Logout
   function logout() {
     auth.signOut().then(() => {
       window.location.href = "index.html";
     });
   }
 
-  // Função de upload
-  function uploadDocumento(tipo) {
-    const input = document.getElementById(`doc${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
-    const file = input.files[0];
+  // Função para enviar todos os documentos
+  function enviarTodosDocumentos() {
+    const arquivos = {
+      rg: document.getElementById("docRG").files[0],
+      foto: document.getElementById("docFoto").files[0],
+      atestado: document.getElementById("docAtestado").files[0]
+    };
 
-    if (!file) {
-      alert("Selecione um arquivo!");
+    const promessas = [];
+
+    for (const [tipo, file] of Object.entries(arquivos)) {
+      if (!file) continue; // ignora arquivos não selecionados
+
+      const path = `alunos/${alunoUID}/${tipo}_${file.name}`;
+      const storageRef = storage.ref(path);
+
+      const p = storageRef.put(file)
+        .then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => {
+          return db.collection("alunos").doc(alunoUID).update({
+            [`documentos.${tipo}`]: url
+          });
+        });
+
+      promessas.push(p);
+    }
+
+    if (promessas.length === 0) {
+      alert("Nenhum arquivo selecionado!");
       return;
     }
 
-    const path = `alunos/${alunoUID}/${tipo}_${file.name}`;
-    const storageRef = storage.ref(path);
-
-    storageRef.put(file)
-      .then(snapshot => snapshot.ref.getDownloadURL())
-      .then(url => {
-        // Salva a URL no Firestore
-        return db.collection("alunos").doc(alunoUID).update({
-          [`documentos.${tipo}`]: url
-        });
-      })
+    Promise.all(promessas)
       .then(() => {
-        alert(`${tipo.toUpperCase()} enviado com sucesso!`);
-        input.value = ""; // limpa o input
+        alert("Todos os documentos enviados com sucesso!");
+        document.getElementById("docRG").value = "";
+        document.getElementById("docFoto").value = "";
+        document.getElementById("docAtestado").value = "";
         listarDocumentos();
       })
       .catch(err => {
         console.error(err);
-        alert("Erro ao enviar documento");
+        alert("Erro ao enviar os documentos");
       });
   }
 

@@ -68,7 +68,7 @@
     apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
     authDomain: "sistema-taekwondo-1.firebaseapp.com",
     projectId: "sistema-taekwondo-1",
-    storageBucket: "sistema-taekwondo-1.firebasestorage.app",
+    storageBucket: "sistema-taekwondo-1.appspot.com",
     messagingSenderId: "635745416768",
     appId: "1:635745416768:web:58d23eca722878f047d1a5"
   };
@@ -77,17 +77,14 @@
 
   const auth = firebase.auth();
   const db = firebase.firestore();
-</script>
-  
-<script>
+
   function cadastrar() {
     const email = cadEmail.value;
     const senha = cadSenha.value;
-  
+
     auth.createUserWithEmailAndPassword(email, senha)
       .then(userCred => {
         const uid = userCred.user.uid;
-  
         return db.collection("alunos").doc(uid).set({
           nome: nome.value,
           dataNascimento: dataNascimento.value,
@@ -106,22 +103,16 @@
       .then(() => alert("Aluno cadastrado com sucesso!"))
       .catch(err => alert(err.message));
   }
+
+  function login() {
+    auth.signInWithEmailAndPassword(
+      loginEmail.value,
+      loginSenha.value
+    )
+    .then(() => alert("Login realizado com sucesso!"))
+    .catch(err => alert(err.message));
+  }
 </script>
-
-  <script>
-    function login() {
-      auth.signInWithEmailAndPassword(
-        loginEmail.value,
-        loginSenha.value
-      )
-      .then(() => {
-        alert("Login realizado com sucesso!");
-        // futuramente: redirecionar para aluno.html
-      })
-      .catch(err => alert(err.message));
-    }
-  </script>
-
 
 </body>
 </html>

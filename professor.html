@@ -7,14 +7,16 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+    th, td { border: 1px solid #333; padding: 8px; text-align: left; vertical-align: top; }
     th { background-color: #f2f2f2; }
     input { width: 100px; padding: 4px; }
     button { padding: 4px 8px; margin: 2px; cursor: pointer; }
+    a { margin-right: 4px; }
   </style>
 </head>
 
@@ -31,6 +33,7 @@
       <th>Faixa</th>
       <th>Telefone</th>
       <th>Ações</th>
+      <th>Documentos</th>
     </tr>
   </thead>
   <tbody id="listaAlunos"></tbody>
@@ -49,9 +52,10 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
+  const storage = firebase.storage();
   let professorUID = null;
 
-  // Verifica login e perfil
+  // Verifica login e perfil professor
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
@@ -76,7 +80,7 @@
       });
   });
 
-  // Carrega lista de alunos
+  // Carrega todos os alunos
   function carregarAlunos() {
     db.collection("alunos").where("perfil", "==", "aluno").orderBy("nome").get()
       .then(snapshot => {
@@ -84,13 +88,21 @@
         tbody.innerHTML = "";
 
         if (snapshot.empty) {
-          tbody.innerHTML = "<tr><td colspan='5'>Nenhum aluno cadastrado</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='6'>Nenhum aluno cadastrado</td></tr>";
           return;
         }
 
         snapshot.forEach(doc => {
           const aluno = doc.data();
           const tr = document.createElement("tr");
+
+          // Monta lista de documentos com links
+          let docsLinks = "";
+          if (aluno.documentos) {
+            for (const [tipo, url] of Object.entries(aluno.documentos)) {
+              docsLinks += `<a href="${url}" target="_blank">${tipo.toUpperCase()}</a> `;
+            }
+          }
 
           tr.innerHTML = `
             <td>${aluno.nome}</td>
@@ -101,6 +113,7 @@
               <button onclick="salvarAlteracoes('${doc.id}')">Salvar</button>
               <button onclick="removerAluno('${doc.id}', '${aluno.nome}')">Remover</button>
             </td>
+            <td>${docsLinks || 'Nenhum'}</td>
           `;
 
           tbody.appendChild(tr);
@@ -128,9 +141,7 @@
       faixa: novaFaixa,
       telefone: novoTelefone
     })
-    .then(() => {
-      alert("Alterações salvas com sucesso!");
-    })
+    .then(() => alert("Alterações salvas com sucesso!"))
     .catch(err => {
       console.error(err);
       alert("Erro ao salvar alterações");

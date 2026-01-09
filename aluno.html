@@ -2,43 +2,27 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Área do Aluno</title>
+  <title>Painel do Aluno</title>
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-</head>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input { margin-bottom: 10px; }
+    button { margin-left: 10px; }
+    ul { list-style-type: none; padding-left: 0; }
+    li { margin-bottom: 5px; }
+  </style>
+</head>
 <body>
 
-<h2>Dados do Aluno</h2>
+<h2>Painel do Aluno</h2>
+<button onclick="logout()">Sair</button>
 
-<label>Nome</label><br>
-<input id="nome"><br><br>
-
-<label>Data de Nascimento</label><br>
-<input id="dataNascimento" type="date"><br><br>
-
-<label>Sexo</label><br>
-<select id="sexo">
-  <option>Masculino</option>
-  <option>Feminino</option>
-</select><br><br>
-
-<label>Endereço</label><br>
-<input id="endereco"><br><br>
-
-<label>Telefone</label><br>
-<input id="telefone"><br><br>
-
-<label>Faixa</label><br>
-<input id="faixa" disabled><br><br>
-
-<label>Email</label><br>
-<input id="email" disabled><br><br>
-
-<h2>Meus Documentos</h2>
+<h3>Meus Documentos</h3>
 
 <label>RG:</label>
 <input type="file" id="docRG"><button onclick="uploadDocumento('rg')">Enviar</button><br>
@@ -49,12 +33,8 @@
 <label>Atestado:</label>
 <input type="file" id="docAtestado"><button onclick="uploadDocumento('atestado')">Enviar</button><br>
 
+<h4>Documentos enviados:</h4>
 <ul id="listaDocumentos"></ul>
-
-
-<button onclick="salvar()">Salvar alterações</button>
-<button onclick="logout()">Sair</button>
-
 
 <script>
   const firebaseConfig = {
@@ -67,122 +47,79 @@
   };
 
   firebase.initializeApp(firebaseConfig);
-
   const auth = firebase.auth();
   const db = firebase.firestore();
+  const storage = firebase.storage();
 
-  let uid = null;
+  let alunoUID = null;
 
+  // Verifica login
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
 
-    uid = user.uid;
-
-    db.collection("alunos").doc(uid).get().then(doc => {
-      if (!doc.exists) {
-        alert("Aluno não encontrado");
-        return;
-      }
-
-      const d = doc.data();
-
-      nome.value = d.nome || "";
-      dataNascimento.value = d.dataNascimento || "";
-      sexo.value = d.sexo || "";
-      endereco.value = d.endereco || "";
-      telefone.value = d.telefone || "";
-      faixa.value = d.faixa || "";
-      email.value = d.email || "";
-    });
+    alunoUID = user.uid;
+    listarDocumentos();
   });
 
-  function salvar() {
-    db.collection("alunos").doc(uid).update({
-      nome: nome.value,
-      dataNascimento: dataNascimento.value,
-      sexo: sexo.value,
-      endereco: endereco.value,
-      telefone: telefone.value
-    })
-    .then(() => alert("Dados atualizados com sucesso!"))
-    .catch(err => alert(err.message));
-  }
-
+  // Logout
   function logout() {
     auth.signOut().then(() => {
       window.location.href = "index.html";
     });
   }
 
-const storage = firebase.storage();
+  // Função de upload
+  function uploadDocumento(tipo) {
+    const input = document.getElementById(`doc${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+    const file = input.files[0];
 
-function uploadDocumento(tipo) {
-  const input = document.getElementById(`doc${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
-  const file = input.files[0];
+    if (!file) {
+      alert("Selecione um arquivo!");
+      return;
+    }
 
-  if (!file) {
-    alert("Selecione um arquivo!");
-    return;
-  }
+    const path = `alunos/${alunoUID}/${tipo}_${file.name}`;
+    const storageRef = storage.ref(path);
 
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Usuário não logado!");
-    return;
-  }
-
-  const path = `alunos/${user.uid}/${tipo}_${file.name}`;
-  const storageRef = storage.ref(path);
-
-  storageRef.put(file)
-    .then(snapshot => snapshot.ref.getDownloadURL())
-    .then(url => {
-      // Salva a URL no Firestore
-      return db.collection("alunos").doc(user.uid).update({
-        [`documentos.${tipo}`]: url
+    storageRef.put(file)
+      .then(snapshot => snapshot.ref.getDownloadURL())
+      .then(url => {
+        // Salva a URL no Firestore
+        return db.collection("alunos").doc(alunoUID).update({
+          [`documentos.${tipo}`]: url
+        });
+      })
+      .then(() => {
+        alert(`${tipo.toUpperCase()} enviado com sucesso!`);
+        input.value = ""; // limpa o input
+        listarDocumentos();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao enviar documento");
       });
-    })
-    .then(() => {
-      alert(`${tipo.toUpperCase()} enviado com sucesso!`);
-      listarDocumentos();
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Erro ao enviar documento");
-    });
-}
+  }
 
-// Lista documentos existentes
-function listarDocumentos() {
-  const user = auth.currentUser;
-  if (!user) return;
+  // Lista documentos enviados
+  function listarDocumentos() {
+    db.collection("alunos").doc(alunoUID).get()
+      .then(doc => {
+        const docs = doc.data().documentos || {};
+        const lista = document.getElementById("listaDocumentos");
+        lista.innerHTML = "";
 
-  db.collection("alunos").doc(user.uid).get()
-    .then(doc => {
-      const docs = doc.data().documentos || {};
-      const lista = document.getElementById("listaDocumentos");
-      lista.innerHTML = "";
-
-      for (const [tipo, url] of Object.entries(docs)) {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${url}" target="_blank">${tipo.toUpperCase()}</a>`;
-        lista.appendChild(li);
-      }
-    });
-}
-
-// Chama ao carregar a página
-auth.onAuthStateChanged(user => {
-  if (user) listarDocumentos();
-});
-
-
-  
+        for (const [tipo, url] of Object.entries(docs)) {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="${url}" target="_blank">${tipo.toUpperCase()}</a>`;
+          lista.appendChild(li);
+        }
+      })
+      .catch(err => console.error(err));
+  }
 </script>
-
 
 </body>
 </html>

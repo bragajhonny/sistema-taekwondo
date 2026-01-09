@@ -105,22 +105,37 @@
   }
 
   function login() {
-    const email = loginEmail.value;
-    const senha = loginSenha.value;
-  
-    if (!email || !senha) {
-      alert("Informe email e senha.");
-      return;
-    }
-  
-    auth.signInWithEmailAndPassword(email, senha)
-      .then(() => {
-        window.location.href = "aluno.html";
-      })
-      .catch(err => {
-        alert(err.message);
-      });
+  const email = loginEmail.value;
+  const senha = loginSenha.value;
+
+  if (!email || !senha) {
+    alert("Informe email e senha.");
+    return;
   }
+
+  auth.signInWithEmailAndPassword(email, senha)
+    .then(userCred => {
+      const uid = userCred.user.uid;
+
+      return db.collection("alunos").doc(uid).get();
+    })
+    .then(doc => {
+      if (!doc.exists) {
+        throw new Error("Perfil do usuário não encontrado.");
+      }
+
+      const perfil = doc.data().perfil;
+
+      if (perfil === "professor") {
+        window.location.href = "professor.html";
+      } else {
+        window.location.href = "aluno.html";
+      }
+    })
+    .catch(err => {
+      alert(err.message);
+    });
+}
 </script>
 
   

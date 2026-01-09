@@ -38,6 +38,20 @@
 <label>Email</label><br>
 <input id="email" disabled><br><br>
 
+<h2>Meus Documentos</h2>
+
+<label>RG:</label>
+<input type="file" id="docRG"><button onclick="uploadDocumento('rg')">Enviar</button><br>
+
+<label>Foto:</label>
+<input type="file" id="docFoto"><button onclick="uploadDocumento('foto')">Enviar</button><br>
+
+<label>Atestado:</label>
+<input type="file" id="docAtestado"><button onclick="uploadDocumento('atestado')">Enviar</button><br>
+
+<ul id="listaDocumentos"></ul>
+
+
 <button onclick="salvar()">Salvar alterações</button>
 <button onclick="logout()">Sair</button>
 
@@ -102,6 +116,71 @@
       window.location.href = "index.html";
     });
   }
+
+const storage = firebase.storage();
+
+function uploadDocumento(tipo) {
+  const input = document.getElementById(`doc${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+  const file = input.files[0];
+
+  if (!file) {
+    alert("Selecione um arquivo!");
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Usuário não logado!");
+    return;
+  }
+
+  const path = `alunos/${user.uid}/${tipo}_${file.name}`;
+  const storageRef = storage.ref(path);
+
+  storageRef.put(file)
+    .then(snapshot => snapshot.ref.getDownloadURL())
+    .then(url => {
+      // Salva a URL no Firestore
+      return db.collection("alunos").doc(user.uid).update({
+        [`documentos.${tipo}`]: url
+      });
+    })
+    .then(() => {
+      alert(`${tipo.toUpperCase()} enviado com sucesso!`);
+      listarDocumentos();
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao enviar documento");
+    });
+}
+
+// Lista documentos existentes
+function listarDocumentos() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  db.collection("alunos").doc(user.uid).get()
+    .then(doc => {
+      const docs = doc.data().documentos || {};
+      const lista = document.getElementById("listaDocumentos");
+      lista.innerHTML = "";
+
+      for (const [tipo, url] of Object.entries(docs)) {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="${url}" target="_blank">${tipo.toUpperCase()}</a>`;
+        lista.appendChild(li);
+      }
+    });
+}
+
+// Chama ao carregar a página
+auth.onAuthStateChanged(user => {
+  if (user) listarDocumentos();
+});
+
+
+  
 </script>
 
 

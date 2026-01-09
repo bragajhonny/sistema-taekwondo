@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Painel do Professor</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<h2>Painel do Professor</h2>
+
+<button onclick="logout()">Sair</button>
+
+<hr>
+
+<table border="1" cellpadding="8">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Faixa</th>
+    </tr>
+  </thead>
+  <tbody id="listaAlunos"></tbody>
+</table>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+    authDomain: "sistema-taekwondo-1.firebaseapp.com",
+    projectId: "sistema-taekwondo-1",
+    storageBucket: "sistema-taekwondo-1.firebasestorage.app",
+    messagingSenderId: "635745416768",
+    appId: "1:635745416768:web:58d23eca722878f047d1a5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    db.collection("alunos").doc(user.uid).get().then(doc => {
+      if (!doc.exists || doc.data().perfil !== "professor") {
+        alert("Acesso negado");
+        window.location.href = "index.html";
+        return;
+      }
+
+      carregarAlunos();
+    });
+  });
+
+  function carregarAlunos() {
+    db.collection("alunos")
+      .where("perfil", "==", "aluno")
+      .orderBy("nome")
+      .get()
+      .then(snapshot => {
+        const tbody = document.getElementById("listaAlunos");
+        tbody.innerHTML = "";
+
+        snapshot.forEach(doc => {
+          const a = doc.data();
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${a.nome}</td>
+            <td>${a.email}</td>
+            <td>${a.faixa || ""}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  }
+
+  function logout() {
+    auth.signOut().then(() => {
+      window.location.href = "index.html";
+    });
+  }
+</script>
+
+</body>
+</html>

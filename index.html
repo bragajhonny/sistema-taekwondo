@@ -104,14 +104,35 @@
       .catch(err => alert(err.message));
   }
 
-  function login() {
+  /*function login() {
     auth.signInWithEmailAndPassword(
       loginEmail.value,
       loginSenha.value
     )
     .then(() => alert("Login realizado com sucesso!"))
     .catch(err => alert(err.message));
+  }*/
+  function login() {
+    const email = loginEmail.value;
+    const senha = loginSenha.value;
+  
+    if (!email || !senha) {
+      alert("Informe email e senha.");
+      return;
+    }
+  
+    auth.signInWithEmailAndPassword(email, senha)
+      .then(() => {
+        // Login OK → redireciona para área do aluno
+        window.location.href = "aluno.html";
+      })
+      .catch(err => {
+        alert(err.message);
+      });
   }
+</script>
+
+  
 </script>
 
 </body>

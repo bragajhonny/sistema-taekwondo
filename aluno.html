@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Área do Aluno</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<h2>Área do Aluno</h2>
+
+<p><strong>Nome:</strong> <span id="nome"></span></p>
+<p><strong>Email:</strong> <span id="email"></span></p>
+<p><strong>Faixa:</strong> <span id="faixa"></span></p>
+
+<button onclick="logout()">Sair</button>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+    authDomain: "sistema-taekwondo-1.firebaseapp.com",
+    projectId: "sistema-taekwondo-1",
+    storageBucket: "sistema-taekwondo-1.appspot.com",
+    messagingSenderId: "635745416768",
+    appId: "1:635745416768:web:58d23eca722878f047d1a5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    db.collection("alunos").doc(user.uid).get()
+      .then(doc => {
+        if (!doc.exists) return;
+
+        const dados = doc.data();
+        nome.innerText = dados.nome;
+        email.innerText = dados.email;
+        faixa.innerText = dados.faixa;
+      });
+  });
+
+  function logout() {
+    auth.signOut().then(() => {
+      window.location.href = "index.html";
+    });
+  }
+</script>
+
+</body>
+</html>

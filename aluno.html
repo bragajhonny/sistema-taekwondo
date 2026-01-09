@@ -12,13 +12,35 @@
 
 <body>
 
-<h2>Área do Aluno</h2>
+<h2>Dados do Aluno</h2>
 
-<p><strong>Nome:</strong> <span id="nome"></span></p>
-<p><strong>Email:</strong> <span id="email"></span></p>
-<p><strong>Faixa:</strong> <span id="faixa"></span></p>
+<label>Nome</label><br>
+<input id="nome"><br><br>
 
+<label>Data de Nascimento</label><br>
+<input id="dataNascimento" type="date"><br><br>
+
+<label>Sexo</label><br>
+<select id="sexo">
+  <option>Masculino</option>
+  <option>Feminino</option>
+</select><br><br>
+
+<label>Endereço</label><br>
+<input id="endereco"><br><br>
+
+<label>Telefone</label><br>
+<input id="telefone"><br><br>
+
+<label>Faixa</label><br>
+<input id="faixa" disabled><br><br>
+
+<label>Email</label><br>
+<input id="email" disabled><br><br>
+
+<button onclick="salvar()">Salvar alterações</button>
 <button onclick="logout()">Sair</button>
+
 
 <script>
   const firebaseConfig = {
@@ -35,25 +57,45 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  let uid = null;
+
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
 
-    db.collection("alunos").doc(user.uid).get()
-      .then(doc => {
-        if (!doc.exists) {
-          alert("Aluno não encontrado.");
-          return;
-        }
+    uid = user.uid;
 
-        const dados = doc.data();
-        document.getElementById("nome").innerText = dados.nome;
-        document.getElementById("email").innerText = dados.email;
-        document.getElementById("faixa").innerText = dados.faixa;
-      });
+    db.collection("alunos").doc(uid).get().then(doc => {
+      if (!doc.exists) {
+        alert("Aluno não encontrado");
+        return;
+      }
+
+      const d = doc.data();
+
+      nome.value = d.nome || "";
+      dataNascimento.value = d.dataNascimento || "";
+      sexo.value = d.sexo || "";
+      endereco.value = d.endereco || "";
+      telefone.value = d.telefone || "";
+      faixa.value = d.faixa || "";
+      email.value = d.email || "";
+    });
   });
+
+  function salvar() {
+    db.collection("alunos").doc(uid).update({
+      nome: nome.value,
+      dataNascimento: dataNascimento.value,
+      sexo: sexo.value,
+      endereco: endereco.value,
+      telefone: telefone.value
+    })
+    .then(() => alert("Dados atualizados com sucesso!"))
+    .catch(err => alert(err.message));
+  }
 
   function logout() {
     auth.signOut().then(() => {
@@ -61,6 +103,7 @@
     });
   }
 </script>
+
 
 </body>
 </html>

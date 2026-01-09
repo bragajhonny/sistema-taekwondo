@@ -77,35 +77,51 @@
 
   const auth = firebase.auth();
   const db = firebase.firestore();
-
-  
-  function cadastrar() {
-  const email = cadEmail.value;
-  const senha = cadSenha.value;
-
-  auth.createUserWithEmailAndPassword(email, senha)
-    .then(userCred => {
-      const uid = userCred.user.uid;
-
-      return db.collection("alunos").doc(uid).set({
-        nome: nome.value,
-        dataNascimento: dataNascimento.value,
-        sexo: sexo.value,
-        endereco: endereco.value,
-        telefone: telefone.value,
-        rg: rg.value,
-        cpf: cpf.value,
-        tipoSanguineo: tipoSanguineo.value,
-        faixa: faixa.value,
-        email: email,
-        perfil: "aluno",
-        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .then(() => alert("Aluno cadastrado com sucesso!"))
-    .catch(err => alert(err.message));
-}
 </script>
+  
+<script>
+  function cadastrar() {
+    const email = cadEmail.value;
+    const senha = cadSenha.value;
+  
+    auth.createUserWithEmailAndPassword(email, senha)
+      .then(userCred => {
+        const uid = userCred.user.uid;
+  
+        return db.collection("alunos").doc(uid).set({
+          nome: nome.value,
+          dataNascimento: dataNascimento.value,
+          sexo: sexo.value,
+          endereco: endereco.value,
+          telefone: telefone.value,
+          rg: rg.value,
+          cpf: cpf.value,
+          tipoSanguineo: tipoSanguineo.value,
+          faixa: faixa.value,
+          email: email,
+          perfil: "aluno",
+          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then(() => alert("Aluno cadastrado com sucesso!"))
+      .catch(err => alert(err.message));
+  }
+</script>
+
+  <script>
+    function login() {
+      auth.signInWithEmailAndPassword(
+        loginEmail.value,
+        loginSenha.value
+      )
+      .then(() => {
+        alert("Login realizado com sucesso!");
+        // futuramente: redirecionar para aluno.html
+      })
+      .catch(err => alert(err.message));
+    }
+  </script>
+
 
 </body>
 </html>

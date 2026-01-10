@@ -10,9 +10,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input { margin-bottom: 10px; }
-    button { margin-top: 10px; padding: 6px 12px; }
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input, select { width: 100%; padding: 8px; margin-bottom: 10px; }
+    button { padding: 6px 12px; margin-top: 10px; }
     ul { list-style-type: none; padding-left: 0; }
     li { margin-bottom: 5px; }
   </style>
@@ -22,19 +22,43 @@
 <h2>Painel do Aluno</h2>
 <button onclick="logout()">Sair</button>
 
-<h3>Meus Documentos</h3>
+<h3>Meus Dados</h3>
 
+<label>Nome:</label>
+<input type="text" id="nome"><br>
+<label>Data de Nascimento:</label>
+<input type="date" id="dataNascimento"><br>
+<label>Sexo:</label>
+<select id="sexo">
+  <option value="">Selecione</option>
+  <option>Masculino</option>
+  <option>Feminino</option>
+</select><br>
+<label>Endereço:</label>
+<input type="text" id="endereco"><br>
+<label>Telefone:</label>
+<input type="text" id="telefone"><br>
+<label>Tipo Sanguíneo:</label>
+<input type="text" id="tipoSanguineo"><br>
+<label>Faixa:</label>
+<input type="text" id="faixa" disabled><br>
 <label>RG:</label>
+<input type="text" id="rg" disabled><br>
+<label>CPF:</label>
+<input type="text" id="cpf" disabled><br>
+<label>Email:</label>
+<input type="text" id="email" disabled><br>
+
+<button onclick="salvarDados()">Salvar Alterações</button>
+
+<hr>
+
+<h3>Upload do RG</h3>
 <input type="file" id="docRG"><br>
-<label>Foto:</label>
-<input type="file" id="docFoto"><br>
-<label>Atestado:</label>
-<input type="file" id="docAtestado"><br>
+<button onclick="enviarRG()">Enviar RG</button>
 
-<button onclick="enviarTodosDocumentos()">Enviar Todos os Documentos</button>
-
-<h4>Documentos enviados:</h4>
-<ul id="listaDocumentos"></ul>
+<h4>RG enviado:</h4>
+<ul id="listaRG"></ul>
 
 <script>
   const firebaseConfig = {
@@ -60,72 +84,90 @@
       return;
     }
     alunoUID = user.uid;
-    listarDocumentos();
+    carregarDados();
+    listarRG();
   });
 
   function logout() {
-    auth.signOut().then(() => {
-      window.location.href = "index.html";
+    auth.signOut().then(() => window.location.href = "index.html");
+  }
+
+  // Carrega os dados do aluno
+  function carregarDados() {
+    db.collection("alunos").doc(alunoUID).get()
+      .then(doc => {
+        if (!doc.exists) return;
+        const data = doc.data();
+        document.getElementById("nome").value = data.nome || "";
+        document.getElementById("dataNascimento").value = data.dataNascimento || "";
+        document.getElementById("sexo").value = data.sexo || "";
+        document.getElementById("endereco").value = data.endereco || "";
+        document.getElementById("telefone").value = data.telefone || "";
+        document.getElementById("tipoSanguineo").value = data.tipoSanguineo || "";
+        document.getElementById("faixa").value = data.faixa || "";
+        document.getElementById("rg").value = data.rg || "";
+        document.getElementById("cpf").value = data.cpf || "";
+        document.getElementById("email").value = data.email || "";
+      })
+      .catch(err => console.error(err));
+  }
+
+  // Salva alterações dos dados
+  function salvarDados() {
+    const nome = document.getElementById("nome").value.trim();
+    const dataNascimento = document.getElementById("dataNascimento").value.trim();
+    const sexo = document.getElementById("sexo").value.trim();
+    const endereco = document.getElementById("endereco").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+    const tipoSanguineo = document.getElementById("tipoSanguineo").value.trim();
+
+    db.collection("alunos").doc(alunoUID).update({
+      nome, dataNascimento, sexo, endereco, telefone, tipoSanguineo
+    })
+    .then(() => alert("Dados atualizados com sucesso!"))
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao salvar dados");
     });
   }
 
-  // Função para enviar todos os documentos
-  function enviarTodosDocumentos() {
-    const arquivos = {
-      rg: document.getElementById("docRG").files[0],
-      foto: document.getElementById("docFoto").files[0],
-      atestado: document.getElementById("docAtestado").files[0]
-    };
+  // Envia RG
+  function enviarRG() {
+    const file = document.getElementById("docRG").files[0];
+    if (!file) { alert("Selecione um arquivo!"); return; }
 
-    const promessas = [];
+    const path = `alunos/${alunoUID}/rg_${file.name}`;
+    const storageRef = storage.ref(path);
 
-    for (const [tipo, file] of Object.entries(arquivos)) {
-      if (!file) continue; // ignora arquivos não selecionados
-
-      const path = `alunos/${alunoUID}/${tipo}_${file.name}`;
-      const storageRef = storage.ref(path);
-
-      const p = storageRef.put(file)
-        .then(snapshot => snapshot.ref.getDownloadURL())
-        .then(url => {
-          return db.collection("alunos").doc(alunoUID).update({
-            [`documentos.${tipo}`]: url
-          });
+    storageRef.put(file)
+      .then(snapshot => snapshot.ref.getDownloadURL())
+      .then(url => {
+        return db.collection("alunos").doc(alunoUID).update({
+          "documentos.rg": url
         });
-
-      promessas.push(p);
-    }
-
-    if (promessas.length === 0) {
-      alert("Nenhum arquivo selecionado!");
-      return;
-    }
-
-    Promise.all(promessas)
+      })
       .then(() => {
-        alert("Todos os documentos enviados com sucesso!");
+        alert("RG enviado com sucesso!");
         document.getElementById("docRG").value = "";
-        document.getElementById("docFoto").value = "";
-        document.getElementById("docAtestado").value = "";
-        listarDocumentos();
+        listarRG();
       })
       .catch(err => {
         console.error(err);
-        alert("Erro ao enviar os documentos");
+        alert("Erro ao enviar RG");
       });
   }
 
-  // Lista documentos enviados
-  function listarDocumentos() {
+  // Lista RG enviado
+  function listarRG() {
     db.collection("alunos").doc(alunoUID).get()
       .then(doc => {
         const docs = doc.data().documentos || {};
-        const lista = document.getElementById("listaDocumentos");
+        const lista = document.getElementById("listaRG");
         lista.innerHTML = "";
 
-        for (const [tipo, url] of Object.entries(docs)) {
+        if (docs.rg) {
           const li = document.createElement("li");
-          li.innerHTML = `<a href="${url}" target="_blank">${tipo.toUpperCase()}</a>`;
+          li.innerHTML = `<a href="${docs.rg}" target="_blank">RG</a>`;
           lista.appendChild(li);
         }
       })

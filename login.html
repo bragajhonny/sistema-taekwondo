@@ -37,8 +37,16 @@
   const db = firebase.firestore();
 
   function login() {
-    const email = email.value.trim();
-    const senha = senha.value.trim();
+    const emailInput = document.getElementById("email");
+    const senhaInput = document.getElementById("senha");
+
+    const email = emailInput.value.trim();
+    const senha = senhaInput.value.trim();
+
+    if (!email || !senha) {
+      alert("Preencha email e senha");
+      return;
+    }
 
     auth.signInWithEmailAndPassword(email, senha)
       .then(cred => {
@@ -46,7 +54,8 @@
       })
       .then(doc => {
         if (!doc.exists) {
-          alert("Usuário sem perfil");
+          alert("Perfil não encontrado");
+          auth.signOut();
           return;
         }
 

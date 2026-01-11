@@ -5,7 +5,6 @@
   <title>Cadastro - CT Gerivaldo Silva</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="style.css">
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -17,9 +16,7 @@
 
   <div class="center-box card">
 
-    <h1>CT Gerivaldo Silva</h1>
-
-    <h3 class="mb-20">Cadastro do Aluno</h3>
+    <h1 class="mb-20">Cadastro do Aluno</h1>
 
     <label>Email</label>
     <input type="email" id="email">
@@ -28,34 +25,20 @@
     <input type="password" id="senha">
 
     <label>Nome completo</label>
-    <input type="text" id="nome">
+    <input id="nome">
 
-    <label>Data de nascimento</label>
-    <input type="date" id="dataNascimento">
+    <label>RG</label>
+    <input id="rg">
 
-    <label>Sexo</label>
-    <select id="sexo">
-      <option value="">Selecione</option>
-      <option>Masculino</option>
-      <option>Feminino</option>
-    </select>
+    <label>CPF</label>
+    <input id="cpf">
 
     <label>Telefone</label>
-    <input type="text" id="telefone">
+    <input id="telefone">
 
-    <label>Endereço</label>
-    <input type="text" id="endereco">
-
-    <label>Tipo sanguíneo</label>
-    <input type="text" id="tipoSanguineo">
-
-    <button class="btn btn-primary btn-lg mt-10" onclick="cadastrar()">
+    <button class="btn btn-primary btn-lg mt-20" onclick="cadastrar()">
       Criar conta
     </button>
-
-    <div class="mt-20 text-center">
-      <a href="login.html">Já tenho conta</a>
-    </div>
 
   </div>
 
@@ -74,17 +57,15 @@
     const db = firebase.firestore();
 
     function cadastrar() {
-      const email = document.getElementById("email").value.trim();
-      const senha = document.getElementById("senha").value.trim();
+      const email = email.value.trim();
+      const senha = senha.value.trim();
       const nome = document.getElementById("nome").value.trim();
-      const dataNascimento = document.getElementById("dataNascimento").value;
-      const sexo = document.getElementById("sexo").value;
+      const rg = document.getElementById("rg").value.trim();
+      const cpf = document.getElementById("cpf").value.trim();
       const telefone = document.getElementById("telefone").value.trim();
-      const endereco = document.getElementById("endereco").value.trim();
-      const tipoSanguineo = document.getElementById("tipoSanguineo").value.trim();
 
-      if (!email || !senha || !nome) {
-        alert("Preencha os campos obrigatórios");
+      if (!email || !senha || !nome || !rg || !cpf) {
+        alert("Preencha todos os campos obrigatórios");
         return;
       }
 
@@ -93,13 +74,11 @@
           return db.collection("alunos").doc(cred.user.uid).set({
             email,
             nome,
-            dataNascimento,
-            sexo,
+            rg,
+            cpf,
             telefone,
-            endereco,
-            tipoSanguineo,
-            perfil: "aluno",
             faixa: "",
+            perfil: "aluno",
             cadastroCompleto: true,
             criadoEm: firebase.firestore.FieldValue.serverTimestamp()
           });

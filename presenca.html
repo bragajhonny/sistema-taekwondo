@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de Presença</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 6px 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Controle de Presença</h2>
+
+<label>Data da aula:</label><br>
+<input type="date" id="dataAula"><br><br>
+
+<ul id="listaAlunos"></ul>
+
+<button onclick="salvarPresenca()">Salvar Presença</button>
+<button onclick="voltar()">Voltar</button>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+    authDomain: "sistema-taekwondo-1.firebaseapp.com",
+    projectId: "sistema-taekwondo-1",
+    messagingSenderId: "635745416768",
+    appId: "1:635745416768:web:58d23eca722878f047d1a5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let professorUID = null;
+
+  // 🔐 Verifica professor
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    professorUID = user.uid;
+
+    db.collection("alunos").doc(user.uid).get()
+      .then(doc => {
+        if (!doc.exists || doc.data().perfil !== "professor") {
+          alert("Acesso negado");
+          window.location.href = "index.html";
+          return;
+        }
+
+        carregarAlunos();
+        definirDataHoje();
+      });
+  });
+
+  function definirDataHoje() {
+    const hoje = new Date().toISOString().split("T")[0];
+    document.getElementById("dataAula").value = hoje;
+  }
+
+  // 📋 Lista alunos
+  function carregarAlunos() {
+    db.collection("alunos")
+      .where("perfil", "==", "aluno")
+      .orderBy("nome")
+      .get()
+      .then(snapshot => {
+        const ul = document.getElementById("listaAlunos");
+        ul.innerHTML = "";
+
+        snapshot.forEach(doc => {
+          const aluno = doc.data();
+
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <label>
+              <input type="checkbox" id="${doc.id}">
+              ${aluno.nome}
+            </label>
+          `;
+
+          ul.appendChild(li);
+        });
+      });
+  }
+
+  // 💾 Salvar presença
+  function salvarPresenca() {
+    const data = document.getElementById("dataAula").value;
+
+    if (!data) {
+      alert("Selecione a data");
+      return;
+    }
+
+    const presencas = {};
+
+    document.querySelectorAll("input[type=checkbox]").forEach(cb => {
+      presencas[cb.id] = cb.checked;
+    });
+
+    db.collection("presencas").doc(data).set({
+      data,
+      professorId: professorUID,
+      alunos: presencas
+    })
+    .then(() => alert("Presença salva com sucesso!"))
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao salvar presença");
+    });
+  }
+
+  function voltar() {
+    window.location.href = "professor.html";
+  }
+</script>
+
+</body>
+</html>

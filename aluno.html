@@ -7,14 +7,23 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    input, select { width: 100%; padding: 8px; margin-bottom: 10px; }
-    button { padding: 6px 12px; margin-top: 10px; }
-    ul { list-style-type: none; padding-left: 0; }
-    li { margin-bottom: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 14px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -22,156 +31,108 @@
 <h2>Painel do Aluno</h2>
 <button onclick="logout()">Sair</button>
 
+<hr>
+
 <h3>Meus Dados</h3>
 
-<label>Nome:</label>
-<input type="text" id="nome"><br>
-<label>Data de Nascimento:</label>
-<input type="date" id="dataNascimento"><br>
-<label>Sexo:</label>
+<label>Nome</label>
+<input id="nome">
+
+<label>Data de Nascimento</label>
+<input type="date" id="dataNascimento">
+
+<label>Sexo</label>
 <select id="sexo">
   <option value="">Selecione</option>
   <option>Masculino</option>
   <option>Feminino</option>
-</select><br>
-<label>Endereço:</label>
-<input type="text" id="endereco"><br>
-<label>Telefone:</label>
-<input type="text" id="telefone"><br>
-<label>Tipo Sanguíneo:</label>
-<input type="text" id="tipoSanguineo"><br>
-<label>Faixa:</label>
-<input type="text" id="faixa" disabled><br>
-<label>RG:</label>
-<input type="text" id="rg" disabled><br>
-<label>CPF:</label>
-<input type="text" id="cpf" disabled><br>
-<label>Email:</label>
-<input type="text" id="email" disabled><br>
+</select>
+
+<label>Endereço</label>
+<input id="endereco">
+
+<label>Telefone</label>
+<input id="telefone">
+
+<label>Tipo Sanguíneo</label>
+<input id="tipoSanguineo">
+
+<label>Faixa</label>
+<input id="faixa" disabled>
+
+<label>RG</label>
+<input id="rg" disabled>
+
+<label>CPF</label>
+<input id="cpf" disabled>
+
+<label>Email</label>
+<input id="email" disabled>
 
 <button onclick="salvarDados()">Salvar Alterações</button>
-
-<hr>
-
-<h3>Upload do RG</h3>
-<input type="file" id="docRG"><br>
-<button onclick="enviarRG()">Enviar RG</button>
-
-<h4>RG enviado:</h4>
-<ul id="listaRG"></ul>
 
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
     authDomain: "sistema-taekwondo-1.firebaseapp.com",
     projectId: "sistema-taekwondo-1",
-    storageBucket: "sistema-taekwondo-1.firebasestorage.app",
     messagingSenderId: "635745416768",
     appId: "1:635745416768:web:58d23eca722878f047d1a5"
   };
 
   firebase.initializeApp(firebaseConfig);
+
   const auth = firebase.auth();
   const db = firebase.firestore();
-  const storage = firebase.storage();
-
   let alunoUID = null;
 
-  // Verifica login
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
+
     alunoUID = user.uid;
-    carregarDados();
-    listarRG();
+
+    db.collection("alunos").doc(alunoUID).get().then(doc => {
+      if (!doc.exists || doc.data().perfil !== "aluno") {
+        alert("Acesso negado");
+        window.location.href = "index.html";
+        return;
+      }
+
+      preencherFormulario(doc.data());
+    });
   });
+
+  function preencherFormulario(data) {
+    nome.value = data.nome || "";
+    dataNascimento.value = data.dataNascimento || "";
+    sexo.value = data.sexo || "";
+    endereco.value = data.endereco || "";
+    telefone.value = data.telefone || "";
+    tipoSanguineo.value = data.tipoSanguineo || "";
+    faixa.value = data.faixa || "";
+    rg.value = data.rg || "";
+    cpf.value = data.cpf || "";
+    email.value = data.email || "";
+  }
+
+  function salvarDados() {
+    db.collection("alunos").doc(alunoUID).update({
+      nome: nome.value,
+      dataNascimento: dataNascimento.value,
+      sexo: sexo.value,
+      endereco: endereco.value,
+      telefone: telefone.value,
+      tipoSanguineo: tipoSanguineo.value
+    })
+    .then(() => alert("Dados atualizados com sucesso!"))
+    .catch(() => alert("Erro ao salvar dados"));
+  }
 
   function logout() {
     auth.signOut().then(() => window.location.href = "index.html");
-  }
-
-  // Carrega os dados do aluno
-  function carregarDados() {
-    db.collection("alunos").doc(alunoUID).get()
-      .then(doc => {
-        if (!doc.exists) return;
-        const data = doc.data();
-        document.getElementById("nome").value = data.nome || "";
-        document.getElementById("dataNascimento").value = data.dataNascimento || "";
-        document.getElementById("sexo").value = data.sexo || "";
-        document.getElementById("endereco").value = data.endereco || "";
-        document.getElementById("telefone").value = data.telefone || "";
-        document.getElementById("tipoSanguineo").value = data.tipoSanguineo || "";
-        document.getElementById("faixa").value = data.faixa || "";
-        document.getElementById("rg").value = data.rg || "";
-        document.getElementById("cpf").value = data.cpf || "";
-        document.getElementById("email").value = data.email || "";
-      })
-      .catch(err => console.error(err));
-  }
-
-  // Salva alterações dos dados
-  function salvarDados() {
-    const nome = document.getElementById("nome").value.trim();
-    const dataNascimento = document.getElementById("dataNascimento").value.trim();
-    const sexo = document.getElementById("sexo").value.trim();
-    const endereco = document.getElementById("endereco").value.trim();
-    const telefone = document.getElementById("telefone").value.trim();
-    const tipoSanguineo = document.getElementById("tipoSanguineo").value.trim();
-
-    db.collection("alunos").doc(alunoUID).update({
-      nome, dataNascimento, sexo, endereco, telefone, tipoSanguineo
-    })
-    .then(() => alert("Dados atualizados com sucesso!"))
-    .catch(err => {
-      console.error(err);
-      alert("Erro ao salvar dados");
-    });
-  }
-
-  // Envia RG
-  function enviarRG() {
-    const file = document.getElementById("docRG").files[0];
-    if (!file) { alert("Selecione um arquivo!"); return; }
-
-    const path = `alunos/${alunoUID}/rg_${file.name}`;
-    const storageRef = storage.ref(path);
-
-    storageRef.put(file)
-      .then(snapshot => snapshot.ref.getDownloadURL())
-      .then(url => {
-        return db.collection("alunos").doc(alunoUID).update({
-          "documentos.rg": url
-        });
-      })
-      .then(() => {
-        alert("RG enviado com sucesso!");
-        document.getElementById("docRG").value = "";
-        listarRG();
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao enviar RG");
-      });
-  }
-
-  // Lista RG enviado
-  function listarRG() {
-    db.collection("alunos").doc(alunoUID).get()
-      .then(doc => {
-        const docs = doc.data().documentos || {};
-        const lista = document.getElementById("listaRG");
-        lista.innerHTML = "";
-
-        if (docs.rg) {
-          const li = document.createElement("li");
-          li.innerHTML = `<a href="${docs.rg}" target="_blank">RG</a>`;
-          lista.appendChild(li);
-        }
-      })
-      .catch(err => console.error(err));
   }
 </script>
 

@@ -225,3 +225,43 @@ a:hover {
   font-size: 16px;
   border-radius: 10px;
 }
+
+
+/* ===== Página centralizada ===== */
+
+.center-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f6f8;
+  padding: 20px;
+}
+
+.center-box {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.center-box h1 {
+  font-size: 26px;
+  margin-bottom: 30px;
+  color: #222;
+}
+
+/* ===== Ações ===== */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ===== Botões ===== */
+
+.btn-lg {
+  padding: 16px;
+  font-size: 16px;
+  border-radius: 8px;
+}

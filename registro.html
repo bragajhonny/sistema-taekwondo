@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro - CT Gerivaldo Silva</title>
+  <title>Cadastro do Aluno</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="style.css">
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -14,31 +15,58 @@
 
 <body class="center-page">
 
-  <div class="center-box card">
+  <div class="center-box">
 
-    <h1 class="mb-20">Cadastro do Aluno</h1>
+    <div class="card">
 
-    <label>Email</label>
-    <input type="email" id="email">
+      <h3 class="text-center mb-20">Cadastro do Aluno</h3>
 
-    <label>Senha</label>
-    <input type="password" id="senha">
+      <label>Nome completo</label>
+      <input type="text" id="nome">
 
-    <label>Nome completo</label>
-    <input id="nome">
+      <label>Data de nascimento</label>
+      <input type="date" id="dataNascimento">
 
-    <label>RG</label>
-    <input id="rg">
+      <label>Sexo</label>
+      <select id="sexo">
+        <option value="">Selecione</option>
+        <option>Masculino</option>
+        <option>Feminino</option>
+      </select>
 
-    <label>CPF</label>
-    <input id="cpf">
+      <label>RG</label>
+      <input type="text" id="rg">
 
-    <label>Telefone</label>
-    <input id="telefone">
+      <label>CPF</label>
+      <input type="text" id="cpf">
 
-    <button class="btn btn-primary btn-lg mt-20" onclick="cadastrar()">
-      Criar conta
-    </button>
+      <label>Endereço</label>
+      <input type="text" id="endereco">
+
+      <label>Telefone</label>
+      <input type="text" id="telefone">
+
+      <label>Tipo sanguíneo</label>
+      <input type="text" id="tipoSanguineo">
+
+      <hr class="mb-20">
+
+      <label>Email</label>
+      <input type="email" id="email">
+
+      <label>Senha</label>
+      <input type="password" id="senha">
+
+      <button class="btn btn-primary btn-lg mt-10" onclick="cadastrar()">
+        Criar conta
+      </button>
+
+      <button class="btn btn-secondary btn-lg mt-10"
+              onclick="window.location.href='login.html'">
+        Já tenho conta
+      </button>
+
+    </div>
 
   </div>
 
@@ -57,28 +85,41 @@
     const db = firebase.firestore();
 
     function cadastrar() {
-      const email = email.value.trim();
-      const senha = senha.value.trim();
-      const nome = document.getElementById("nome").value.trim();
-      const rg = document.getElementById("rg").value.trim();
-      const cpf = document.getElementById("cpf").value.trim();
-      const telefone = document.getElementById("telefone").value.trim();
+      const dados = {
+        nome: nome.value.trim(),
+        dataNascimento: dataNascimento.value,
+        sexo: sexo.value,
+        rg: rg.value.trim(),
+        cpf: cpf.value.trim(),
+        endereco: endereco.value.trim(),
+        telefone: telefone.value.trim(),
+        tipoSanguineo: tipoSanguineo.value.trim(),
+        email: email.value.trim(),
+        senha: senha.value.trim()
+      };
 
-      if (!email || !senha || !nome || !rg || !cpf) {
-        alert("Preencha todos os campos obrigatórios");
-        return;
+      // validação básica
+      for (let campo in dados) {
+        if (!dados[campo]) {
+          alert("Preencha todos os campos");
+          return;
+        }
       }
 
-      auth.createUserWithEmailAndPassword(email, senha)
+      auth.createUserWithEmailAndPassword(dados.email, dados.senha)
         .then(cred => {
           return db.collection("alunos").doc(cred.user.uid).set({
-            email,
-            nome,
-            rg,
-            cpf,
-            telefone,
-            faixa: "",
+            nome: dados.nome,
+            dataNascimento: dados.dataNascimento,
+            sexo: dados.sexo,
+            rg: dados.rg,
+            cpf: dados.cpf,
+            endereco: dados.endereco,
+            telefone: dados.telefone,
+            tipoSanguineo: dados.tipoSanguineo,
+            email: dados.email,
             perfil: "aluno",
+            faixa: "",
             cadastroCompleto: true,
             criadoEm: firebase.firestore.FieldValue.serverTimestamp()
           });

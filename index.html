@@ -77,8 +77,13 @@
         const perfil = doc.data().perfil;
 
         if (perfil === "aluno") {
-          window.location.href = "aluno.html";
-        } else if (perfil === "professor") {
+  if (doc.data().cadastroCompleto === true) {
+    window.location.href = "aluno.html";
+  } else {
+    window.location.href = "cadastro.html";
+  }
+}
+ else if (perfil === "professor") {
           window.location.href = "professor.html";
         } else {
           alert("Perfil inválido");

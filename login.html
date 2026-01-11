@@ -2,12 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Login - Sistema Taekwondo</title>
+  <title>Login - CT Gerivaldo Silva</title>
 
-  <!-- CSS Base -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -15,55 +15,76 @@
 
 <body class="center-page">
 
-<div class="card login-card">
-  <h2>🥋 Sistema Taekwondo</h2>
+  <div class="center-box card">
 
-  <label>Email</label>
-  <input type="email" id="email">
+    <h1>CT Gerivaldo Silva</h1>
 
-  <label>Senha</label>
-  <input type="password" id="senha">
+    <h3 class="mb-20">Login</h3>
 
-  <button class="btn btn-primary" onclick="login()">Entrar</button>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Digite seu email">
 
-  <p class="link">
-    Não tem conta?
-    <a href="registro.html">Criar cadastro</a>
-  </p>
-</div>
+    <label>Senha</label>
+    <input type="password" id="senha" placeholder="Digite sua senha">
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-    authDomain: "sistema-taekwondo-1.firebaseapp.com",
-    projectId: "sistema-taekwondo-1",
-    messagingSenderId: "635745416768",
-    appId: "1:635745416768:web:58d23eca722878f047d1a5"
-  };
+    <button class="btn btn-primary btn-lg mt-10" onclick="login()">
+      Entrar
+    </button>
 
-  firebase.initializeApp(firebaseConfig);
+    <div class="mt-20 text-center">
+      <a href="registro.html">Criar uma conta</a>
+    </div>
 
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  </div>
 
-  function login() {
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+      authDomain: "sistema-taekwondo-1.firebaseapp.com",
+      projectId: "sistema-taekwondo-1",
+      messagingSenderId: "635745416768",
+      appId: "1:635745416768:web:58d23eca722878f047d1a5"
+    };
 
-    auth.signInWithEmailAndPassword(email, senha)
-      .then(cred => {
-        db.collection("alunos").doc(cred.user.uid).get()
-          .then(doc => {
-            if (doc.data().perfil === "professor") {
-              window.location.href = "professor.html";
-            } else {
-              window.location.href = "aluno.html";
-            }
-          });
-      })
-      .catch(() => alert("Email ou senha inválidos"));
-  }
-</script>
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+
+      if (!email || !senha) {
+        alert("Preencha email e senha");
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, senha)
+        .then(cred => {
+          return db.collection("alunos").doc(cred.user.uid).get();
+        })
+        .then(doc => {
+          if (!doc.exists) {
+            alert("Perfil não encontrado");
+            auth.signOut();
+            return;
+          }
+
+          const dados = doc.data();
+
+          if (dados.perfil === "professor") {
+            window.location.href = "professor.html";
+          } else {
+            window.location.href = "aluno.html";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Email ou senha inválidos");
+        });
+    }
+  </script>
 
 </body>
 </html>

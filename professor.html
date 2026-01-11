@@ -1,70 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Painel do Professor</title>
 
+  <!-- CSS Base -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    h2 {
-      margin-bottom: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-
-    th, td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f2f2f2;
-    }
-
-    input {
-      width: 120px;
-      padding: 4px;
-    }
-
-    button {
-      padding: 5px 8px;
-      margin: 2px;
-      cursor: pointer;
-    }
-  </style>
 </head>
 
 <body>
 
-<h2>Painel do Professor</h2>
-<button onclick="logout()">Sair</button>
-<button onclick="window.location.href='presenca.html'">Controle de Presença</button>
+<!-- HEADER -->
+<header class="header">
+  <h1>Painel do Professor</h1>
+  <div>
+    <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">
+      Presença
+    </button>
+    <button class="btn btn-danger" onclick="logout()">
+      Sair
+    </button>
+  </div>
+</header>
 
-<table>
-  <thead>
-    <tr>
-      <th>Nome</th>
-      <th>Email</th>
-      <th>Telefone</th>
-      <th>Faixa</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody id="listaAlunos"></tbody>
-</table>
+<!-- CARD TABELA -->
+<div class="card">
+  <h3>Alunos Cadastrados</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Faixa</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="listaAlunos"></tbody>
+  </table>
+</div>
 
 <script>
   // 🔥 Firebase config
@@ -81,7 +61,7 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // 🔐 Verificação de login e perfil
+  // 🔐 Proteção de acesso
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
@@ -95,13 +75,7 @@
           window.location.href = "index.html";
           return;
         }
-
         carregarAlunos();
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao verificar perfil");
-        window.location.href = "index.html";
       });
   });
 
@@ -125,82 +99,59 @@
           const a = doc.data();
 
           const tr = document.createElement("tr");
-
           tr.innerHTML = `
-            <td>${a.nome}</td>
-            <td>${a.email}</td>
+            <td>${a.nome || ""}</td>
+            <td>${a.email || ""}</td>
             <td>${a.telefone || ""}</td>
             <td>
               <input id="faixa-${doc.id}" value="${a.faixa || ""}">
             </td>
             <td>
-              <button onclick="salvarFaixa('${doc.id}')">Salvar faixa</button>
-              <button onclick="verFicha('${doc.id}')">Ver ficha</button>
-              <button onclick="verHistorico('${doc.id}')">Presença</button>
-              <button onclick="removerAluno('${doc.id}', '${a.nome}')">Remover</button>
+              <button class="btn btn-success" onclick="salvarFaixa('${doc.id}')">
+                Salvar
+              </button>
+              <button class="btn btn-secondary" onclick="verFicha('${doc.id}')">
+                Ficha
+              </button>
+              <button class="btn btn-danger" onclick="removerAluno('${doc.id}', '${a.nome}')">
+                Remover
+              </button>
             </td>
           `;
-
           tbody.appendChild(tr);
         });
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao carregar alunos");
       });
   }
 
   // 🎯 Salvar faixa
   function salvarFaixa(alunoId) {
     const faixa = document.getElementById(`faixa-${alunoId}`).value.trim();
-
     if (!faixa) {
       alert("Informe a faixa");
       return;
     }
 
-    if (!confirm("Deseja salvar a nova faixa?")) return;
-
     db.collection("alunos").doc(alunoId).update({ faixa })
-      .then(() => alert("Faixa atualizada com sucesso"))
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao salvar faixa");
-      });
+      .then(() => alert("Faixa atualizada com sucesso"));
   }
 
-  // 📄 Ver ficha completa
+  // 📄 Ver ficha
   function verFicha(alunoId) {
     window.location.href = `ficha-aluno.html?id=${alunoId}`;
   }
 
   // 🗑️ Remover aluno
-  function removerAluno(alunoId, nome) {
+  function removerAluno(id, nome) {
     if (!confirm(`Deseja remover o aluno ${nome}?`)) return;
 
-    db.collection("alunos").doc(alunoId).delete()
-      .then(() => {
-        alert("Aluno removido");
-        carregarAlunos();
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao remover aluno");
-      });
+    db.collection("alunos").doc(id).delete()
+      .then(() => carregarAlunos());
   }
 
   // 🚪 Logout
   function logout() {
-    auth.signOut().then(() => {
-      window.location.href = "index.html";
-    });
+    auth.signOut().then(() => window.location.href = "index.html");
   }
-
-  function verHistorico(alunoId) {
-    window.location.href = `historico-aluno.html?uid=${alunoId}`;
-  }
-
-  
 </script>
 
 </body>

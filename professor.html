@@ -13,25 +13,34 @@
       font-family: Arial, sans-serif;
       padding: 20px;
     }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 15px;
     }
+
     th, td {
       border: 1px solid #333;
       padding: 8px;
       text-align: left;
     }
+
     th {
       background-color: #f2f2f2;
     }
+
     input {
       width: 120px;
       padding: 4px;
     }
+
     button {
-      padding: 6px 10px;
+      padding: 5px 8px;
       margin: 2px;
       cursor: pointer;
     }
@@ -57,6 +66,7 @@
 </table>
 
 <script>
+  // 🔥 Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
     authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -70,24 +80,31 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // Proteção de acesso
+  // 🔐 Verificação de login e perfil
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
 
-    db.collection("alunos").doc(user.uid).get().then(doc => {
-      if (!doc.exists || doc.data().perfil !== "professor") {
-        alert("Acesso negado");
+    db.collection("alunos").doc(user.uid).get()
+      .then(doc => {
+        if (!doc.exists || doc.data().perfil !== "professor") {
+          alert("Acesso negado");
+          window.location.href = "index.html";
+          return;
+        }
+
+        carregarAlunos();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao verificar perfil");
         window.location.href = "index.html";
-        return;
-      }
-      carregarAlunos();
-    });
+      });
   });
 
-  // Carregar alunos
+  // 📋 Carregar alunos
   function carregarAlunos() {
     db.collection("alunos")
       .where("perfil", "==", "aluno")
@@ -98,12 +115,14 @@
         tbody.innerHTML = "";
 
         if (snapshot.empty) {
-          tbody.innerHTML = "<tr><td colspan='5'>Nenhum aluno cadastrado</td></tr>";
+          tbody.innerHTML =
+            "<tr><td colspan='5'>Nenhum aluno cadastrado</td></tr>";
           return;
         }
 
         snapshot.forEach(doc => {
           const a = doc.data();
+
           const tr = document.createElement("tr");
 
           tr.innerHTML = `
@@ -114,7 +133,8 @@
               <input id="faixa-${doc.id}" value="${a.faixa || ""}">
             </td>
             <td>
-              <button onclick="salvarFaixa('${doc.id}')">Salvar</button>
+              <button onclick="salvarFaixa('${doc.id}')">Salvar faixa</button>
+              <button onclick="verFicha('${doc.id}')">Ver ficha</button>
               <button onclick="removerAluno('${doc.id}', '${a.nome}')">Remover</button>
             </td>
           `;
@@ -122,38 +142,56 @@
           tbody.appendChild(tr);
         });
       })
-      .catch(() => alert("Erro ao carregar alunos"));
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao carregar alunos");
+      });
   }
 
-  // Atualizar faixa
+  // 🎯 Salvar faixa
   function salvarFaixa(alunoId) {
-    const novaFaixa = document.getElementById(`faixa-${alunoId}`).value.trim();
-    if (!novaFaixa) {
+    const faixa = document.getElementById(`faixa-${alunoId}`).value.trim();
+
+    if (!faixa) {
       alert("Informe a faixa");
       return;
     }
 
-    db.collection("alunos").doc(alunoId).update({
-      faixa: novaFaixa
-    })
-    .then(() => alert("Faixa atualizada com sucesso"))
-    .catch(() => alert("Erro ao atualizar faixa"));
+    if (!confirm("Deseja salvar a nova faixa?")) return;
+
+    db.collection("alunos").doc(alunoId).update({ faixa })
+      .then(() => alert("Faixa atualizada com sucesso"))
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao salvar faixa");
+      });
   }
 
-  // Remover aluno
-  function removerAluno(id, nome) {
+  // 📄 Ver ficha completa
+  function verFicha(alunoId) {
+    window.location.href = `ficha-aluno.html?id=${alunoId}`;
+  }
+
+  // 🗑️ Remover aluno
+  function removerAluno(alunoId, nome) {
     if (!confirm(`Deseja remover o aluno ${nome}?`)) return;
 
-    db.collection("alunos").doc(id).delete()
+    db.collection("alunos").doc(alunoId).delete()
       .then(() => {
         alert("Aluno removido");
         carregarAlunos();
       })
-      .catch(() => alert("Erro ao remover aluno"));
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao remover aluno");
+      });
   }
 
+  // 🚪 Logout
   function logout() {
-    auth.signOut().then(() => window.location.href = "index.html");
+    auth.signOut().then(() => {
+      window.location.href = "index.html";
+    });
   }
 </script>
 

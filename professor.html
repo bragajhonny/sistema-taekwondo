@@ -7,16 +7,34 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #333; padding: 8px; text-align: left; vertical-align: top; }
-    th { background-color: #f2f2f2; }
-    input { width: 100px; padding: 4px; }
-    button { padding: 4px 8px; margin: 2px; cursor: pointer; }
-    a { margin-right: 4px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    input {
+      width: 120px;
+      padding: 4px;
+    }
+    button {
+      padding: 6px 10px;
+      margin: 2px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -30,10 +48,9 @@
     <tr>
       <th>Nome</th>
       <th>Email</th>
-      <th>Faixa</th>
       <th>Telefone</th>
+      <th>Faixa</th>
       <th>Ações</th>
-      <th>Documentos</th>
     </tr>
   </thead>
   <tbody id="listaAlunos"></tbody>
@@ -44,130 +61,99 @@
     apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
     authDomain: "sistema-taekwondo-1.firebaseapp.com",
     projectId: "sistema-taekwondo-1",
-    storageBucket: "sistema-taekwondo-1.firebasestorage.app",
     messagingSenderId: "635745416768",
     appId: "1:635745416768:web:58d23eca722878f047d1a5"
   };
 
   firebase.initializeApp(firebaseConfig);
+
   const auth = firebase.auth();
   const db = firebase.firestore();
-  const storage = firebase.storage();
-  let professorUID = null;
 
-  // Verifica login e perfil professor
+  // Proteção de acesso
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
 
-    professorUID = user.uid;
-
-    db.collection("alunos").doc(user.uid).get()
-      .then(doc => {
-        if (!doc.exists || doc.data().perfil !== "professor") {
-          alert("Acesso negado");
-          window.location.href = "index.html";
-          return;
-        }
-        carregarAlunos();
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao verificar perfil");
+    db.collection("alunos").doc(user.uid).get().then(doc => {
+      if (!doc.exists || doc.data().perfil !== "professor") {
+        alert("Acesso negado");
         window.location.href = "index.html";
-      });
+        return;
+      }
+      carregarAlunos();
+    });
   });
 
-  // Carrega todos os alunos
+  // Carregar alunos
   function carregarAlunos() {
-    db.collection("alunos").where("perfil", "==", "aluno").orderBy("nome").get()
+    db.collection("alunos")
+      .where("perfil", "==", "aluno")
+      .orderBy("nome")
+      .get()
       .then(snapshot => {
         const tbody = document.getElementById("listaAlunos");
         tbody.innerHTML = "";
 
         if (snapshot.empty) {
-          tbody.innerHTML = "<tr><td colspan='6'>Nenhum aluno cadastrado</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='5'>Nenhum aluno cadastrado</td></tr>";
           return;
         }
 
         snapshot.forEach(doc => {
-          const aluno = doc.data();
+          const a = doc.data();
           const tr = document.createElement("tr");
 
-          // Monta lista de documentos com links
-          let docsLinks = "";
-          if (aluno.documentos) {
-            for (const [tipo, url] of Object.entries(aluno.documentos)) {
-              docsLinks += `<a href="${url}" target="_blank">${tipo.toUpperCase()}</a> `;
-            }
-          }
-
           tr.innerHTML = `
-            <td>${aluno.nome}</td>
-            <td>${aluno.email}</td>
-            <td><input type="text" value="${aluno.faixa || ''}" id="faixa-${doc.id}"></td>
-            <td><input type="text" value="${aluno.telefone || ''}" id="telefone-${doc.id}"></td>
+            <td>${a.nome}</td>
+            <td>${a.email}</td>
+            <td>${a.telefone || ""}</td>
             <td>
-              <button onclick="salvarAlteracoes('${doc.id}')">Salvar</button>
-              <button onclick="removerAluno('${doc.id}', '${aluno.nome}')">Remover</button>
+              <input id="faixa-${doc.id}" value="${a.faixa || ""}">
             </td>
-            <td>${docsLinks || 'Nenhum'}</td>
+            <td>
+              <button onclick="salvarFaixa('${doc.id}')">Salvar</button>
+              <button onclick="removerAluno('${doc.id}', '${a.nome}')">Remover</button>
+            </td>
           `;
 
           tbody.appendChild(tr);
         });
       })
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao carregar alunos");
-      });
+      .catch(() => alert("Erro ao carregar alunos"));
   }
 
-  // Salvar alterações de faixa e telefone
-  function salvarAlteracoes(alunoId) {
+  // Atualizar faixa
+  function salvarFaixa(alunoId) {
     const novaFaixa = document.getElementById(`faixa-${alunoId}`).value.trim();
-    const novoTelefone = document.getElementById(`telefone-${alunoId}`).value.trim();
-
-    if (!novaFaixa || !novoTelefone) {
-      alert("Preencha faixa e telefone antes de salvar.");
+    if (!novaFaixa) {
+      alert("Informe a faixa");
       return;
     }
 
-    if (!confirm("Deseja realmente salvar essas alterações?")) return;
-
     db.collection("alunos").doc(alunoId).update({
-      faixa: novaFaixa,
-      telefone: novoTelefone
+      faixa: novaFaixa
     })
-    .then(() => alert("Alterações salvas com sucesso!"))
-    .catch(err => {
-      console.error(err);
-      alert("Erro ao salvar alterações");
-    });
+    .then(() => alert("Faixa atualizada com sucesso"))
+    .catch(() => alert("Erro ao atualizar faixa"));
   }
 
   // Remover aluno
-  function removerAluno(alunoId, nome) {
-    if (!confirm(`Deseja realmente remover o aluno ${nome}?`)) return;
+  function removerAluno(id, nome) {
+    if (!confirm(`Deseja remover o aluno ${nome}?`)) return;
 
-    db.collection("alunos").doc(alunoId).delete()
+    db.collection("alunos").doc(id).delete()
       .then(() => {
-        alert(`Aluno ${nome} removido com sucesso!`);
+        alert("Aluno removido");
         carregarAlunos();
       })
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao remover aluno");
-      });
+      .catch(() => alert("Erro ao remover aluno"));
   }
 
-  // Logout
   function logout() {
-    auth.signOut().then(() => {
-      window.location.href = "index.html";
-    });
+    auth.signOut().then(() => window.location.href = "index.html");
   }
 </script>
 

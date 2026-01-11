@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha do Aluno</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+    }
+    p {
+      margin: 6px 0;
+    }
+    strong {
+      display: inline-block;
+      width: 160px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 8px 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Ficha do Aluno</h2>
+
+<div id="conteudo"></div>
+
+<button onclick="voltar()">Voltar</button>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+    authDomain: "sistema-taekwondo-1.firebaseapp.com",
+    projectId: "sistema-taekwondo-1",
+    messagingSenderId: "635745416768",
+    appId: "1:635745416768:web:58d23eca722878f047d1a5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  const params = new URLSearchParams(window.location.search);
+  const alunoId = params.get("id");
+
+  if (!alunoId) {
+    alert("Aluno não informado");
+    window.location.href = "professor.html";
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    db.collection("alunos").doc(user.uid).get().then(doc => {
+      if (!doc.exists || doc.data().perfil !== "professor") {
+        alert("Acesso negado");
+        window.location.href = "index.html";
+        return;
+      }
+
+      carregarFicha();
+    });
+  });
+
+  function carregarFicha() {
+    db.collection("alunos").doc(alunoId).get()
+      .then(doc => {
+        if (!doc.exists) {
+          alert("Aluno não encontrado");
+          voltar();
+          return;
+        }
+
+        const a = doc.data();
+        const div = document.getElementById("conteudo");
+
+        div.innerHTML = `
+          <p><strong>Nome:</strong> ${a.nome}</p>
+          <p><strong>Email:</strong> ${a.email}</p>
+          <p><strong>Telefone:</strong> ${a.telefone || ""}</p>
+          <p><strong>Sexo:</strong> ${a.sexo || ""}</p>
+          <p><strong>Data Nascimento:</strong> ${a.dataNascimento || ""}</p>
+          <p><strong>Endereço:</strong> ${a.endereco || ""}</p>
+          <p><strong>RG:</strong> ${a.rg || ""}</p>
+          <p><strong>CPF:</strong> ${a.cpf || ""}</p>
+          <p><strong>Tipo Sanguíneo:</strong> ${a.tipoSanguineo || ""}</p>
+          <p><strong>Faixa:</strong> ${a.faixa || ""}</p>
+        `;
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao carregar ficha");
+      });
+  }
+
+  function voltar() {
+    window.location.href = "professor.html";
+  }
+</script>
+
+</body>
+</html>

@@ -91,6 +91,11 @@
       window.location.href = "index.html";
       return;
     }
+    if (!doc.data().cadastroCompleto) {
+      window.location.href = "cadastro.html";
+      return;
+    }
+
 
     alunoUID = user.uid;
 

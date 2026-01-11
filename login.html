@@ -1,36 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Login - Sistema Taekwondo</title>
 
+  <!-- CSS Base -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      max-width: 400px;
-      margin: auto;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-  </style>
 </head>
 
-<body>
+<body class="center-page">
 
-<h2>Login</h2>
+<div class="card login-card">
+  <h2>🥋 Sistema Taekwondo</h2>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="senha" placeholder="Senha">
+  <label>Email</label>
+  <input type="email" id="email">
 
-<button onclick="login()">Entrar</button>
+  <label>Senha</label>
+  <input type="password" id="senha">
+
+  <button class="btn btn-primary" onclick="login()">Entrar</button>
+
+  <p class="link">
+    Não tem conta?
+    <a href="registro.html">Criar cadastro</a>
+  </p>
+</div>
 
 <script>
   const firebaseConfig = {
@@ -47,40 +47,21 @@
   const db = firebase.firestore();
 
   function login() {
-    const email = document.getElementById("email").value.trim();
+    const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
-
-    if (!email || !senha) {
-      alert("Preencha email e senha");
-      return;
-    }
 
     auth.signInWithEmailAndPassword(email, senha)
       .then(cred => {
-        return db.collection("alunos").doc(cred.user.uid).get();
+        db.collection("alunos").doc(cred.user.uid).get()
+          .then(doc => {
+            if (doc.data().perfil === "professor") {
+              window.location.href = "professor.html";
+            } else {
+              window.location.href = "aluno.html";
+            }
+          });
       })
-      .then(doc => {
-        if (!doc.exists) {
-          alert("Perfil não encontrado");
-          auth.signOut();
-          return;
-        }
-
-        const perfil = doc.data().perfil;
-
-        if (perfil === "professor") {
-          window.location.href = "professor.html";
-        } else if (perfil === "aluno") {
-          window.location.href = "aluno.html";
-        } else {
-          alert("Perfil inválido");
-          auth.signOut();
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Email ou senha inválidos");
-      });
+      .catch(() => alert("Email ou senha inválidos"));
   }
 </script>
 

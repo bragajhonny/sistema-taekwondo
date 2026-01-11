@@ -2,73 +2,47 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Sistema Taekwondo</title>
+  <title>Login - Sistema Taekwondo</title>
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      max-width: 400px;
+      margin: auto;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
-<h2>Cadastro do Aluno</h2>
-
-<input id="nome" placeholder="Nome"><br>
-<input id="dataNascimento" type="date"><br>
-
-<select id="sexo">
-  <option value="">Sexo</option>
-  <option>Masculino</option>
-  <option>Feminino</option>
-</select><br>
-
-<input id="endereco" placeholder="Endereço"><br>
-<input id="telefone" placeholder="Telefone"><br>
-<input id="rg" placeholder="RG"><br>
-<input id="cpf" placeholder="CPF"><br>
-<input id="tipoSanguineo" placeholder="Tipo sanguíneo"><br>
-<input id="faixa" placeholder="Faixa"><br>
-
-<input id="cadEmail" placeholder="Email"><br>
-<input id="cadSenha" type="password" placeholder="Senha"><br>
-
-<button onclick="cadastrar()">Cadastrar</button>
-
-<hr>
-
 <h2>Login</h2>
-<input id="loginEmail" placeholder="Email"><br>
-<input id="loginSenha" type="password" placeholder="Senha"><br>
+
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="senha" placeholder="Senha">
+
 <button onclick="login()">Entrar</button>
-
-<!-- INFO DO APP
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-    authDomain: "sistema-taekwondo-1.firebaseapp.com",
-    projectId: "sistema-taekwondo-1",
-    storageBucket: "sistema-taekwondo-1.firebasestorage.app",
-    messagingSenderId: "635745416768",
-    appId: "1:635745416768:web:58d23eca722878f047d1a5"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>  -->
 
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
     authDomain: "sistema-taekwondo-1.firebaseapp.com",
     projectId: "sistema-taekwondo-1",
-    storageBucket: "sistema-taekwondo-1.appspot.com",
     messagingSenderId: "635745416768",
     appId: "1:635745416768:web:58d23eca722878f047d1a5"
   };
@@ -78,67 +52,44 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  function cadastrar() {
-    const email = cadEmail.value;
-    const senha = cadSenha.value;
-
-    auth.createUserWithEmailAndPassword(email, senha)
-      .then(userCred => {
-        const uid = userCred.user.uid;
-        return db.collection("alunos").doc(uid).set({
-          nome: nome.value,
-          dataNascimento: dataNascimento.value,
-          sexo: sexo.value,
-          endereco: endereco.value,
-          telefone: telefone.value,
-          rg: rg.value,
-          cpf: cpf.value,
-          tipoSanguineo: tipoSanguineo.value,
-          faixa: faixa.value,
-          email: email,
-          perfil: "aluno",
-          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      })
-      .then(() => alert("Aluno cadastrado com sucesso!"))
-      .catch(err => alert(err.message));
-  }
-
   function login() {
-  const email = loginEmail.value;
-  const senha = loginSenha.value;
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value;
 
-  if (!email || !senha) {
-    alert("Informe email e senha.");
-    return;
+    if (!email || !senha) {
+      alert("Preencha email e senha");
+      return;
+    }
+
+    auth.signInWithEmailAndPassword(email, senha)
+      .then(cred => {
+        const uid = cred.user.uid;
+
+        return db.collection("alunos").doc(uid).get();
+      })
+      .then(doc => {
+        if (!doc.exists) {
+          alert("Perfil não encontrado");
+          auth.signOut();
+          return;
+        }
+
+        const perfil = doc.data().perfil;
+
+        if (perfil === "aluno") {
+          window.location.href = "aluno.html";
+        } else if (perfil === "professor") {
+          window.location.href = "professor.html";
+        } else {
+          alert("Perfil inválido");
+          auth.signOut();
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Email ou senha inválidos");
+      });
   }
-
-  auth.signInWithEmailAndPassword(email, senha)
-    .then(userCred => {
-      const uid = userCred.user.uid;
-
-      return db.collection("alunos").doc(uid).get();
-    })
-    .then(doc => {
-      if (!doc.exists) {
-        throw new Error("Perfil do usuário não encontrado.");
-      }
-
-      const perfil = doc.data().perfil;
-
-      if (perfil === "professor") {
-        window.location.href = "professor.html";
-      } else {
-        window.location.href = "aluno.html";
-      }
-    })
-    .catch(err => {
-      alert(err.message);
-    });
-}
-</script>
-
-  
 </script>
 
 </body>

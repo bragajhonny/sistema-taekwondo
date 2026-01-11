@@ -1,69 +1,30 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Login - Sistema Taekwondo</title>
-
-  <!-- CSS Base -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <title>Sistema Taekwondo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 80px;
+    }
+    button {
+      width: 200px;
+      padding: 15px;
+      font-size: 16px;
+      margin: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
+<body>
 
-<body class="center-page">
+<h1>Sistema Taekwondo</h1>
 
-<div class="card login-card">
-  <h2>🥋 Sistema Taekwondo</h2>
-
-  <label>Email</label>
-  <input type="email" id="email">
-
-  <label>Senha</label>
-  <input type="password" id="senha">
-
-  <button class="btn btn-primary" onclick="login()">Entrar</button>
-
-  <p class="link">
-    Não tem conta?
-    <a href="registro.html">Criar cadastro</a>
-  </p>
-</div>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-    authDomain: "sistema-taekwondo-1.firebaseapp.com",
-    projectId: "sistema-taekwondo-1",
-    messagingSenderId: "635745416768",
-    appId: "1:635745416768:web:58d23eca722878f047d1a5"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  function login() {
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-
-    auth.signInWithEmailAndPassword(email, senha)
-      .then(cred => {
-        db.collection("alunos").doc(cred.user.uid).get()
-          .then(doc => {
-            if (doc.data().perfil === "professor") {
-              window.location.href = "professor.html";
-            } else {
-              window.location.href = "aluno.html";
-            }
-          });
-      })
-      .catch(() => alert("Email ou senha inválidos"));
-  }
-</script>
+<button onclick="window.location.href='login.html'">Login</button>
+<br>
+<button onclick="window.location.href='registro.html'">Cadastro</button>
 
 </body>
 </html>

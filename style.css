@@ -172,3 +172,56 @@ a:hover {
 .mb-10 { margin-bottom: 10px; }
 .mb-20 { margin-bottom: 20px; }
 .text-center { text-align: center; }
+
+
+
+/* ===== Layout mobile ===== */
+
+.mobile-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0d47a1, #1976d2);
+  padding: 20px;
+}
+
+.mobile-card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.logo {
+  font-size: 56px;
+  margin-bottom: 10px;
+}
+
+.mobile-card h1 {
+  margin: 10px 0 5px;
+  font-size: 24px;
+}
+
+.subtitle {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ===== Botões grandes ===== */
+
+.btn-lg {
+  padding: 16px;
+  font-size: 16px;
+  border-radius: 10px;
+}

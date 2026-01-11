@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Painel do Aluno</title>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -15,17 +16,34 @@
       max-width: 600px;
       margin: auto;
     }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
     input, select {
       width: 100%;
       padding: 8px;
       margin-bottom: 10px;
     }
+
+    input[disabled] {
+      background-color: #eee;
+    }
+
     button {
-      padding: 8px 14px;
+      padding: 10px;
+      font-weight: bold;
+      cursor: pointer;
       margin-top: 10px;
     }
   </style>
 </head>
+
 <body>
 
 <h2>Painel do Aluno</h2>
@@ -44,8 +62,8 @@
 <label>Sexo</label>
 <select id="sexo">
   <option value="">Selecione</option>
-  <option>Masculino</option>
-  <option>Feminino</option>
+  <option value="Masculino">Masculino</option>
+  <option value="Feminino">Feminino</option>
 </select>
 
 <label>Endereço</label>
@@ -86,28 +104,31 @@
   const db = firebase.firestore();
   let alunoUID = null;
 
+  // Proteção de acesso
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
-    if (!doc.data().cadastroCompleto) {
-      window.location.href = "cadastro.html";
-      return;
-    }
-
 
     alunoUID = user.uid;
 
-    db.collection("alunos").doc(alunoUID).get().then(doc => {
-      if (!doc.exists || doc.data().perfil !== "aluno") {
-        alert("Acesso negado");
-        window.location.href = "index.html";
-        return;
-      }
+    db.collection("alunos").doc(alunoUID).get()
+      .then(doc => {
+        if (!doc.exists || doc.data().perfil !== "aluno") {
+          alert("Acesso negado.");
+          auth.signOut();
+          window.location.href = "index.html";
+          return;
+        }
 
-      preencherFormulario(doc.data());
-    });
+        preencherFormulario(doc.data());
+      })
+      .catch(() => {
+        alert("Erro ao carregar dados.");
+        auth.signOut();
+        window.location.href = "index.html";
+      });
   });
 
   function preencherFormulario(data) {
@@ -125,19 +146,21 @@
 
   function salvarDados() {
     db.collection("alunos").doc(alunoUID).update({
-      nome: nome.value,
+      nome: nome.value.trim(),
       dataNascimento: dataNascimento.value,
       sexo: sexo.value,
-      endereco: endereco.value,
-      telefone: telefone.value,
-      tipoSanguineo: tipoSanguineo.value
+      endereco: endereco.value.trim(),
+      telefone: telefone.value.trim(),
+      tipoSanguineo: tipoSanguineo.value.trim()
     })
     .then(() => alert("Dados atualizados com sucesso!"))
-    .catch(() => alert("Erro ao salvar dados"));
+    .catch(() => alert("Erro ao salvar os dados."));
   }
 
   function logout() {
-    auth.signOut().then(() => window.location.href = "index.html");
+    auth.signOut().then(() => {
+      window.location.href = "index.html";
+    });
   }
 </script>
 

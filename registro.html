@@ -2,11 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro - Sistema Taekwondo</title>
+  <title>Cadastro - CT Gerivaldo Silva</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -14,71 +15,105 @@
 
 <body class="center-page">
 
-<div class="card login-card">
-  <h2>Cadastro do Aluno</h2>
+  <div class="center-box card">
 
-  <label>Nome completo</label>
-  <input id="nome">
+    <h1>CT Gerivaldo Silva</h1>
 
-  <label>Email</label>
-  <input type="email" id="email">
+    <h3 class="mb-20">Cadastro do Aluno</h3>
 
-  <label>Senha</label>
-  <input type="password" id="senha">
+    <label>Email</label>
+    <input type="email" id="email">
 
-  <label>Confirmar senha</label>
-  <input type="password" id="confirmar">
+    <label>Senha</label>
+    <input type="password" id="senha">
 
-  <button class="btn btn-success" onclick="registrar()">Criar conta</button>
+    <label>Nome completo</label>
+    <input type="text" id="nome">
 
-  <p class="link">
-    Já tem conta?
-    <a href="index.html">Fazer login</a>
-  </p>
-</div>
+    <label>Data de nascimento</label>
+    <input type="date" id="dataNascimento">
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-    authDomain: "sistema-taekwondo-1.firebaseapp.com",
-    projectId: "sistema-taekwondo-1",
-    messagingSenderId: "635745416768",
-    appId: "1:635745416768:web:58d23eca722878f047d1a5"
-  };
+    <label>Sexo</label>
+    <select id="sexo">
+      <option value="">Selecione</option>
+      <option>Masculino</option>
+      <option>Feminino</option>
+    </select>
 
-  firebase.initializeApp(firebaseConfig);
+    <label>Telefone</label>
+    <input type="text" id="telefone">
 
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+    <label>Endereço</label>
+    <input type="text" id="endereco">
 
-  function registrar() {
-    const nome = document.getElementById("nome").value;
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-    const confirmar = document.getElementById("confirmar").value;
+    <label>Tipo sanguíneo</label>
+    <input type="text" id="tipoSanguineo">
 
-    if (senha !== confirmar) {
-      alert("As senhas não conferem");
-      return;
-    }
+    <button class="btn btn-primary btn-lg mt-10" onclick="cadastrar()">
+      Criar conta
+    </button>
 
-    auth.createUserWithEmailAndPassword(email, senha)
-      .then(cred => {
-        return db.collection("alunos").doc(cred.user.uid).set({
-          nome,
-          email,
-          perfil: "aluno",
-          faixa: "Branca",
-          criadoEm: new Date()
+    <div class="mt-20 text-center">
+      <a href="login.html">Já tenho conta</a>
+    </div>
+
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+      authDomain: "sistema-taekwondo-1.firebaseapp.com",
+      projectId: "sistema-taekwondo-1",
+      messagingSenderId: "635745416768",
+      appId: "1:635745416768:web:58d23eca722878f047d1a5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function cadastrar() {
+      const email = document.getElementById("email").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+      const nome = document.getElementById("nome").value.trim();
+      const dataNascimento = document.getElementById("dataNascimento").value;
+      const sexo = document.getElementById("sexo").value;
+      const telefone = document.getElementById("telefone").value.trim();
+      const endereco = document.getElementById("endereco").value.trim();
+      const tipoSanguineo = document.getElementById("tipoSanguineo").value.trim();
+
+      if (!email || !senha || !nome) {
+        alert("Preencha os campos obrigatórios");
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, senha)
+        .then(cred => {
+          return db.collection("alunos").doc(cred.user.uid).set({
+            email,
+            nome,
+            dataNascimento,
+            sexo,
+            telefone,
+            endereco,
+            tipoSanguineo,
+            perfil: "aluno",
+            faixa: "",
+            cadastroCompleto: true,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        })
+        .then(() => {
+          alert("Cadastro realizado com sucesso");
+          window.location.href = "aluno.html";
+        })
+        .catch(err => {
+          console.error(err);
+          alert(err.message);
         });
-      })
-      .then(() => {
-        alert("Cadastro realizado!");
-        window.location.href = "aluno.html";
-      })
-      .catch(() => alert("Erro ao cadastrar"));
-  }
-</script>
+    }
+  </script>
 
 </body>
 </html>

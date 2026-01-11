@@ -136,6 +136,7 @@
             <td>
               <button onclick="salvarFaixa('${doc.id}')">Salvar faixa</button>
               <button onclick="verFicha('${doc.id}')">Ver ficha</button>
+              <button onclick="verHistorico('${doc.id}')">Presença</button>
               <button onclick="removerAluno('${doc.id}', '${a.nome}')">Remover</button>
             </td>
           `;
@@ -194,6 +195,12 @@
       window.location.href = "index.html";
     });
   }
+
+  function verHistorico(alunoId) {
+    window.location.href = `historico-aluno.html?uid=${alunoId}`;
+  }
+
+  
 </script>
 
 </body>

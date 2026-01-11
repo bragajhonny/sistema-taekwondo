@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro do Aluno</title>
+  <title>Cadastro de Aluno</title>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -10,15 +10,18 @@
 
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      max-width: 450px;
+      max-width: 500px;
       margin: auto;
     }
     input, select, button {
       width: 100%;
       padding: 10px;
       margin-bottom: 10px;
+    }
+    h2 {
+      text-align: center;
     }
   </style>
 </head>
@@ -27,11 +30,14 @@
 
 <h2>Cadastro do Aluno</h2>
 
-<input id="nome" placeholder="Nome completo">
+<!-- DADOS DE LOGIN -->
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="senha" placeholder="Senha">
 
-<input id="telefone" placeholder="Telefone">
+<hr>
+
+<!-- DADOS PESSOAIS -->
+<input id="nome" placeholder="Nome completo">
 <input type="date" id="dataNascimento">
 
 <select id="sexo">
@@ -41,11 +47,12 @@
 </select>
 
 <input id="endereco" placeholder="Endereço">
-<input id="tipoSanguineo" placeholder="Tipo sanguíneo">
+<input id="telefone" placeholder="Telefone">
 <input id="rg" placeholder="RG">
 <input id="cpf" placeholder="CPF">
+<input id="tipoSanguineo" placeholder="Tipo sanguíneo">
 
-<button onclick="cadastrar()">Criar Conta</button>
+<button onclick="registrar()">Finalizar Cadastro</button>
 
 <script>
   const firebaseConfig = {
@@ -57,39 +64,51 @@
   };
 
   firebase.initializeApp(firebaseConfig);
+
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  function cadastrar() {
-    const dados = {
-      nome: nome.value.trim(),
-      email: email.value.trim(),
-      telefone: telefone.value.trim(),
-      dataNascimento: dataNascimento.value,
-      sexo: sexo.value,
-      endereco: endereco.value.trim(),
-      tipoSanguineo: tipoSanguineo.value.trim(),
-      rg: rg.value.trim(),
-      cpf: cpf.value.trim()
-    };
+  function registrar() {
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value.trim();
 
-    if (!dados.nome || !dados.email || !senha.value || !dados.rg || !dados.cpf) {
-      alert("Preencha todos os campos obrigatórios");
+    const nome = document.getElementById("nome").value.trim();
+    const dataNascimento = document.getElementById("dataNascimento").value;
+    const sexo = document.getElementById("sexo").value;
+    const endereco = document.getElementById("endereco").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+    const rg = document.getElementById("rg").value.trim();
+    const cpf = document.getElementById("cpf").value.trim();
+    const tipoSanguineo = document.getElementById("tipoSanguineo").value.trim();
+
+    if (!email || !senha || !nome) {
+      alert("Preencha os campos obrigatórios");
       return;
     }
 
-    auth.createUserWithEmailAndPassword(dados.email, senha.value)
+    auth.createUserWithEmailAndPassword(email, senha)
       .then(cred => {
         return db.collection("alunos").doc(cred.user.uid).set({
-          ...dados,
+          email: email,
+          nome,
+          dataNascimento,
+          sexo,
+          endereco,
+          telefone,
+          rg,
+          cpf,
+          tipoSanguineo,
+
+          faixa: "",                 // professor define
           perfil: "aluno",
-          faixa: "",
+          cadastroCompleto: true,
+
           criadoEm: firebase.firestore.FieldValue.serverTimestamp()
         });
       })
       .then(() => {
         alert("Cadastro realizado com sucesso!");
-        window.location.href = "login.html";
+        window.location.href = "aluno.html";
       })
       .catch(err => {
         console.error(err);

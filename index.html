@@ -4,27 +4,37 @@
   <meta charset="UTF-8">
   <title>Sistema Taekwondo</title>
 
-  <!-- CSS Base do Sistema -->
+  <!-- Viewport obrigatório para celular -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS Base -->
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="center-page">
+<body class="mobile-page">
 
-  <div class="card home-card">
-    <h1>🥋 Sistema Taekwondo</h1>
-    <p class="subtitle">Controle de alunos, faixas e presença</p>
+  <div class="mobile-card">
 
-    <button
-      class="btn btn-primary"
-      onclick="window.location.href='login.html'">
-      Login
-    </button>
+    <div class="logo">
+      🥋
+    </div>
 
-    <button
-      class="btn btn-success"
-      onclick="window.location.href='registro.html'">
-      Cadastro
-    </button>
+    <h1>CT Gerivaldo Silva</h1>
+
+    <div class="mobile-actions">
+      <button
+        class="btn btn-primary btn-lg"
+        onclick="window.location.href='login.html'">
+        Entrar
+      </button>
+
+      <button
+        class="btn btn-outline btn-lg"
+        onclick="window.location.href='registro.html'">
+        Criar conta
+      </button>
+    </div>
+
   </div>
 
 </body>

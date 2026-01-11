@@ -235,8 +235,9 @@ a:hover {
   align-items: center;
   justify-content: center;
   background-color: #f5f6f8;
-  padding: 20px;
+  padding: 0; /* 🔥 ISSO RESOLVE */
 }
+
 
 .center-box {
   width: 100%;

@@ -4,90 +4,65 @@
   <meta charset="UTF-8">
   <title>Painel do Aluno</title>
 
+  <!-- CSS Base -->
+  <link rel="stylesheet" href="style.css">
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-
-    h2 {
-      text-align: center;
-    }
-
-    label {
-      font-weight: bold;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-    }
-
-    input[disabled] {
-      background-color: #eee;
-    }
-
-    button {
-      padding: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-  </style>
 </head>
 
 <body>
 
-<h2>Painel do Aluno</h2>
-<button onclick="logout()">Sair</button>
+<!-- HEADER -->
+<header class="header">
+  <h1>Painel do Aluno</h1>
+  <button class="btn btn-danger" onclick="logout()">Sair</button>
+</header>
 
-<hr>
+<!-- CARD DADOS -->
+<div class="card">
+  <h3>Meus Dados</h3>
 
-<h3>Meus Dados</h3>
+  <label>Nome</label>
+  <input id="nome">
 
-<label>Nome</label>
-<input id="nome">
+  <label>Data de Nascimento</label>
+  <input type="date" id="dataNascimento">
 
-<label>Data de Nascimento</label>
-<input type="date" id="dataNascimento">
+  <label>Sexo</label>
+  <select id="sexo">
+    <option value="">Selecione</option>
+    <option>Masculino</option>
+    <option>Feminino</option>
+  </select>
 
-<label>Sexo</label>
-<select id="sexo">
-  <option value="">Selecione</option>
-  <option value="Masculino">Masculino</option>
-  <option value="Feminino">Feminino</option>
-</select>
+  <label>Endereço</label>
+  <input id="endereco">
 
-<label>Endereço</label>
-<input id="endereco">
+  <label>Telefone</label>
+  <input id="telefone">
 
-<label>Telefone</label>
-<input id="telefone">
+  <label>Tipo Sanguíneo</label>
+  <input id="tipoSanguineo">
 
-<label>Tipo Sanguíneo</label>
-<input id="tipoSanguineo">
+  <label>Faixa</label>
+  <input id="faixa" disabled>
 
-<label>Faixa</label>
-<input id="faixa" disabled>
+  <label>RG</label>
+  <input id="rg" disabled>
 
-<label>RG</label>
-<input id="rg" disabled>
+  <label>CPF</label>
+  <input id="cpf" disabled>
 
-<label>CPF</label>
-<input id="cpf" disabled>
+  <label>Email</label>
+  <input id="email" disabled>
 
-<label>Email</label>
-<input id="email" disabled>
-
-<button onclick="salvarDados()">Salvar Alterações</button>
+  <button class="btn btn-success" onclick="salvarDados()">
+    Salvar Alterações
+  </button>
+</div>
 
 <script>
   const firebaseConfig = {
@@ -104,7 +79,7 @@
   const db = firebase.firestore();
   let alunoUID = null;
 
-  // Proteção de acesso
+  // 🔐 Proteção de acesso
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "index.html";
@@ -116,21 +91,15 @@
     db.collection("alunos").doc(alunoUID).get()
       .then(doc => {
         if (!doc.exists || doc.data().perfil !== "aluno") {
-          alert("Acesso negado.");
-          auth.signOut();
+          alert("Acesso negado");
           window.location.href = "index.html";
           return;
         }
-
         preencherFormulario(doc.data());
-      })
-      .catch(() => {
-        alert("Erro ao carregar dados.");
-        auth.signOut();
-        window.location.href = "index.html";
       });
   });
 
+  // 📋 Preencher dados
   function preencherFormulario(data) {
     nome.value = data.nome || "";
     dataNascimento.value = data.dataNascimento || "";
@@ -144,23 +113,23 @@
     email.value = data.email || "";
   }
 
+  // 💾 Salvar alterações (exceto faixa, rg, cpf, email)
   function salvarDados() {
     db.collection("alunos").doc(alunoUID).update({
-      nome: nome.value.trim(),
+      nome: nome.value,
       dataNascimento: dataNascimento.value,
       sexo: sexo.value,
-      endereco: endereco.value.trim(),
-      telefone: telefone.value.trim(),
-      tipoSanguineo: tipoSanguineo.value.trim()
+      endereco: endereco.value,
+      telefone: telefone.value,
+      tipoSanguineo: tipoSanguineo.value
     })
     .then(() => alert("Dados atualizados com sucesso!"))
-    .catch(() => alert("Erro ao salvar os dados."));
+    .catch(() => alert("Erro ao salvar dados"));
   }
 
+  // 🚪 Logout
   function logout() {
-    auth.signOut().then(() => {
-      window.location.href = "index.html";
-    });
+    auth.signOut().then(() => window.location.href = "index.html");
   }
 </script>
 

@@ -2,100 +2,29 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Login - Sistema Taekwondo</title>
-
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+  <title>Sistema Taekwondo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 40px;
-      max-width: 400px;
-      margin: auto;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      margin: 6px 0;
+      text-align: center;
+      margin-top: 80px;
     }
     button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
+      width: 200px;
+      padding: 15px;
+      font-size: 16px;
+      margin: 10px;
       cursor: pointer;
     }
   </style>
 </head>
-
 <body>
 
-<h2>Login</h2>
+<h1>Sistema Taekwondo</h1>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="senha" placeholder="Senha">
-
-<button onclick="login()">Entrar</button>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-    authDomain: "sistema-taekwondo-1.firebaseapp.com",
-    projectId: "sistema-taekwondo-1",
-    messagingSenderId: "635745416768",
-    appId: "1:635745416768:web:58d23eca722878f047d1a5"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  function login() {
-    const email = document.getElementById("email").value.trim();
-    const senha = document.getElementById("senha").value;
-
-    if (!email || !senha) {
-      alert("Preencha email e senha");
-      return;
-    }
-
-    auth.signInWithEmailAndPassword(email, senha)
-      .then(cred => {
-        const uid = cred.user.uid;
-
-        return db.collection("alunos").doc(uid).get();
-      })
-      .then(doc => {
-        if (!doc.exists) {
-          alert("Perfil não encontrado");
-          auth.signOut();
-          return;
-        }
-
-        const perfil = doc.data().perfil;
-
-        if (perfil === "aluno") {
-  if (doc.data().cadastroCompleto === true) {
-    window.location.href = "aluno.html";
-  } else {
-    window.location.href = "cadastro.html";
-  }
-}
- else if (perfil === "professor") {
-          window.location.href = "professor.html";
-        } else {
-          alert("Perfil inválido");
-          auth.signOut();
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Email ou senha inválidos");
-      });
-  }
-</script>
+<button onclick="window.location.href='login.html'">Login</button>
+<br>
+<button onclick="window.location.href='registro.html'">Cadastro</button>
 
 </body>
 </html>

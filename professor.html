@@ -12,10 +12,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 
-<body class="mobile-page">
+<body style="background: var(--cor-fundo);">
 
-  <!-- HEADER -->
-  <div class="header">
+  <!-- HEADER FIXO NO TOPO -->
+  <div class="header" style="margin-bottom: 20px;">
     <h1>Professor</h1>
     <div>
       <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">Presença</button>
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <!-- CONTEÚDO -->
+  <!-- CONTEÚDO CENTRALIZADO -->
   <div class="center-box">
     <div class="card">
       <h3>Alunos cadastrados</h3>
@@ -59,7 +59,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // 🔐 Proteção de acesso
     auth.onAuthStateChanged(user => {
       if (!user) window.location.href = "index.html";
 
@@ -74,7 +73,6 @@
         });
     });
 
-    // 📋 Carregar alunos
     function carregarAlunos() {
       db.collection("alunos")
         .where("perfil", "==", "aluno")
@@ -125,13 +123,9 @@
         .catch(() => alert("Erro ao carregar alunos"));
     }
 
-    // 🎯 Atualizar faixa
     function salvarFaixa(alunoId) {
       const faixa = document.getElementById(`faixa-${alunoId}`).value;
-      if (!faixa) {
-        alert("Selecione uma faixa");
-        return;
-      }
+      if (!faixa) { alert("Selecione uma faixa"); return; }
       if (!confirm("Deseja salvar a nova faixa?")) return;
 
       db.collection("alunos").doc(alunoId).update({ faixa })
@@ -139,24 +133,18 @@
         .catch(() => alert("Erro ao atualizar faixa"));
     }
 
-    // 📄 Ficha do aluno
     function verFicha(alunoId) {
       window.location.href = `ficha-aluno.html?id=${alunoId}`;
     }
 
-    // 🗑️ Remover aluno
     function removerAluno(id, nome) {
       if (!confirm(`Deseja remover o aluno ${nome}?`)) return;
 
       db.collection("alunos").doc(id).delete()
-        .then(() => {
-          alert("Aluno removido");
-          carregarAlunos();
-        })
+        .then(() => { alert("Aluno removido"); carregarAlunos(); })
         .catch(() => alert("Erro ao remover aluno"));
     }
 
-    // 🚪 Logout
     function logout() {
       auth.signOut().then(() => window.location.href = "index.html");
     }

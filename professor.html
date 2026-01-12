@@ -21,7 +21,7 @@
     <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">
       Presença
     </button>
-    <button class="btn btn-secondary" onclick="window.location.href='historico-aula.html'">
+    <button class="btn btn-secondary" onclick="window.location.href='historico-aluno.html'">
       Histórico de Aulas
     </button>
     <button class="btn btn-danger" onclick="logout()">Sair</button>
@@ -41,7 +41,6 @@
             <th>Email</th>
             <th>Telefone</th>
             <th>Faixa</th>
-            <th>Data</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -96,7 +95,7 @@
         tbody.innerHTML = "<tr><td colspan='6'>Nenhum aluno cadastrado</td></tr>";
         return;
       }
-
+/*
       snapshot.forEach(async doc => {
         const a = doc.data();
 
@@ -110,6 +109,11 @@
           options += `<option value="${pDoc.id}">${pDoc.id}</option>`;
         });
 
+
+        <button class="btn btn-primary mb-10" onclick="verHistorico('${doc.id}')">
+              Histórico
+            </button>
+*/
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${a.nome}</td>
@@ -143,9 +147,7 @@
             <button class="btn btn-secondary mb-10" onclick="verFicha('${doc.id}')">
               Ficha
             </button>
-            <button class="btn btn-primary mb-10" onclick="verHistorico('${doc.id}')">
-              Histórico
-            </button>
+            
             <button class="btn btn-danger" onclick="removerAluno('${doc.id}', '${a.nome}')">
               Remover
             </button>
@@ -173,7 +175,7 @@
     function verFicha(alunoId) {
       window.location.href = `ficha-aluno.html?id=${alunoId}`;
     }
-
+/*
     // 📊 Ver histórico
     function verHistorico(alunoId) {
       const selectData = document.getElementById(`data-${alunoId}`);
@@ -186,7 +188,7 @@
 
       window.location.href = `historico-aluno.html?uid=${alunoId}&data=${dataSelecionada}`;
     }
-
+*/
     // 🗑️ Remover aluno
     function removerAluno(id, nome) {
       if (!confirm(`Deseja remover o aluno ${nome}?`)) return;

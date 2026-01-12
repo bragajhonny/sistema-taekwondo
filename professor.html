@@ -18,12 +18,10 @@
   <div class="header">
     <h1>Professor</h1>
     <div>
-      <button class="btn btn-secondary"
-              onclick="window.location.href='presenca.html'">
+      <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">
         Presença
       </button>
-      <button class="btn btn-danger"
-              onclick="logout()">
+      <button class="btn btn-danger" onclick="logout()">
         Sair
       </button>
     </div>
@@ -41,6 +39,7 @@
             <th>Email</th>
             <th>Telefone</th>
             <th>Faixa</th>
+            <th>Data</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -50,7 +49,6 @@
   </div>
 
   <script>
-    // 🔥 Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
       authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -63,21 +61,6 @@
 
     const auth = firebase.auth();
     const db = firebase.firestore();
-
-    // 📚 Lista fixa de faixas
-    const FAIXAS = [
-      "branca",
-      "branca/amarela",
-      "amarela",
-      "amarela/verde",
-      "verde",
-      "verde/azul",
-      "azul",
-      "azul/vermelha",
-      "vermelha",
-      "vermelha/preta",
-      "preta"
-    ];
 
     // 🔐 Proteção de acesso
     auth.onAuthStateChanged(user => {
@@ -94,91 +77,112 @@
             return;
           }
           carregarAlunos();
-        })
-        .catch(() => {
-          alert("Erro ao verificar acesso");
-          window.location.href = "index.html";
         });
     });
 
-    // 📋 Carregar alunos ordenados por nome
-    function carregarAlunos() {
-      db.collection("alunos")
+    // 📋 Carregar alunos
+    async function carregarAlunos() {
+      const snapshot = await db.collection("alunos")
         .where("perfil", "==", "aluno")
         .orderBy("nome")
-        .get()
-        .then(snapshot => {
-          const tbody = document.getElementById("listaAlunos");
-          tbody.innerHTML = "";
+        .get();
 
-          if (snapshot.empty) {
-            tbody.innerHTML =
-              "<tr><td colspan='5'>Nenhum aluno cadastrado</td></tr>";
-            return;
-          }
+      const tbody = document.getElementById("listaAlunos");
+      tbody.innerHTML = "";
 
-          snapshot.forEach(doc => {
-            const a = doc.data();
-
-            const options = FAIXAS.map(faixa => `
-              <option value="${faixa}"
-                ${a.faixa === faixa ? "selected" : ""}>
-                ${faixa}
-              </option>
-            `).join("");
-
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${a.nome}</td>
-              <td>${a.email}</td>
-              <td>${a.telefone || ""}</td>
-              <td>
-                <select id="faixa-${doc.id}">
-                  <option value="">Selecione</option>
-                  ${options}
-                </select>
-              </td>
-              <td>
-                <button class="btn btn-success mb-10"
-                        onclick="salvarFaixa('${doc.id}')">
-                  Salvar
-                </button>
-                <button class="btn btn-secondary mb-10"
-                        onclick="verFicha('${doc.id}')">
-                  Ficha
-                </button>
-                <button class="btn btn-danger"
-                        onclick="removerAluno('${doc.id}', '${a.nome}')">
-                  Remover
-                </button>
-              </td>
-            `;
-
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(() => alert("Erro ao carregar alunos"));
-    }
-
-    // 🎯 Atualizar faixa
-    function salvarFaixa(alunoId) {
-      const faixa = document.getElementById(`faixa-${alunoId}`).value;
-
-      if (!faixa) {
-        alert("Selecione uma faixa");
+      if (snapshot.empty) {
+        tbody.innerHTML = "<tr><td colspan='6'>Nenhum aluno cadastrado</td></tr>";
         return;
       }
 
+      snapshot.forEach(async doc => {
+        const a = doc.data();
+
+        // Carregar datas de presença existentes
+        const presencasSnap = await db.collection("presencas")
+          .orderBy("data", "desc")
+          .get();
+
+        let options = '<option value="">Selecionar</option>';
+        presencasSnap.forEach(pDoc => {
+          options += `<option value="${pDoc.id}">${pDoc.id}</option>`;
+        });
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${a.nome}</td>
+          <td>${a.email}</td>
+          <td>${a.telefone || ""}</td>
+          <td>
+            <select id="faixa-${doc.id}">
+              <option value="">-- Faixa --</option>
+              <option${a.faixa==="branca"?" selected":""}>branca</option>
+              <option${a.faixa==="branca/amarela"?" selected":""}>branca/amarela</option>
+              <option${a.faixa==="amarela"?" selected":""}>amarela</option>
+              <option${a.faixa==="amarela/verde"?" selected":""}>amarela/verde</option>
+              <option${a.faixa==="verde"?" selected":""}>verde</option>
+              <option${a.faixa==="verde/azul"?" selected":""}>verde/azul</option>
+              <option${a.faixa==="azul"?" selected":""}>azul</option>
+              <option${a.faixa==="azul/vermelha"?" selected":""}>azul/vermelha</option>
+              <option${a.faixa==="vermelha"?" selected":""}>vermelha</option>
+              <option${a.faixa==="vermelha/preta"?" selected":""}>vermelha/preta</option>
+              <option${a.faixa==="preta"?" selected":""}>preta</option>
+            </select>
+          </td>
+          <td>
+            <select id="data-${doc.id}">
+              ${options}
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-success mb-10" onclick="salvarFaixa('${doc.id}')">
+              Salvar
+            </button>
+            <button class="btn btn-secondary mb-10" onclick="verFicha('${doc.id}')">
+              Ficha
+            </button>
+            <button class="btn btn-primary mb-10" onclick="verHistorico('${doc.id}')">
+              Histórico
+            </button>
+            <button class="btn btn-danger" onclick="removerAluno('${doc.id}', '${a.nome}')">
+              Remover
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 🎯 Salvar faixa
+    function salvarFaixa(alunoId) {
+      const faixa = document.getElementById(`faixa-${alunoId}`).value;
+      if (!faixa) {
+        alert("Informe a faixa");
+        return;
+      }
       if (!confirm("Deseja salvar a nova faixa?")) return;
 
       db.collection("alunos").doc(alunoId).update({ faixa })
         .then(() => alert("Faixa atualizada com sucesso"))
-        .catch(() => alert("Erro ao atualizar faixa"));
+        .catch(err => alert("Erro ao atualizar faixa"));
     }
 
     // 📄 Ver ficha
     function verFicha(alunoId) {
       window.location.href = `ficha-aluno.html?id=${alunoId}`;
+    }
+
+    // 📊 Ver histórico
+    function verHistorico(alunoId) {
+      const selectData = document.getElementById(`data-${alunoId}`);
+      const dataSelecionada = selectData.value;
+
+      if (!dataSelecionada) {
+        alert("Selecione uma data para ver o histórico");
+        return;
+      }
+
+      window.location.href = `historico-aluno.html?uid=${alunoId}&data=${dataSelecionada}`;
     }
 
     // 🗑️ Remover aluno
@@ -195,8 +199,7 @@
 
     // 🚪 Logout
     function logout() {
-      auth.signOut()
-        .then(() => window.location.href = "index.html");
+      auth.signOut().then(() => window.location.href = "index.html");
     }
   </script>
 

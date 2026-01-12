@@ -92,7 +92,7 @@
 					</tbody>
 				</table>
 				<ul class="actions">
-					<li><input type="submit" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
+					<li><input type="button" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
 				</ul>
 			</div>
 		</div>
@@ -140,28 +140,37 @@
     });
 
     function preencherFormulario(data) {
-      nome.value = data.nome || "";
-      dataNascimento.value = data.dataNascimento || "";
-      sexo.value = data.sexo || "";
-      endereco.value = data.endereco || "";
-      telefone.value = data.telefone || "";
-      tipoSanguineo.value = data.tipoSanguineo || "";
-      faixa.value = data.faixa || "";
-      email.value = data.email || "";
-    }
+  nome.value = data.nome || "";
+  dataNascimento.value = data.dataNascimento || "";
+  sexo.value = data.sexo || "";
+  endereco.value = data.endereco || "";
+  telefone.value = data.telefone || "";
+  tipoSanguineo.value = data.tipoSanguineo || "";
+  faixa.value = data.faixa || "";
+  email.value = data.email || "";
+  rg.value = data.rg || "";
+  cpf.value = data.cpf || "";
+}
+
 
     function salvarDados() {
-      db.collection("alunos").doc(alunoUID).update({
-        nome: nome.value,
-        dataNascimento: dataNascimento.value,
-        sexo: sexo.value,
-        endereco: endereco.value,
-        telefone: telefone.value,
-        tipoSanguineo: tipoSanguineo.value
-      })
-      .then(() => alert("Dados atualizados com sucesso"))
-      .catch(() => alert("Erro ao salvar dados"));
-    }
+  db.collection("alunos").doc(alunoUID).update({
+    nome: nome.value,
+    dataNascimento: dataNascimento.value,
+    sexo: sexo.value,
+    endereco: endereco.value,
+    telefone: telefone.value,
+    tipoSanguineo: tipoSanguineo.value,
+    rg: rg.value,
+    cpf: cpf.value
+  })
+  .then(() => alert("Dados atualizados com sucesso"))
+  .catch((erro) => {
+    console.error(erro);
+    alert("Erro ao salvar dados");
+  });
+}
+
 
     function logout() {
       auth.signOut().then(() => {

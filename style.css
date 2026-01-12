@@ -8,45 +8,53 @@
 }
 
 /* =========================
-   VARIÁVEIS DO SISTEMA
+   VARIÁVEIS DE CORES
 ========================= */
 :root {
-  --cor-primaria: #1e3a8a;
-  --cor-secundaria: #2563eb;
-  --cor-sucesso: #16a34a;
-  --cor-perigo: #dc2626;
-  --cor-fundo: #f5f7fa;
-  --cor-card: #ffffff;
-  --cor-texto: #1f2937;
-  --cor-borda: #d1d5db;
+  --cor-primaria: #1e3a8a;       /* Azul escuro */
+  --cor-secundaria: #2563eb;     /* Azul claro */
+  --cor-sucesso: #16a34a;        /* Verde */
+  --cor-perigo: #dc2626;         /* Vermelho */
+  --cor-fundo: #f5f7fa;          /* Fundo da página */
+  --cor-card: #ffffff;            /* Fundo do card */
+  --cor-texto: #1f2937;           /* Cor do texto */
+  --cor-borda: #d1d5db;           /* Cor de borda */
 }
 
 /* =========================
    BASE
 ========================= */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Arial', sans-serif;
   background: var(--cor-fundo);
   color: var(--cor-texto);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
 }
 
 /* =========================
-   HEADER
+   CARD CENTRAL
 ========================= */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--cor-primaria);
-  color: white;
-  padding: 14px 18px;
-  border-radius: 8px;
-  margin-bottom: 20px;
+.center-box {
+  width: 100%;
+  max-width: 400px;
+  background: var(--cor-card);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  padding: 40px 30px;
+  text-align: center;
 }
 
-.header h1 {
-  font-size: 18px;
+/* =========================
+   TÍTULOS
+========================= */
+h1 {
+  font-size: 28px;
+  margin-bottom: 40px;
+  color: var(--cor-primaria);
 }
 
 /* =========================
@@ -54,215 +62,70 @@ body {
 ========================= */
 button {
   cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 14px 0;
+  transition: all 0.2s ease-in-out;
 }
 
 .btn {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  font-weight: bold;
-  font-size: 14px;
+  width: 100%;
 }
 
 .btn-primary {
-  background: var(--cor-primaria);
-  color: white;
+  background-color: var(--cor-primaria);
+  color: #fff;
 }
 
-.btn-success {
-  background: var(--cor-sucesso);
-  color: white;
-}
-
-.btn-danger {
-  background: var(--cor-perigo);
-  color: white;
+.btn-primary:hover {
+  background-color: #162d6c;
 }
 
 .btn-secondary {
-  background: var(--cor-secundaria);
-  color: white;
+  background-color: var(--cor-secundaria);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #1a4bc4;
+}
+
+/* Espaçamento entre os botões */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* =========================
-   CARDS
+   INPUTS E SELECTS (para futuras páginas)
 ========================= */
-.card {
-  background: var(--cor-card);
-  padding: 18px;
-  border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.05);
-  margin-bottom: 20px;
-}
-
-.card h3 {
-  margin-bottom: 12px;
-  font-size: 16px;
-}
-
-/* =========================
-   FORMULÁRIOS
-========================= */
-label {
-  font-weight: bold;
-  font-size: 14px;
-  margin-top: 10px;
-  display: block;
-}
-
-input,
-select {
+input, select {
   width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  margin-bottom: 12px;
-  border-radius: 6px;
+  padding: 12px;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  border-radius: 8px;
   border: 1px solid var(--cor-borda);
   font-size: 14px;
 }
 
-input:disabled {
-  background: #e5e7eb;
-}
-
 /* =========================
-   TABELAS
+   RESPONSIVIDADE
 ========================= */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-}
+@media (max-width: 480px) {
+  .center-box {
+    padding: 30px 20px;
+  }
 
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid var(--cor-borda);
-  text-align: left;
-}
+  h1 {
+    font-size: 24px;
+  }
 
-th {
-  background: #e5e7eb;
-  font-size: 14px;
-}
-
-tr:hover {
-  background: #f1f5f9;
-}
-
-/* =========================
-   LINKS
-========================= */
-a {
-  color: var(--cor-secundaria);
-  text-decoration: none;
-  font-weight: bold;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* =========================
-   UTILITÁRIOS
-========================= */
-.mt-10 { margin-top: 10px; }
-.mt-20 { margin-top: 20px; }
-.mb-10 { margin-bottom: 10px; }
-.mb-20 { margin-bottom: 20px; }
-.text-center { text-align: center; }
-
-
-
-/* ===== Layout mobile ===== */
-
-.mobile-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #0d47a1, #1976d2);
-  padding: 20px;
-}
-
-.mobile-card {
-  width: 100%;
-  max-width: 380px;
-  background: #fff;
-  border-radius: 16px;
-  padding: 32px 24px;
-  text-align: center;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-}
-
-.logo {
-  font-size: 56px;
-  margin-bottom: 10px;
-}
-
-.mobile-card h1 {
-  margin: 10px 0 5px;
-  font-size: 24px;
-}
-
-.subtitle {
-  color: #555;
-  font-size: 14px;
-  margin-bottom: 28px;
-}
-
-.mobile-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-/* ===== Botões grandes ===== */
-
-.btn-lg {
-  padding: 16px;
-  font-size: 16px;
-  border-radius: 10px;
-}
-
-
-/* ===== Página centralizada ===== */
-
-.center-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f6f8;
-  padding: 0; /* 🔥 ISSO RESOLVE */
-}
-
-
-.center-box {
-  width: 100%;
-  max-width: 360px;
-  text-align: center;
-}
-
-.center-box h1 {
-  font-size: 26px;
-  margin-bottom: 30px;
-  color: #222;
-}
-
-/* ===== Ações ===== */
-
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-/* ===== Botões ===== */
-
-.btn-lg {
-  padding: 16px;
-  font-size: 16px;
-  border-radius: 8px;
+  button {
+    font-size: 15px;
+    padding: 12px 0;
+  }
 }

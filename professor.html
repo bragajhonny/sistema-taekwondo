@@ -11,38 +11,36 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
-
 <body class="mobile-page">
 
   <!-- HEADER -->
   <div class="header">
     <h1>Professor</h1>
     <div>
-      <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">Presença</button>
       <button class="btn btn-danger" onclick="logout()">Sair</button>
     </div>
   </div>
 
   <!-- CONTEÚDO -->
-  <div class="center-box">
-    <div class="card">
-      <h3>Alunos cadastrados</h3>
+  <div class="mobile-card">
 
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Telefone</th>
-              <th>Faixa</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="listaAlunos"></tbody>
-        </table>
-      </div>
+    <h3>Alunos cadastrados</h3>
+
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Faixa</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listaAlunos"></tbody>
+      </table>
     </div>
+
   </div>
 
   <script>
@@ -55,12 +53,22 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    const faixas = [
+      "branca", "branca/amarela", "amarela", "amarela/verde",
+      "verde", "verde/azul", "azul", "azul/vermelha",
+      "vermelha", "vermelha/preta", "preta"
+    ];
+
     // 🔐 Proteção de acesso
     auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = "index.html";
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
 
       db.collection("alunos").doc(user.uid).get()
         .then(doc => {
@@ -69,7 +77,13 @@
             window.location.href = "index.html";
             return;
           }
+
           carregarAlunos();
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Erro ao verificar perfil");
+          window.location.href = "index.html";
         });
     });
 
@@ -90,55 +104,57 @@
 
           snapshot.forEach(doc => {
             const a = doc.data();
+
             const tr = document.createElement("tr");
+
+            // Cria select de faixas
+            let faixaSelect = `<select id="faixa-${doc.id}">`;
+            faixas.forEach(f => {
+              faixaSelect += `<option value="${f}" ${a.faixa === f ? "selected" : ""}>${f}</option>`;
+            });
+            faixaSelect += "</select>";
 
             tr.innerHTML = `
               <td>${a.nome}</td>
               <td>${a.email}</td>
               <td>${a.telefone || ""}</td>
-              <td>
-                <select id="faixa-${doc.id}">
-                  <option value="">-- Selecione --</option>
-                  <option value="branca" ${a.faixa==="branca"?"selected":""}>Branca</option>
-                  <option value="branca/amarela" ${a.faixa==="branca/amarela"?"selected":""}>Branca/Amarela</option>
-                  <option value="amarela" ${a.faixa==="amarela"?"selected":""}>Amarela</option>
-                  <option value="amarela/verde" ${a.faixa==="amarela/verde"?"selected":""}>Amarela/Verde</option>
-                  <option value="verde" ${a.faixa==="verde"?"selected":""}>Verde</option>
-                  <option value="verde/azul" ${a.faixa==="verde/azul"?"selected":""}>Verde/Azul</option>
-                  <option value="azul" ${a.faixa==="azul"?"selected":""}>Azul</option>
-                  <option value="azul/vermelha" ${a.faixa==="azul/vermelha"?"selected":""}>Azul/Vermelha</option>
-                  <option value="vermelha" ${a.faixa==="vermelha"?"selected":""}>Vermelha</option>
-                  <option value="vermelha/preta" ${a.faixa==="vermelha/preta"?"selected":""}>Vermelha/Preta</option>
-                  <option value="preta" ${a.faixa==="preta"?"selected":""}>Preta</option>
-                </select>
-              </td>
+              <td>${faixaSelect}</td>
               <td>
                 <button class="btn btn-success mb-10" onclick="salvarFaixa('${doc.id}')">Salvar</button>
                 <button class="btn btn-secondary mb-10" onclick="verFicha('${doc.id}')">Ficha</button>
-                <button class="btn btn-danger" onclick="removerAluno('${doc.id}','${a.nome}')">Remover</button>
+                <button class="btn btn-danger" onclick="removerAluno('${doc.id}', '${a.nome}')">Remover</button>
               </td>
             `;
+
             tbody.appendChild(tr);
           });
         })
-        .catch(() => alert("Erro ao carregar alunos"));
+        .catch(err => {
+          console.error(err);
+          alert("Erro ao carregar alunos");
+        });
     }
 
     // 🎯 Atualizar faixa
     function salvarFaixa(alunoId) {
       const faixa = document.getElementById(`faixa-${alunoId}`).value;
+
       if (!faixa) {
-        alert("Selecione uma faixa");
+        alert("Informe a faixa");
         return;
       }
+
       if (!confirm("Deseja salvar a nova faixa?")) return;
 
       db.collection("alunos").doc(alunoId).update({ faixa })
         .then(() => alert("Faixa atualizada com sucesso"))
-        .catch(() => alert("Erro ao atualizar faixa"));
+        .catch(err => {
+          console.error(err);
+          alert("Erro ao atualizar faixa");
+        });
     }
 
-    // 📄 Ficha do aluno
+    // 📄 Ver ficha do aluno
     function verFicha(alunoId) {
       window.location.href = `ficha-aluno.html?id=${alunoId}`;
     }
@@ -152,7 +168,10 @@
           alert("Aluno removido");
           carregarAlunos();
         })
-        .catch(() => alert("Erro ao remover aluno"));
+        .catch(err => {
+          console.error(err);
+          alert("Erro ao remover aluno");
+        });
     }
 
     // 🚪 Logout

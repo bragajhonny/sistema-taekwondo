@@ -5,7 +5,6 @@
   <title>Painel do Professor</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="style.css">
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -19,10 +18,12 @@
   <div class="header">
     <h1>Professor</h1>
     <div>
-      <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">
+      <button class="btn btn-secondary"
+              onclick="window.location.href='presenca.html'">
         Presença
       </button>
-      <button class="btn btn-danger" onclick="logout()">
+      <button class="btn btn-danger"
+              onclick="logout()">
         Sair
       </button>
     </div>
@@ -30,7 +31,6 @@
 
   <!-- CONTEÚDO -->
   <div class="card">
-
     <h3>Alunos cadastrados</h3>
 
     <div style="overflow-x:auto;">
@@ -47,10 +47,10 @@
         <tbody id="listaAlunos"></tbody>
       </table>
     </div>
-
   </div>
 
   <script>
+    // 🔥 Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
       authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -63,6 +63,21 @@
 
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // 📚 Lista fixa de faixas
+    const FAIXAS = [
+      "branca",
+      "branca/amarela",
+      "amarela",
+      "amarela/verde",
+      "verde",
+      "verde/azul",
+      "azul",
+      "azul/vermelha",
+      "vermelha",
+      "vermelha/preta",
+      "preta"
+    ];
 
     // 🔐 Proteção de acesso
     auth.onAuthStateChanged(user => {
@@ -79,10 +94,14 @@
             return;
           }
           carregarAlunos();
+        })
+        .catch(() => {
+          alert("Erro ao verificar acesso");
+          window.location.href = "index.html";
         });
     });
 
-    // 📋 Carregar alunos
+    // 📋 Carregar alunos ordenados por nome
     function carregarAlunos() {
       db.collection("alunos")
         .where("perfil", "==", "aluno")
@@ -101,13 +120,23 @@
           snapshot.forEach(doc => {
             const a = doc.data();
 
+            const options = FAIXAS.map(faixa => `
+              <option value="${faixa}"
+                ${a.faixa === faixa ? "selected" : ""}>
+                ${faixa}
+              </option>
+            `).join("");
+
             const tr = document.createElement("tr");
             tr.innerHTML = `
               <td>${a.nome}</td>
               <td>${a.email}</td>
               <td>${a.telefone || ""}</td>
               <td>
-                <input id="faixa-${doc.id}" value="${a.faixa || ""}">
+                <select id="faixa-${doc.id}">
+                  <option value="">Selecione</option>
+                  ${options}
+                </select>
               </td>
               <td>
                 <button class="btn btn-success mb-10"
@@ -133,9 +162,10 @@
 
     // 🎯 Atualizar faixa
     function salvarFaixa(alunoId) {
-      const faixa = document.getElementById(`faixa-${alunoId}`).value.trim();
+      const faixa = document.getElementById(`faixa-${alunoId}`).value;
+
       if (!faixa) {
-        alert("Informe a faixa");
+        alert("Selecione uma faixa");
         return;
       }
 
@@ -146,7 +176,7 @@
         .catch(() => alert("Erro ao atualizar faixa"));
     }
 
-    // 📄 Ficha do aluno
+    // 📄 Ver ficha
     function verFicha(alunoId) {
       window.location.href = `ficha-aluno.html?id=${alunoId}`;
     }
@@ -165,7 +195,8 @@
 
     // 🚪 Logout
     function logout() {
-      auth.signOut().then(() => window.location.href = "index.html");
+      auth.signOut()
+        .then(() => window.location.href = "index.html");
     }
   </script>
 

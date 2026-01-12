@@ -17,8 +17,9 @@
 		<div id="wrapper">
 			<!-- Header -->
 			<header id="header">
+				
 				<div class="inner">
-					<!-- Logo -->
+				<!-- Logo -->
 					<a href="index.html" class="logo">
 						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
 					</a>
@@ -136,7 +137,8 @@
               <td>
                 <button class="btn btn-success mb-10" onclick="salvarFaixa('${doc.id}')">Salvar</button>
                 <button class="btn btn-secondary mb-10" onclick="verFicha('${doc.id}')">Ficha</button>
-                <button class="btn btn-danger" onclick="removerAluno('${doc.id}','${a.nome}')">Remover</button>
+		<img src="images/lixo.png" alt="Remover aluno" title="Remover aluno"   style="width: 24px; cursor: pointer;" onclick="removerAluno('${doc.id}','${a.nome}')" />
+
               </td>
             `;
             tbody.appendChild(tr);

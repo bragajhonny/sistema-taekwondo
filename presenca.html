@@ -115,33 +115,45 @@
 
     //Carregar alunos
     function carregarAlunos() {
-      db.collection("alunos")
+    const tbody = document.getElementById("listaAlunos");
+    tbody.innerHTML = "";
+
+    db.collection("alunos")
         .where("perfil", "==", "aluno")
         .orderBy("nome")
         .get()
         .then(snapshot => {
-          const tbody = document.getElementById("listaAlunos");
-          tbody.innerHTML = "";
 
-          if (snapshot.empty) {
-            tbody.innerHTML = "<tr><td colspan='2'>Nenhum aluno cadastrado</td></tr>";
-            return;
-          }
+            if (snapshot.empty) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2">Nenhum aluno cadastrado</td>
+                    </tr>
+                `;
+                return;
+            }
 
-          snapshot.forEach(doc => {
-            const aluno = doc.data();
+            snapshot.forEach(doc => {
+                const aluno = doc.data();
+                const checkboxId = `presenca-${doc.id}`;
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${aluno.nome}</td>
-              <td class="text-center">
-                <input type="checkbox" id="presenca-${doc.id}">
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${aluno.nome}</td>
+                    <td style="text-align:center;">
+                        <input 
+                            type="checkbox"
+                            id="${checkboxId}"
+                            name="${checkboxId}"
+                            data-nome="${aluno.nome}">
+                        <label for="${checkboxId}"></label>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
         });
-    }
+}
 
     //Salvar presença
     function salvarPresenca() {

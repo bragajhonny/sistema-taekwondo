@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+	</head>
+	<body class="is-preload">
+		<div id="wrapper">
+			<header id="header">
+				<div class="inner">
+					<!-- Logo -->
+					<a href="index.html" class="logo">
+						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
+					</a>
+
+					<!-- Nav -->
+					<nav>
+						<ul>
+							<li><a href="#menu">Menu</a></li>
+						</ul>
+					</nav>
+
+				</div>
+			</header>
+
+			<!-- Menu -->
+			<nav id="menu">
+				<h2>Menu</h2>
+				<ul>
+					<li><a href="index.html">Home</a></li>
+					<li><a href="generic.html">Ipsum veroeros</a></li>
+					<li><a href="generic.html">Tempus etiam</a></li>
+					<li><a href="generic.html">Consequat dolor</a></li>
+					<li><a href="elements.html">Elements</a></li>
+				</ul>
+			</nav>
+
+
+			<!-- Footer -->
+			<footer id="footer">
+				<div class="inner">
+					<section>
+						<h2>Login</h2>
+						<form method="post" action="#">
+							<div class="fields">
+								<div class="field half">
+									<input type="email" id="email" placeholder="Digite seu e-mail" />
+								</div>
+								<div class="field half">
+									<input type="password" id="senha" placeholder="Digite sua senha" />
+								</div>
+							</div>
+							<ul class="actions">
+								<li><input type="submit" value="Login" class="primary" onclick="login()" /></li>
+								<li>Não tem uma conta? Faça seu <a href="http://html5up.net">cadastro aqui.</a></li>
+							</ul>
+						</form>
+					</section>
+				</div>
+			</footer>
+		</div>
+
+		<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+      authDomain: "sistema-taekwondo-1.firebaseapp.com",
+      projectId: "sistema-taekwondo-1",
+      messagingSenderId: "635745416768",
+      appId: "1:635745416768:web:58d23eca722878f047d1a5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+
+      if (!email || !senha) {
+        alert("Preencha email e senha");
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, senha)
+        .then(cred => {
+          return db.collection("alunos").doc(cred.user.uid).get();
+        })
+        .then(doc => {
+          if (!doc.exists) {
+            alert("Perfil não encontrado");
+            auth.signOut();
+            return;
+          }
+
+          const dados = doc.data();
+
+          if (dados.perfil === "professor") {
+            window.location.href = "professor.html";
+          } else {
+            window.location.href = "aluno.html";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Email ou senha inválidos");
+        });
+    }
+  </script>
+
+	</body>
+</html>

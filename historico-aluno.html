@@ -1,137 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Histórico de Presença</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-
-    th, td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: center;
-    }
-
-    th {
-      background-color: #f2f2f2;
-    }
-
-    .ok { color: green; font-weight: bold; }
-    .no { color: red; font-weight: bold; }
-  </style>
 </head>
 
 <body>
 
-<h2>Histórico de Presença</h2>
-<p id="nomeAluno"></p>
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Histórico de Presença</h1>
+    <div>
+      <button class="btn btn-secondary" onclick="voltar()">Voltar</button>
+      <button class="btn btn-danger" onclick="logout()">Sair</button>
+    </div>
+  </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Data</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody id="listaPresencas"></tbody>
-</table>
+  <!-- CONTEÚDO -->
+  <div class="card">
 
-<button onclick="voltar()">Voltar</button>
+    <p id="nomeAluno" class="mb-20" style="font-weight:bold;"></p>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-    authDomain: "sistema-taekwondo-1.firebaseapp.com",
-    projectId: "sistema-taekwondo-1",
-    messagingSenderId: "635745416768",
-    appId: "1:635745416768:web:58d23eca722878f047d1a5"
-  };
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="listaPresencas"></tbody>
+      </table>
+    </div>
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  </div>
 
-  const params = new URLSearchParams(window.location.search);
-  const alunoUID = params.get("uid");
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
+      authDomain: "sistema-taekwondo-1.firebaseapp.com",
+      projectId: "sistema-taekwondo-1",
+      messagingSenderId: "635745416768",
+      appId: "1:635745416768:web:58d23eca722878f047d1a5"
+    };
 
-  if (!alunoUID) {
-    alert("Aluno não informado");
-    window.location.href = "professor.html";
-  }
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "index.html";
-      return;
+    const params = new URLSearchParams(window.location.search);
+    const alunoUID = params.get("uid");
+
+    if (!alunoUID) {
+      alert("Aluno não informado");
+      window.location.href = "professor.html";
     }
 
-    carregarAluno();
-    carregarPresencas();
-  });
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
 
-  function carregarAluno() {
-    db.collection("alunos").doc(alunoUID).get()
-      .then(doc => {
-        if (doc.exists) {
-          document.getElementById("nomeAluno").innerText =
-            "Aluno: " + doc.data().nome;
-        }
-      });
-  }
+      carregarAluno();
+      carregarPresencas();
+    });
 
-  function carregarPresencas() {
-    db.collection("presencas")
-      .orderBy("data", "desc")
-      .get()
-      .then(snapshot => {
-        const tbody = document.getElementById("listaPresencas");
-        tbody.innerHTML = "";
-
-        if (snapshot.empty) {
-          tbody.innerHTML =
-            "<tr><td colspan='2'>Nenhuma presença registrada</td></tr>";
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          const dados = doc.data();
-          const status = dados.alunos?.[alunoUID];
-
-          if (status === undefined) return;
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${dados.data}</td>
-            <td class="${status ? 'ok' : 'no'}">
-              ${status ? "Presente" : "Ausente"}
-            </td>
-          `;
-
-          tbody.appendChild(tr);
+    function carregarAluno() {
+      db.collection("alunos").doc(alunoUID).get()
+        .then(doc => {
+          if (doc.exists) {
+            document.getElementById("nomeAluno").innerText =
+              "Aluno: " + doc.data().nome;
+          }
         });
-      });
-  }
+    }
 
-  function voltar() {
-    window.location.href = "professor.html";
-  }
-</script>
+    function carregarPresencas() {
+      db.collection("presencas")
+        .orderBy("data", "desc")
+        .get()
+        .then(snapshot => {
+          const tbody = document.getElementById("listaPresencas");
+          tbody.innerHTML = "";
+
+          if (snapshot.empty) {
+            tbody.innerHTML =
+              "<tr><td colspan='2'>Nenhuma presença registrada</td></tr>";
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            const dados = doc.data();
+            const status = dados.alunos?.[alunoUID];
+
+            if (status === undefined) return;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${dados.data}</td>
+              <td class="${status ? 'ok' : 'no'}">
+                ${status ? "Presente" : "Ausente"}
+              </td>
+            `;
+
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    function voltar() {
+      window.location.href = "professor.html";
+    }
+
+    function logout() {
+      auth.signOut().then(() => window.location.href = "index.html");
+    }
+  </script>
 
 </body>
 </html>

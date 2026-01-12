@@ -1,53 +1,80 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Controle de Presença</title>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Controle de presença - CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+	</head>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Header -->
+			<header id="header">
+				<div class="inner">
+					<!-- Logo -->
+					<a href="index.html" class="logo">
+						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
+					</a>
 
-<body>
+					<!-- Nav -->
+					<nav>
+						<ul>
+							<li><a href="#menu">Menu</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1>Presença</h1>
-    <div>
-      <button class="btn btn-secondary" onclick="voltar()">Voltar</button>
-      <button class="btn btn-danger" onclick="logout()">Sair</button>
-    </div>
-  </div>
+			<!-- Menu -->
+			<nav id="menu">
+				<h2>Menu</h2>
+				<ul>
+					<li><a href="presenca.html">Presença</a></li>
+					<li><a href="historico-aluno.html">Histórico de presença</a></li>
+					<input type="button" value="Sair" class="primary" onclick="logout()" />
+				</ul>
+			</nav>
 
-  <!-- CONTEÚDO -->
-  <div class="card">
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<h1>Presença</h1>
+					<ul>
+						<input type="date" id="dataAula">
+					</ul>
 
-    <label>Data da aula</label>
-    <input type="date" id="dataAula" class="mb-20">
 
-    <h3>Lista de alunos</h3>
+					<table>
+        					<thead>
+          						<tr>
+								<th>Nome</th>
+								<th>Presença</th>
+							</tr>
+						</thead>
+						<tbody id="listaAlunos"></tbody>
+					</table>
+					<ul class="actions">
+						<li><input type="submit" value="Marcar presença" class="primary" onclick="salvarPresenca()" /></li>
+						<li><input type="button" value="Voltar" class="primary" onclick="history.back()"/></li>
+					</ul>
+				</div>
+			</div>
 
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Presença</th>
-          </tr>
-        </thead>
-        <tbody id="listaAlunos"></tbody>
-      </table>
-    </div>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
 
-    <button class="btn btn-success mt-20" onclick="salvarPresenca()">Salvar Presença</button>
-
-  </div>
-
-  <script>
+<script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
       authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -63,7 +90,7 @@
 
     let professorUID = null;
 
-    // 🔐 Proteção de acesso
+    //Proteção de acesso
     auth.onAuthStateChanged(user => {
       if (!user) window.location.href = "index.html";
 
@@ -86,7 +113,7 @@
       document.getElementById("dataAula").value = hoje;
     }
 
-    // 📋 Carregar alunos
+    //Carregar alunos
     function carregarAlunos() {
       db.collection("alunos")
         .where("perfil", "==", "aluno")
@@ -116,7 +143,7 @@
         });
     }
 
-    // 💾 Salvar presença
+    //Salvar presença
     function salvarPresenca() {
       const data = document.getElementById("dataAula").value;
 
@@ -152,6 +179,6 @@
       auth.signOut().then(() => window.location.href = "index.html");
     }
   </script>
-
-</body>
+  
+	</body>
 </html>

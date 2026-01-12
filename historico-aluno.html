@@ -14,32 +14,38 @@
 
 <body class="center-page">
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1>Histórico de Presença</h1>
-    <div>
-      <button class="btn btn-secondary" onclick="voltar()">Voltar</button>
-      <button class="btn btn-danger" onclick="logout()">Sair</button>
-    </div>
-  </div>
+  <div class="center-box">
 
-  <!-- CONTEÚDO -->
-  <div class="card">
-    <label for="selectData">Selecione a aula:</label>
-    <select id="selectData" class="mb-20" onchange="carregarAlunos()">
-      <option value="">-- Selecione --</option>
-    </select>
-
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Aluno Presente</th>
-          </tr>
-        </thead>
-        <tbody id="listaAlunosPresenca"></tbody>
-      </table>
+    <!-- HEADER -->
+    <div class="header mb-20">
+      <h1>Histórico de Presença</h1>
+      <div>
+        <button class="btn btn-secondary" onclick="voltar()">Voltar</button>
+        <button class="btn btn-danger" onclick="logout()">Sair</button>
+      </div>
     </div>
+
+    <!-- CONTEÚDO -->
+    <div class="card">
+
+      <label for="selectData">Selecione a aula:</label>
+      <select id="selectData" class="mb-20" onchange="carregarAlunos()">
+        <option value="">-- Selecione --</option>
+      </select>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Aluno Presente</th>
+            </tr>
+          </thead>
+          <tbody id="listaAlunosPresenca"></tbody>
+        </table>
+      </div>
+
+    </div>
+
   </div>
 
   <script>
@@ -63,21 +69,21 @@
       carregarDatas();
     });
 
-    // 🔹 Carrega todas as datas de aulas já cadastradas
+    // Carrega todas as datas de aulas
     function carregarDatas() {
       db.collection("presencas").orderBy("data", "desc").get()
         .then(snapshot => {
           const select = document.getElementById("selectData");
           snapshot.forEach(doc => {
             const option = document.createElement("option");
-            option.value = doc.id; // id do documento da data
-            option.text = doc.data().data; // data da aula
+            option.value = doc.id;
+            option.text = doc.data().data;
             select.appendChild(option);
           });
         });
     }
 
-    // 🔹 Carrega alunos presentes na aula selecionada
+    // Carrega apenas alunos presentes na aula selecionada
     function carregarAlunos() {
       const dataId = document.getElementById("selectData").value;
       const tbody = document.getElementById("listaAlunosPresenca");
@@ -87,23 +93,14 @@
 
       db.collection("presencas").doc(dataId).get()
         .then(doc => {
-          if (!doc.exists) {
-            tbody.innerHTML = "<tr><td>Nenhuma presença registrada</td></tr>";
-            return;
-          }
+          if (!doc.exists) return;
 
           const dados = doc.data();
-          const alunos = dados.alunos || {};
+          const registros = dados.registros || {};
 
           // Filtra apenas alunos presentes
-          const presentesUID = Object.keys(alunos).filter(uid => alunos[uid] === true);
+          const presentesUID = Object.keys(registros).filter(uid => registros[uid] === true);
 
-          if (presentesUID.length === 0) {
-            tbody.innerHTML = "<tr><td>Nenhum aluno presente nesta aula</td></tr>";
-            return;
-          }
-
-          // Buscar nomes dos alunos presentes
           const promises = presentesUID.map(uid =>
             db.collection("alunos").doc(uid).get()
               .then(alunoDoc => alunoDoc.exists ? alunoDoc.data().nome : "Desconhecido")
@@ -111,20 +108,20 @@
 
           Promise.all(promises).then(nomes => {
             nomes.sort((a, b) => a.localeCompare(b));
+
             nomes.forEach(nome => {
               const tr = document.createElement("tr");
               tr.innerHTML = `<td>${nome}</td>`;
               tbody.appendChild(tr);
             });
+
+            if (nomes.length === 0) {
+              tbody.innerHTML = "<tr><td>Nenhum aluno presente nesta aula</td></tr>";
+            }
           });
-        })
-        .catch(err => {
-          console.error(err);
-          tbody.innerHTML = "<tr><td>Erro ao carregar alunos</td></tr>";
         });
     }
 
-    // 🔹 Botões
     function voltar() {
       window.location.href = "professor.html";
     }

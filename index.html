@@ -6,10 +6,12 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		
 		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 	</head>
+
 	<body class="is-preload">
 		<div id="wrapper">
 			<header id="header">
@@ -18,36 +20,15 @@
 					<a href="index.html" class="logo">
 						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
 					</a>
-
-					<!-- Nav -->
-					<nav>
-						<ul>
-							<li><a href="#menu">Menu</a></li>
-						</ul>
-					</nav>
-
 				</div>
 			</header>
-
-			<!-- Menu -->
-			<nav id="menu">
-				<h2>Menu</h2>
-				<ul>
-					<li><a href="index.html">Home</a></li>
-					<li><a href="generic.html">Ipsum veroeros</a></li>
-					<li><a href="generic.html">Tempus etiam</a></li>
-					<li><a href="generic.html">Consequat dolor</a></li>
-					<li><a href="elements.html">Elements</a></li>
-				</ul>
-			</nav>
-
 
 			<!-- Footer -->
 			<footer id="footer">
 				<div class="inner">
 					<section>
 						<h2>Login</h2>
-						<form method="post" action="#">
+						<form>
 							<div class="fields">
 								<div class="field half">
 									<input type="email" id="email" placeholder="Digite seu e-mail" />
@@ -57,7 +38,7 @@
 								</div>
 							</div>
 							<ul class="actions">
-								<li><input type="submit" value="Login" class="primary" onclick="login()" /></li>
+								<li><input type="button" value="Login" class="primary" onclick="login()" /></li>
 								<li>Não tem uma conta? Faça seu <a href="registro.html">cadastro aqui.</a></li>
 							</ul>
 						</form>
@@ -72,7 +53,7 @@
 		<script src="assets/js/breakpoints.min.js"></script>
 		<script src="assets/js/util.js"></script>
 		<script src="assets/js/main.js"></script>
-<script>
+ <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
       authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -122,5 +103,4 @@
   </script>
 
 	</body>
-
 </html>

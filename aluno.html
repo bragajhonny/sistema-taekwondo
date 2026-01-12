@@ -1,64 +1,110 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Painel do Aluno - CT Gerivaldo Silva</title>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Painel do Aluno - CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+	</head>
 
-  <link rel="stylesheet" href="style.css">
+	<body class="is-preload">
+	<!-- Wrapper -->
+	<div id="wrapper">
+		<!-- Header -->
+		<header id="header">
+			<div class="inner">
+				<!-- Logo -->
+				<a href="index.html" class="logo">
+					<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
+				</a>
+			</div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-</head>
+			<!-- Nav -->
+			<nav>
+				<ul>
+					<li><a href="#menu">Menu</a></li>
+				</ul>
+			</nav>
+		</header>
 
-<body class="center-page">
+		<!-- Menu -->
+		<nav id="menu">
+			<h2>Menu</h2>
+			<ul>
+				<li><a href="presenca.html">Presença</a></li>
+				<li><a href="historico-aluno.html">Histórico de presença</a></li>
+				<input type="button" value="Sair" class="primary" onclick="logout()" />
+			</ul>
+		</nav>
 
-  <div class="center-box card">
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+				<h1>Painel do Aluno</h1>
+						
+				<table>
+					<tbody>
+						<tr>
+							<td>Nome</td>
+							<td><input id="nome"></td>
+						</tr>
+						<tr>
+							<td>Data de nascimento</td>
+							<td><input type="date" id="dataNascimento"></td>
+						</tr>
+						<tr>
+							<td>Sexo</td>
+							<td><input id="sexo"></td>
+						</tr>
+						<tr>
+							<td>Telefone</td>
+							<td><input id="telefone"></td>
+						</tr>
+						<tr>
+							<td>Endereço</td>
+							<td><input type="text" id="endereco" placeholder="Endereço"></td>
+						</tr>
+						<tr>
+							<td>Tipo Sanguineo</td>
+							<td><input id="tipoSanguineo"></td>
+						</tr>
+						<tr>
+							<td>Faixa</td>
+							<td><input id="faixa" disabled></td>
+						</tr>
+						<tr>
+							<td>RG</td>
+							<td><input type="text" id="rg" placeholder="RG" disabled></td>
+						</tr>
+						<tr>
+							<td>CPF</td>
+							<td><input type="text" id="cpf" placeholder="CPF" disabled></td>
+						</tr>
+						<tr>
+							<td>E-mail</td>
+							<td><input id="email" disabled></td>
+						</tr>
+					</tbody>
+				</table>
+				<ul class="actions">
+					<li><input type="submit" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
+				</ul>
+			</div>
+		</div>
 
-    <div class="header mb-20">
-      <h1>Painel do Aluno</h1>
-      <button class="btn btn-danger" onclick="logout()">Sair</button>
-    </div>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
 
-    <h3 class="mb-20">Meus Dados</h3>
-
-    <label>Nome</label>
-    <input id="nome">
-
-    <label>Data de nascimento</label>
-    <input type="date" id="dataNascimento">
-
-    <label>Sexo</label>
-    <select id="sexo">
-      <option value="">Selecione</option>
-      <option>Masculino</option>
-      <option>Feminino</option>
-    </select>
-
-    <label>Endereço</label>
-    <input id="endereco">
-
-    <label>Telefone</label>
-    <input id="telefone">
-
-    <label>Tipo sanguíneo</label>
-    <input id="tipoSanguineo">
-
-    <label>Faixa</label>
-    <input id="faixa" disabled>
-
-    <label>Email</label>
-    <input id="email" disabled>
-
-    <button class="btn btn-primary btn-lg mt-20" onclick="salvarDados()">
-      Salvar alterações
-    </button>
-
-  </div>
-
-  <script>
+ <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
       authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -123,6 +169,5 @@
       });
     }
   </script>
-
-</body>
+	</body>
 </html>

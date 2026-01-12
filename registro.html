@@ -1,76 +1,100 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Cadastro do Aluno</title>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Cadastro - CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+	</head>
 
-  <link rel="stylesheet" href="style.css">
+	<body class="is-preload">
+	<!-- Wrapper -->
+	<div id="wrapper">
+		<!-- Header -->
+		<header id="header">
+			<div class="inner">
+				<!-- Logo -->
+				<a href="index.html" class="logo">
+					<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
+				</a>
+			</div>
+		</header>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-</head>
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+				<h1>Cadastro</h1>
+						
+				<table>
+					<tbody>
+						<tr>
+							<td>Nome</td>
+							<td><input type="text" id="nome" placeholder="Nome completo"></td>
+						</tr>
+						<tr>
+							<td>Data de nascimento</td>
+							<td><input type="date" id="dataNascimento"></td>
+						</tr>
+						<tr>
+							<td>Sexo</td>
+							<td>
+								<select id="sexo">
+									<option value="">- Selecione -</option>
+									<option value="1">Feminino</option>
+									<option value="2">Masculino</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>RG</td>
+							<td><input type="text" id="rg" placeholder="RG"></td>
+						</tr>
+						<tr>
+							<td>CPF</td>
+							<td><input type="text" id="cpf" placeholder="CPF"></td>
+						</tr>
+						<tr>
+							<td>Endereço</td>
+							<td><input type="text" id="endereco" placeholder="Endereço"></td>
+						</tr>
+						<tr>
+							<td>Telefone</td>
+							<td><input type="text" id="telefone" placeholder="Telefone"></td>
+						</tr>
+						<tr>
+							<td>Tipo Sanguineo</td>
+							<td><input type="text" id="tipoSanguineo" placeholder="Tipo sanguineo"></td>
+						</tr>
+						<tr>
+							<td>E-mail</td>
+							<td><input type="email" id="email" placeholder="E-mail"></td>
+						</tr>
+						<tr>
+							<td>Senha</td>
+							<td><input type="password" id="senha" placeholder="Senha"></td>
+						</tr>
+					</tbody>
+				</table>
+				<ul class="actions">
+					<li><input type="submit" value="Cadastrar" class="primary" onclick="cadastrar()" /></li>
+					<li>Já tem uma conta? Faça seu <a href="index.html">login aqui.</a></li>
+				</ul>
+			</div>
+		</div>
 
-<body class="center-page">
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
 
-  <div class="center-box">
-
-    <div class="card">
-
-      <h3 class="text-center mb-20">Cadastro do Aluno</h3>
-
-      <label>Nome completo</label>
-      <input type="text" id="nome">
-
-      <label>Data de nascimento</label>
-      <input type="date" id="dataNascimento">
-
-      <label>Sexo</label>
-      <select id="sexo">
-        <option value="">Selecione</option>
-        <option>Masculino</option>
-        <option>Feminino</option>
-      </select>
-
-      <label>RG</label>
-      <input type="text" id="rg">
-
-      <label>CPF</label>
-      <input type="text" id="cpf">
-
-      <label>Endereço</label>
-      <input type="text" id="endereco">
-
-      <label>Telefone</label>
-      <input type="text" id="telefone">
-
-      <label>Tipo sanguíneo</label>
-      <input type="text" id="tipoSanguineo">
-
-      <hr class="mb-20">
-
-      <label>Email</label>
-      <input type="email" id="email">
-
-      <label>Senha</label>
-      <input type="password" id="senha">
-
-      <button class="btn btn-primary btn-lg mt-10" onclick="cadastrar()">
-        Criar conta
-      </button>
-
-      <button class="btn btn-secondary btn-lg mt-10"
-              onclick="window.location.href='login.html'">
-        Já tenho conta
-      </button>
-
-    </div>
-
-  </div>
-
-  <script>
+<script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
       authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -135,5 +159,5 @@
     }
   </script>
 
-</body>
+	</body>
 </html>

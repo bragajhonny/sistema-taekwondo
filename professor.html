@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Painel do Professor</title>
+  <title>Painel do Professor - CT Gerivaldo Silva</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
@@ -12,38 +12,38 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 
-<body style="background: var(--cor-fundo);">
+<body class="center-page">
 
-  <!-- HEADER FIXO NO TOPO -->
-  <div class="header" style="margin-bottom: 20px;">
-    <h1>Professor</h1>
-    <div>
-      <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">Presença</button>
-      <button class="btn btn-secondary" onclick="window.location.href='historico-aluno.html'">Histórico de Presença</button>
-      <button class="btn btn-danger" onclick="logout()">Sair</button>
-    </div>
-  </div>
+  <div class="center-box card">
 
-  <!-- CONTEÚDO CENTRALIZADO -->
-  <div class="center-box">
-    <div class="card">
-      <h3>Alunos cadastrados</h3>
-
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Telefone</th>
-              <th>Faixa</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="listaAlunos"></tbody>
-        </table>
+    <!-- HEADER -->
+    <div class="header mb-20">
+      <h1>Professor</h1>
+      <div>
+        <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">Presença</button>
+        <button class="btn btn-secondary" onclick="window.location.href='historico-aluno.html'">Histórico de Presença</button>
+        <button class="btn btn-danger" onclick="logout()">Sair</button>
       </div>
     </div>
+
+    <!-- CONTEÚDO -->
+    <h3 class="mb-20">Alunos cadastrados</h3>
+
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Faixa</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listaAlunos"></tbody>
+      </table>
+    </div>
+
   </div>
 
   <script>

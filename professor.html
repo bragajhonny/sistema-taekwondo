@@ -1,50 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Painel do Professor - CT Gerivaldo Silva</title>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Painel do Professor - CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+	</head>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Header -->
+			<header id="header">
+				<div class="inner">
+					<!-- Logo -->
+					<a href="index.html" class="logo">
+						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Phantom</span>
+					</a>
 
-<body class="center-page">
+					<!-- Nav -->
+					<nav>
+						<ul>
+							<li><a href="#menu">Menu</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
 
-  <div class="center-box card">
+			<!-- Menu -->
+			<nav id="menu">
+				<h2>Menu</h2>
+				<ul>
+					<li><a href="presenca.html">Presença</a></li>
+					<li><a href="historico-aluno.html">Histórico de presença</a></li>
+					<button class="btn btn-danger" onclick="logout()">Sair</button>
 
-    <!-- HEADER -->
-    <div class="header mb-20">
-      <h1>Professor</h1>
-      <div>
-        <button class="btn btn-secondary" onclick="window.location.href='presenca.html'">Presença</button>
-        <button class="btn btn-secondary" onclick="window.location.href='historico-aluno.html'">Histórico de Presença</button>
-        <button class="btn btn-danger" onclick="logout()">Sair</button>
-      </div>
-    </div>
+				</ul>
+			</nav>
 
-    <!-- CONTEÚDO -->
-    <h3 class="mb-20">Alunos cadastrados</h3>
+			<!-- Main -->
+			<div id="main">
+				<div class="inner">
+					<h1>Alunos cadastrados</h1>
+					<table>
+        					<thead>
+          						<tr>
+								<th>Nome</th>
+								<th>Email</th>
+								<th>Telefone</th>
+								<th>Faixa</th>
+								<th>Ações</th>
+							</tr>
+						</thead>
+						<tbody id="listaAlunos"></tbody>
+					</table>
+				</div>
+			</div>
 
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Telefone</th>
-            <th>Faixa</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="listaAlunos"></tbody>
-      </table>
-    </div>
-
-  </div>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -150,5 +173,5 @@
     }
   </script>
 
-</body>
+	</body>
 </html>

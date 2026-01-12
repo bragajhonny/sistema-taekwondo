@@ -11,6 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
+
 <body class="mobile-page">
 
   <!-- HEADER -->
@@ -62,7 +63,7 @@
       carregarDatas();
     });
 
-    // Carregar todas as datas de aulas existentes
+    // Carregar todas as datas de aulas
     function carregarDatas() {
       db.collection("presencas")
         .orderBy("data", "desc")
@@ -71,14 +72,14 @@
           const select = document.getElementById("selectData");
           snapshot.forEach(doc => {
             const option = document.createElement("option");
-            option.value = doc.id;       // id do documento = data
-            option.text = doc.data().data; 
+            option.value = doc.id; // ID do documento = data
+            option.text = doc.data().data;
             select.appendChild(option);
           });
         });
     }
 
-    // Carregar alunos presentes
+    // Carregar apenas alunos presentes
     function carregarAlunos() {
       const dataId = document.getElementById("selectData").value;
       const tbody = document.getElementById("listaAlunosPresenca");

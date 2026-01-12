@@ -25,21 +25,21 @@
 
   <!-- CONTEÚDO -->
   <div class="card">
-
-    <p id="nomeAluno" class="mb-20" style="font-weight:bold;"></p>
+    <label for="selectData">Selecione a aula:</label>
+    <select id="selectData" class="mb-20" onchange="carregarAlunos()">
+      <option value="">-- Selecione --</option>
+    </select>
 
     <div style="overflow-x:auto;">
       <table>
         <thead>
           <tr>
-            <th>Data</th>
-            <th>Status</th>
+            <th>Aluno</th>
           </tr>
         </thead>
-        <tbody id="listaPresencas"></tbody>
+        <tbody id="listaAlunosPresenca"></tbody>
       </table>
     </div>
-
   </div>
 
   <script>
@@ -55,63 +55,64 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const params = new URLSearchParams(window.location.search);
-    const alunoUID = params.get("uid");
-
-    if (!alunoUID) {
-      alert("Aluno não informado");
-      window.location.href = "professor.html";
-    }
-
     auth.onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "index.html";
         return;
       }
-
-      carregarAluno();
-      carregarPresencas();
+      carregarDatas();
     });
 
-    function carregarAluno() {
-      db.collection("alunos").doc(alunoUID).get()
-        .then(doc => {
-          if (doc.exists) {
-            document.getElementById("nomeAluno").innerText =
-              "Aluno: " + doc.data().nome;
-          }
+    // Carregar todas as datas de aulas
+    function carregarDatas() {
+      db.collection("presencas").orderBy("data", "desc").get()
+        .then(snapshot => {
+          const select = document.getElementById("selectData");
+          snapshot.forEach(doc => {
+            const option = document.createElement("option");
+            option.value = doc.id;
+            option.text = doc.data().data;
+            select.appendChild(option);
+          });
         });
     }
 
-    function carregarPresencas() {
-      db.collection("presencas")
-        .orderBy("data", "desc")
-        .get()
-        .then(snapshot => {
-          const tbody = document.getElementById("listaPresencas");
-          tbody.innerHTML = "";
+    // Carregar apenas alunos presentes
+    function carregarAlunos() {
+      const dataId = document.getElementById("selectData").value;
+      const tbody = document.getElementById("listaAlunosPresenca");
+      tbody.innerHTML = "";
 
-          if (snapshot.empty) {
-            tbody.innerHTML =
-              "<tr><td colspan='2'>Nenhuma presença registrada</td></tr>";
-            return;
-          }
+      if (!dataId) return;
 
-          snapshot.forEach(doc => {
-            const dados = doc.data();
-            const status = dados.alunos?.[alunoUID];
+      db.collection("presencas").doc(dataId).get()
+        .then(doc => {
+          if (!doc.exists) return;
 
-            if (status === undefined) return;
+          const dados = doc.data();
+          const alunos = dados.alunos || {};
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${dados.data}</td>
-              <td class="${status ? 'ok' : 'no'}">
-                ${status ? "Presente" : "Ausente"}
-              </td>
-            `;
+          // Buscar nomes apenas dos presentes
+          const presentesUID = Object.keys(alunos).filter(uid => alunos[uid]);
 
-            tbody.appendChild(tr);
+          const promises = presentesUID.map(uid =>
+            db.collection("alunos").doc(uid).get()
+              .then(alunoDoc => {
+                return alunoDoc.exists ? alunoDoc.data().nome : "Desconhecido";
+              })
+          );
+
+          Promise.all(promises).then(resultados => {
+            resultados.sort((a, b) => a.localeCompare(b));
+            resultados.forEach(nome => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `<td>${nome}</td>`;
+              tbody.appendChild(tr);
+            });
+
+            if (resultados.length === 0) {
+              tbody.innerHTML = "<tr><td>Nenhum aluno presente nesta aula</td></tr>";
+            }
           });
         });
     }

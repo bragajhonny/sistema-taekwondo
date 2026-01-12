@@ -11,8 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
-
-<body>
+<body class="mobile-page">
 
   <!-- HEADER -->
   <div class="header">
@@ -24,7 +23,7 @@
   </div>
 
   <!-- CONTEÚDO -->
-  <div class="card">
+  <div class="mobile-card">
     <label for="selectData">Selecione a aula:</label>
     <select id="selectData" class="mb-20" onchange="carregarAlunos()">
       <option value="">-- Selecione --</option>
@@ -63,21 +62,23 @@
       carregarDatas();
     });
 
-    // Carregar todas as datas de aulas
+    // Carregar todas as datas de aulas existentes
     function carregarDatas() {
-      db.collection("presencas").orderBy("data", "desc").get()
+      db.collection("presencas")
+        .orderBy("data", "desc")
+        .get()
         .then(snapshot => {
           const select = document.getElementById("selectData");
           snapshot.forEach(doc => {
             const option = document.createElement("option");
-            option.value = doc.id;
-            option.text = doc.data().data;
+            option.value = doc.id;       // id do documento = data
+            option.text = doc.data().data; 
             select.appendChild(option);
           });
         });
     }
 
-    // Carregar apenas alunos presentes
+    // Carregar alunos presentes
     function carregarAlunos() {
       const dataId = document.getElementById("selectData").value;
       const tbody = document.getElementById("listaAlunosPresenca");
@@ -87,33 +88,42 @@
 
       db.collection("presencas").doc(dataId).get()
         .then(doc => {
-          if (!doc.exists) return;
+          if (!doc.exists) {
+            tbody.innerHTML = "<tr><td>Nenhum registro encontrado</td></tr>";
+            return;
+          }
 
           const dados = doc.data();
           const alunos = dados.alunos || {};
 
-          // Buscar nomes apenas dos presentes
-          const presentesUID = Object.keys(alunos).filter(uid => alunos[uid]);
+          // Pega somente os presentes
+          const presentesUID = Object.keys(alunos).filter(uid => alunos[uid] === true);
 
+          if (presentesUID.length === 0) {
+            tbody.innerHTML = "<tr><td>Nenhum aluno presente nesta aula</td></tr>";
+            return;
+          }
+
+          // Buscar nomes dos presentes
           const promises = presentesUID.map(uid =>
             db.collection("alunos").doc(uid).get()
-              .then(alunoDoc => {
-                return alunoDoc.exists ? alunoDoc.data().nome : "Desconhecido";
-              })
+              .then(alunoDoc => alunoDoc.exists ? alunoDoc.data().nome : null)
           );
 
           Promise.all(promises).then(resultados => {
-            resultados.sort((a, b) => a.localeCompare(b));
-            resultados.forEach(nome => {
-              const tr = document.createElement("tr");
-              tr.innerHTML = `<td>${nome}</td>`;
-              tbody.appendChild(tr);
-            });
-
-            if (resultados.length === 0) {
-              tbody.innerHTML = "<tr><td>Nenhum aluno presente nesta aula</td></tr>";
-            }
+            resultados
+              .filter(nome => nome) // ignora null
+              .sort((a, b) => a.localeCompare(b))
+              .forEach(nome => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${nome}</td>`;
+                tbody.appendChild(tr);
+              });
           });
+        })
+        .catch(err => {
+          console.error(err);
+          tbody.innerHTML = "<tr><td>Erro ao carregar alunos</td></tr>";
         });
     }
 
@@ -125,6 +135,5 @@
       auth.signOut().then(() => window.location.href = "index.html");
     }
   </script>
-
 </body>
 </html>

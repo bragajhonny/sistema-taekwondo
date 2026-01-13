@@ -14,7 +14,7 @@ let accessToken = null;
 
 function loginGoogle() {
   const client = google.accounts.oauth2.initTokenClient({
-    client_id: "COLE_AQUI_SEU_CLIENT_ID",
+    client_id: "322269879460-6em7hmf2893phipn16lcs1fdgprcmi42.apps.googleusercontent.com",
     scope: "https://www.googleapis.com/auth/drive.file",
     callback: (response) => {
       accessToken = response.access_token;

@@ -7,9 +7,10 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
-		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<!--		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+-->
 	</head>
 
 	<body class="is-preload">
@@ -28,7 +29,7 @@
 		<!-- Main -->
 		<div id="main">
 			<div class="inner">
-				<h1>Cadastro</h1>
+				<h1>Cadastro atualizado</h1>
 						
 				<table>
 					<tbody>
@@ -94,6 +95,64 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
+		<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbz0OMp9N3dRQHuRxJV4kFeeDVJZ2CKoofKPhjDsSxJQHlMeWjUEzDmK8UVhE1IvYv4bDw/exec';
+
+function cadastrar() {
+  const dados = {
+    nome: nome.value.trim(),
+    dataNascimento: dataNascimento.value,
+    sexo: sexo.value,
+    rg: rg.value.trim(),
+    cpf: cpf.value.trim(),
+    endereco: endereco.value.trim(),
+    telefone: telefone.value.trim(),
+    tipoSanguineo: tipoSanguineo.value.trim(),
+    email: email.value.trim(),
+    senha: senha.value.trim()
+  };
+
+  for (let campo in dados) {
+    if (!dados[campo]) {
+      alert('Preencha todos os campos');
+      return;
+    }
+  }
+
+  const formData = new FormData();
+  formData.append('acao', 'cadastrarAluno');
+
+  for (let campo in dados) {
+    formData.append(campo, dados[campo]);
+  }
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'sucesso') {
+      alert('Cadastro realizado com sucesso');
+      window.location.href = 'index.html';
+    } else {
+      alert(data.msg);
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Erro ao cadastrar aluno');
+  });
+}
+</script>
+
+
+
+
+
+
+
+<!--		
 <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
@@ -157,7 +216,7 @@
           alert(err.message);
         });
     }
-  </script>
+  </script> -->
 
 	</body>
 </html>

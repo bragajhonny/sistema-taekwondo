@@ -2,28 +2,59 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Teste Drive</title>
+  <title>Criar pasta do aluno</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-<button onclick="loginGoogle()">Entrar com Google</button>
+<button onclick="loginGoogle()">Login Google</button>
+<button onclick="criarPastaAluno()">Criar pasta do aluno</button>
 
 <script>
 let accessToken = null;
 
 function loginGoogle() {
   const client = google.accounts.oauth2.initTokenClient({
-    client_id: "322269879460-6em7hmf2893phipn16lcs1fdgprcmi42.apps.googleusercontent.com",
+    client_id: "SEU_CLIENT_ID.apps.googleusercontent.com",
     scope: "https://www.googleapis.com/auth/drive.file",
-    callback: (response) => {
-      accessToken = response.access_token;
-      alert("LOGIN OK");
-      console.log(accessToken);
+    callback: (res) => {
+      accessToken = res.access_token;
+      alert("Login OK");
     }
   });
 
   client.requestAccessToken();
+}
+
+async function criarPastaAluno() {
+  if (!accessToken) {
+    alert("Faça login primeiro");
+    return;
+  }
+
+  const nomeAluno = "João Silva";
+  const uidAluno = "uid123";
+  const pastaPaiId = "1tRDKX1Ni8a1pJgFsgU2BU_JaY08c-vMw";
+
+  const response = await fetch(
+    "https://www.googleapis.com/drive/v3/files",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: `${nomeAluno} (${uidAluno})`,
+        mimeType: "application/vnd.google-apps.folder",
+        parents: [pastaPaiId]
+      })
+    }
+  );
+
+  const data = await response.json();
+  console.log("Pasta criada:", data.id);
+  alert("Pasta criada com sucesso");
 }
 </script>
 

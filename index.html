@@ -64,42 +64,18 @@ function login() {
     return;
   }
 
+  const formData = new FormData();
+  formData.append('acao', 'login');
+  formData.append('email', email);
+  formData.append('senha', senha);
+
   fetch(API_URL, {
-  method: 'POST',
-	  const formData = new FormData();
-formData.append('acao', 'login');
-formData.append('email', email);
-formData.append('senha', senha);
-
-fetch(API_URL, {
-  method: 'POST',
-  body: formData
-})
-.then(res => res.text())
-.then(texto => {
-  const data = JSON.parse(texto);
-
-  if (data.status === 'sucesso') {
-    localStorage.setItem('usuario', JSON.stringify(data.dados));
-
-    if (data.dados.tipo === 'professor') {
-      window.location.href = 'professor.html';
-    } else {
-      window.location.href = 'aluno.html';
-    }
-  } else {
-    alert(data.msg);
-  }
-})
-.catch(err => {
-  console.error(err);
-  alert('Erro ao conectar com o servidor');
-});
-
-})
-.then(res => res.text())
-.then(texto => {
-  const data = JSON.parse(texto);
+    method: 'POST',
+    body: formData
+  })
+  .then(res => res.text())
+  .then(texto => {
+    const data = JSON.parse(texto);
 
     if (data.status === 'sucesso') {
       localStorage.setItem('usuario', JSON.stringify(data.dados));
@@ -174,6 +150,7 @@ fetch(API_URL, {
 
 	</body>
 </html>
+
 
 
 

@@ -24,7 +24,7 @@
 			<footer id="footer">
 				<div class="inner">
 					<section>
-						<h2>Login</h2>
+						<h2>Login atualizado</h2>
 						<form onsubmit="return false;">
 							<div class="fields">
 								<div class="field half">
@@ -53,16 +53,11 @@
 
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbzz7NHMWz9BeYTN7hiLVwenIn128u-ukOhPCybySnvl4j3zngL8Qts48QKHkG3TRuWU0w/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzCUuQeTEZjTrbBigFT2uZM_FSQlf6lZarkvA3noh--0pHY0_cV1E3_s9CbtkvXqI592w/exec';
 
 function login() {
   const email = document.getElementById('email').value;
   const senha = document.getElementById('senha').value;
-
-  if (!email || !senha) {
-    alert('Preencha email e senha');
-    return;
-  }
 
   const formData = new FormData();
   formData.append('acao', 'login');
@@ -73,10 +68,8 @@ function login() {
     method: 'POST',
     body: formData
   })
-  .then(res => res.text())
-  .then(texto => {
-    const data = JSON.parse(texto);
-
+  .then(res => res.json())
+  .then(data => {
     if (data.status === 'sucesso') {
       localStorage.setItem('usuario', JSON.stringify(data.dados));
 
@@ -94,6 +87,7 @@ function login() {
     alert('Erro ao conectar com o servidor');
   });
 }
+
 </script>
 
 
@@ -150,6 +144,7 @@ function login() {
 
 	</body>
 </html>
+
 
 
 

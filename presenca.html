@@ -120,7 +120,7 @@
     tbody.innerHTML = "";
 
     db.collection("alunos")
-        .where("perfil", "==", "aluno")
+        .where("perfil", "in", ["aluno", "professor"])
         .orderBy("nome")
         .get()
         .then(snapshot => {

@@ -24,7 +24,7 @@
 			<footer id="footer">
 				<div class="inner">
 					<section>
-						<h2>Login</h2>
+						<h2>Login atualizado</h2>
 						<form onsubmit="return false;">
 							<div class="fields">
 								<div class="field half">
@@ -66,14 +66,36 @@ function login() {
 
   fetch(API_URL, {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    acao: 'login',
-    email: email,
-    senha: senha
-  })
+	  const formData = new FormData();
+formData.append('acao', 'login');
+formData.append('email', email);
+formData.append('senha', senha);
+
+fetch(API_URL, {
+  method: 'POST',
+  body: formData
+})
+.then(res => res.text())
+.then(texto => {
+  const data = JSON.parse(texto);
+
+  if (data.status === 'sucesso') {
+    localStorage.setItem('usuario', JSON.stringify(data.dados));
+
+    if (data.dados.tipo === 'professor') {
+      window.location.href = 'professor.html';
+    } else {
+      window.location.href = 'aluno.html';
+    }
+  } else {
+    alert(data.msg);
+  }
+})
+.catch(err => {
+  console.error(err);
+  alert('Erro ao conectar com o servidor');
+});
+
 })
 .then(res => res.text())
 .then(texto => {
@@ -152,6 +174,7 @@ function login() {
 
 	</body>
 </html>
+
 
 
 

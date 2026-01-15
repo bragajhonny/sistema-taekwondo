@@ -184,6 +184,10 @@ function salvarDados() {
     alert('Erro ao salvar dados');
   });
 }
+
+	function logout() {
+      auth.signOut().then(() => window.location.href = "index.html");
+    }
 </script>
 
 

@@ -6,10 +6,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-
-		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 	</head>
 
 	<body class="is-preload">
@@ -75,6 +71,88 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
+			<script>
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (!usuario || usuario.tipo !== 'professor') {
+  window.location.href = 'index.html';
+}
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbzC5ZmMYsHkT20ej9GbFPLiwBHnGZ-je2IbpoBZmjPuVly0tBr6DyKU7WuDLo69qQ2clQ/exec';
+
+document.getElementById('dataAula').value =
+  new Date().toISOString().split('T')[0];
+
+	fetch(API_URL, {
+  method: 'POST',
+  body: new URLSearchParams({
+    acao: 'listarAlunosPresenca'
+  })
+})
+.then(r => r.json())
+.then(res => {
+  const tbody = document.getElementById('listaAlunos');
+  tbody.innerHTML = '';
+
+  res.dados.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${a.nome}</td>
+      <td style="text-align:center">
+        <input type="checkbox" data-id="${a.idAluno}" data-nome="${a.nome}">
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+});
+
+	<script>
+function salvarPresenca() {
+  const data = document.getElementById('dataAula').value;
+  if (!data) {
+    alert('Selecione a data');
+    return;
+  }
+
+  const registros = {};
+
+  document.querySelectorAll('#listaAlunos input[type="checkbox"]')
+    .forEach(cb => {
+      registros[cb.dataset.id] = {
+        nome: cb.dataset.nome,
+        presente: cb.checked
+      };
+    });
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'salvarPresenca',
+      data: data,
+      registros: JSON.stringify(registros)
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status === 'sucesso') {
+      alert('Presença salva com sucesso');
+    } else {
+      alert(res.msg);
+    }
+  })
+  .catch(() => alert('Erro ao salvar presença'));
+}
+</script>
+
+</script>
+
+
+
+
+
+
+
+<!--
 <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
@@ -192,6 +270,7 @@
       auth.signOut().then(() => window.location.href = "index.html");
     }
   </script>
-  
+  -->
+			
 	</body>
 </html>

@@ -6,10 +6,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-
-		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 	</head>
 
 	<body class="is-preload">
@@ -68,6 +64,54 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
+<script>
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (!usuario || usuario.tipo !== 'professor') {
+  window.location.href = 'index.html';
+}
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbyuKWxrHCUnfXzNOOZ1Hrbukv75rggPCxYpsDosuYiwm2zt-PR-19xCyXrkjMn9erPQIA/exec';
+
+fetch(API_URL, {
+  method: 'POST',
+  body: new URLSearchParams({
+    acao: 'listarAlunos'
+  })
+})
+.then(r => r.json())
+.then(res => {
+  if (res.status !== 'sucesso') {
+    alert(res.msg);
+    return;
+  }
+
+  const tbody = document.getElementById('listaAlunos');
+
+  res.dados.forEach(a => {
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td>${a.nome}</td>
+      <td>${a.email}</td>
+      <td>${a.faixa || '-'}</td>
+      <td>
+        <a href="${a.pastaDrive}" target="_blank">Abrir</a>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+})
+.catch(() => {
+  alert('Erro ao carregar alunos');
+});
+</script>
+
+
+
+	
+<!--
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
@@ -171,6 +215,7 @@
       auth.signOut().then(() => window.location.href = "index.html");
     }
   </script>
-
+-->
+			
 	</body>
 </html>

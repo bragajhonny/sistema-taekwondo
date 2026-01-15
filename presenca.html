@@ -112,6 +112,10 @@ document.getElementById('dataAula').value =
       <td style="text-align:center">
 		<input type="checkbox" id="demo-copy" name="demo-copy" data-id="${a.idAluno}" data-nome="${a.nome}">
       </td>
+	  <td style="text-align:center;">
+		<input type="checkbox" id="${checkboxId}" name="${checkboxId}" data-nome="${aluno.nome}">
+		<label for="${checkboxId}"></label>
+    </td>
     `;
     tbody.appendChild(tr);
   });

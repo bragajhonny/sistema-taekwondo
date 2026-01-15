@@ -92,13 +92,17 @@ fetch(API_URL, {
     const tr = document.createElement('tr');
 
     tr.innerHTML = `
-      <td>${a.nome}</td>
-      <td>${a.email}</td>
-      <td>${a.faixa || '-'}</td>
-      <td>
-        <a href="${a.pastaDrive}" target="_blank">Abrir</a>
-      </td>
-    `;
+  <td>${a.nome}</td>
+  <td>${a.email}</td>
+  <td>
+    <input type="text" value="${a.faixa || ''}" 
+           onchange="salvarFaixa('${a.idAluno}', this.value)">
+  </td>
+  <td>
+    <a href="${a.pastaDrive}" target="_blank">Abrir</a>
+  </td>
+`;
+
 
     tbody.appendChild(tr);
   });
@@ -106,6 +110,27 @@ fetch(API_URL, {
 .catch(() => {
   alert('Erro ao carregar alunos');
 });
+
+	function salvarFaixa(idAluno, faixa) {
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'atualizarFaixa',
+      idAluno: idAluno,
+      faixa: faixa
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status !== 'sucesso') {
+      alert(res.msg || 'Erro ao salvar faixa');
+    }
+  })
+  .catch(() => {
+    alert('Erro ao salvar faixa');
+  });
+}
+	
 </script>
 
 

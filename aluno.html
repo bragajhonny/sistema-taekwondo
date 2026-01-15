@@ -186,8 +186,10 @@ function salvarDados() {
 }
 
 	function logout() {
-      auth.signOut().then(() => window.location.href = "index.html");
-    }
+  localStorage.removeItem('usuario');
+  window.location.href = 'index.html';
+}
+	
 </script>
 
 

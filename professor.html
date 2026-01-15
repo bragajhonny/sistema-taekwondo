@@ -64,200 +64,115 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
-<script>
-const usuario = JSON.parse(localStorage.getItem('usuario'));
+			<script>
+			const usuario = JSON.parse(localStorage.getItem('usuario'));
+			
+			if (!usuario || usuario.tipo !== 'professor') {
+			  window.location.href = 'index.html';
+			}
+			
+			const API_URL = 'https://script.google.com/macros/s/AKfycbyuT3IuGy-0uYIPlL2PE2hQVy5nMuDEC-Sc6BbfleIQke5lvhnCu9rgiFi6kDGryR_zkw/exec';
+			
+			fetch(API_URL, {
+			  method: 'POST',
+			  body: new URLSearchParams({
+			    acao: 'listarAlunos'
+			  })
+			})
+			.then(r => r.json())
+			.then(res => {
+			  if (res.status !== 'sucesso') {
+			    alert(res.msg);
+			    return;
+			  }
+			
+			  const tbody = document.getElementById('listaAlunos');
+			
+			  res.dados.forEach(a => {
+			    const tr = document.createElement('tr');
+			
+			    tr.innerHTML = `
+				  <td>${a.nome}</td>
+				  <td>${a.email}</td>
+				  <td>
+					  <select onchange="salvarFaixa('${a.idAluno}', this.value)">
+					    <option value="">-</option>
+					    <option value="branca" ${a.faixa === 'branca' ? 'selected' : ''}>Branca</option>
+					    <option value="amarela" ${a.faixa === 'amarela' ? 'selected' : ''}>Amarela</option>
+					    <option value="amarela/verde" ${a.faixa === 'amarela/verde' ? 'selected' : ''}>Amarela/Verde</option>
+					    <option value="verde" ${a.faixa === 'verde' ? 'selected' : ''}>Verde</option>
+					    <option value="verde/azul" ${a.faixa === 'verde/azul' ? 'selected' : ''}>Verde/Azul</option>
+					    <option value="azul" ${a.faixa === 'azul' ? 'selected' : ''}>Azul</option>
+					    <option value="azul/vermelha" ${a.faixa === 'azul/vermelha' ? 'selected' : ''}>Azul/Vermelha</option>
+					    <option value="vermelha" ${a.faixa === 'vermelha' ? 'selected' : ''}>Vermelha</option>
+					    <option value="vermelha/preta" ${a.faixa === 'vermelha/preta' ? 'selected' : ''}>Vermelha/Preta</option>
+					    <option value="preta" ${a.faixa === 'preta' ? 'selected' : ''}>Preta</option>
+					  </select>
+					</td>
+			
+					<td>
+						<a href="${a.pastaDrive}" target="_blank">Abrir pasta</a>
+						<button class="btn btn-secondary mb-10" onclick="verFicha('${doc.id}')">Ficha</button>
+						<button onclick="verArquivos('${a.pastaId}', '${a.nome}')">Arquivos</button>	
+					</td>
+				`;
+				tbody.appendChild(tr);
+			  });
+				}).catch(() => { alert('Erro ao carregar alunos'); });
 
-if (!usuario || usuario.tipo !== 'professor') {
-  window.location.href = 'index.html';
-}
+			function salvarFaixa(idAluno, faixa) {
+			  fetch(API_URL, {
+			    method: 'POST',
+			    body: new URLSearchParams({
+			      acao: 'atualizarFaixa',
+			      idAluno: idAluno,
+			      faixa: faixa
+			    })
+			  })
+			  .then(r => r.json())
+			  .then(res => {
+			    if (res.status !== 'sucesso') {
+			      alert(res.msg || 'Erro ao salvar faixa');
+			    }
+			  })
+			  .catch(() => {
+			    alert('Erro ao salvar faixa');
+			  });
+			}
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbzUzWrRKB8A_zSIds0rcq_8dbqCDwTRcirQOo8aP-hpqPN_hbIWSTiT96HVzME0T0QNMg/exec';
+			function logout() {
+		  		localStorage.removeItem('usuario');
+		  		window.location.href = 'index.html';
+			}
 
-fetch(API_URL, {
-  method: 'POST',
-  body: new URLSearchParams({
-    acao: 'listarAlunos'
-  })
-})
-.then(r => r.json())
-.then(res => {
-  if (res.status !== 'sucesso') {
-    alert(res.msg);
-    return;
-  }
-
-  const tbody = document.getElementById('listaAlunos');
-
-  res.dados.forEach(a => {
-    const tr = document.createElement('tr');
-
-    tr.innerHTML = `
-  <td>${a.nome}</td>
-  <td>${a.email}</td>
-  <td>
-  <select onchange="salvarFaixa('${a.idAluno}', this.value)">
-    <option value="">-</option>
-    <option value="branca" ${a.faixa === 'branca' ? 'selected' : ''}>Branca</option>
-    <option value="amarela" ${a.faixa === 'amarela' ? 'selected' : ''}>Amarela</option>
-    <option value="amarela/verde" ${a.faixa === 'amarela/verde' ? 'selected' : ''}>Amarela/Verde</option>
-    <option value="verde" ${a.faixa === 'verde' ? 'selected' : ''}>Verde</option>
-    <option value="verde/azul" ${a.faixa === 'verde/azul' ? 'selected' : ''}>Verde/Azul</option>
-    <option value="azul" ${a.faixa === 'azul' ? 'selected' : ''}>Azul</option>
-    <option value="azul/vermelha" ${a.faixa === 'azul/vermelha' ? 'selected' : ''}>Azul/Vermelha</option>
-    <option value="vermelha" ${a.faixa === 'vermelha' ? 'selected' : ''}>Vermelha</option>
-    <option value="vermelha/preta" ${a.faixa === 'vermelha/preta' ? 'selected' : ''}>Vermelha/Preta</option>
-    <option value="preta" ${a.faixa === 'preta' ? 'selected' : ''}>Preta</option>
-  </select>
-</td>
-
-  <td>
-    <a href="${a.pastaDrive}" target="_blank">Abrir</a>
-  </td>
-`;
-
-
-    tbody.appendChild(tr);
-  });
-})
-.catch(() => {
-  alert('Erro ao carregar alunos');
-});
-
-	function salvarFaixa(idAluno, faixa) {
+				function verArquivos(pastaId, nomeAluno) {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'atualizarFaixa',
-      idAluno: idAluno,
-      faixa: faixa
+      acao: 'listarArquivosAluno',
+      pastaId: pastaId
     })
   })
   .then(r => r.json())
   .then(res => {
     if (res.status !== 'sucesso') {
-      alert(res.msg || 'Erro ao salvar faixa');
+      alert(res.msg);
+      return;
     }
+
+    let html = `Arquivos de ${nomeAluno}\n\n`;
+
+    res.dados.forEach(a => {
+      html += `• ${a.nome}\n${a.url}\n\n`;
+    });
+
+    alert(html);
   })
   .catch(() => {
-    alert('Erro ao salvar faixa');
+    alert('Erro ao carregar arquivos');
   });
 }
 
-	function logout() {
-  		localStorage.removeItem('usuario');
-  		window.location.href = 'index.html';
-	}
-	
-</script>
-
-
-
-	
-<!--
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-      authDomain: "sistema-taekwondo-1.firebaseapp.com",
-      projectId: "sistema-taekwondo-1",
-      messagingSenderId: "635745416768",
-      appId: "1:635745416768:web:58d23eca722878f047d1a5"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = "index.html";
-
-      db.collection("alunos").doc(user.uid).get()
-        .then(doc => {
-          if (!doc.exists || doc.data().perfil !== "professor") {
-            alert("Acesso negado");
-            window.location.href = "index.html";
-            return;
-          }
-          carregarAlunos();
-        });
-    });
-
-    function carregarAlunos() {
-      db.collection("alunos")
-        .where("perfil", "in", ["aluno", "professor"])
-        .orderBy("nome")
-        .get()
-        .then(snapshot => {
-          const tbody = document.getElementById("listaAlunos");
-          tbody.innerHTML = "";
-
-          if (snapshot.empty) {
-            tbody.innerHTML = "<tr><td colspan='5'>Nenhum aluno cadastrado</td></tr>";
-            return;
-          }
-
-          snapshot.forEach(doc => {
-            const a = doc.data();
-            const tr = document.createElement("tr");
-
-            tr.innerHTML = `
-              <td>${a.nome}</td>
-              <td>${a.telefone || ""}</td>
-              <td>
-                <select id="faixa-${doc.id}">
-                  <option value="">-- Selecione --</option>
-                  <option value="branca" ${a.faixa==="branca"?"selected":""}>Branca</option>
-                  <option value="branca/amarela" ${a.faixa==="branca/amarela"?"selected":""}>Branca/Amarela</option>
-                  <option value="amarela" ${a.faixa==="amarela"?"selected":""}>Amarela</option>
-                  <option value="amarela/verde" ${a.faixa==="amarela/verde"?"selected":""}>Amarela/Verde</option>
-                  <option value="verde" ${a.faixa==="verde"?"selected":""}>Verde</option>
-                  <option value="verde/azul" ${a.faixa==="verde/azul"?"selected":""}>Verde/Azul</option>
-                  <option value="azul" ${a.faixa==="azul"?"selected":""}>Azul</option>
-                  <option value="azul/vermelha" ${a.faixa==="azul/vermelha"?"selected":""}>Azul/Vermelha</option>
-                  <option value="vermelha" ${a.faixa==="vermelha"?"selected":""}>Vermelha</option>
-                  <option value="vermelha/preta" ${a.faixa==="vermelha/preta"?"selected":""}>Vermelha/Preta</option>
-                  <option value="preta" ${a.faixa==="preta"?"selected":""}>Preta</option>
-                </select>
-              </td>
-              <td>
-                <button class="btn btn-success mb-10" onclick="salvarFaixa('${doc.id}')">Salvar</button>
-                <button class="btn btn-secondary mb-10" onclick="verFicha('${doc.id}')">Ficha</button>
-		<img src="images/lixo.png" alt="Remover aluno" title="Remover aluno"   style="width: 24px; cursor: pointer;" onclick="removerAluno('${doc.id}','${a.nome}')" />
-
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(() => alert("Erro ao carregar alunos"));
-    }
-
-    function salvarFaixa(alunoId) {
-      const faixa = document.getElementById(`faixa-${alunoId}`).value;
-      if (!faixa) { alert("Selecione uma faixa"); return; }
-      if (!confirm("Deseja salvar a nova faixa?")) return;
-
-      db.collection("alunos").doc(alunoId).update({ faixa })
-        .then(() => alert("Faixa atualizada com sucesso"))
-        .catch(() => alert("Erro ao atualizar faixa"));
-    }
-
-    function verFicha(alunoId) {
-      window.location.href = `ficha-aluno.html?id=${alunoId}`;
-    }
-
-    function removerAluno(id, nome) {
-      if (!confirm(`Deseja remover o aluno ${nome}?`)) return;
-
-      db.collection("alunos").doc(id).delete()
-        .then(() => { alert("Aluno removido"); carregarAlunos(); })
-        .catch(() => alert("Erro ao remover aluno"));
-    }
-
-    function logout() {
-      auth.signOut().then(() => window.location.href = "index.html");
-    }
-  </script>
--->
-			
+		</script>
 	</body>
 </html>

@@ -6,17 +6,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-
-		<style>
-		  #listaAlunos input[type="checkbox"] {
-		    appearance: auto !important;
-		    -webkit-appearance: checkbox !important;
-		    opacity: 1 !important;
-		    position: static !important;
-		    pointer-events: auto !important;
-		  }
-		</style>
-
 	</head>
 
 	<body class="is-preload">
@@ -107,16 +96,21 @@ document.getElementById('dataAula').value =
 
   res.dados.forEach(a => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${a.nome}</td>
-      <td style="text-align:center">
-		<input type="checkbox" id="demo-copy" name="demo-copy" data-id="${a.idAluno}" data-nome="${a.nome}">
-      </td>
-	  <td style="text-align:center;">
-		<input type="checkbox" id="${checkboxId}" name="${checkboxId}" data-nome="${aluno.nome}">
-		<label for="${checkboxId}"></label>
-    </td>
-    `;
+    const checkboxId = `presenca-${a.idAluno}`;
+
+tr.innerHTML = `
+  <td>${a.nome}</td>
+  <td style="text-align:center">
+    <input 
+      type="checkbox"
+      id="${checkboxId}"
+      data-id="${a.idAluno}"
+      data-nome="${a.nome}"
+    >
+    <label for="${checkboxId}"></label>
+  </td>
+`;
+
     tbody.appendChild(tr);
   });
 });

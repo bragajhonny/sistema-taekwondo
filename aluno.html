@@ -98,6 +98,7 @@ if (!usuario || usuario.tipo !== 'aluno') {
 				</table>
 				<ul class="actions">
 					<li><input type="button" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
+					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveAluno, '_blank')" /></li>
 				</ul>
 			</div>
 		</div>
@@ -109,7 +110,60 @@ if (!usuario || usuario.tipo !== 'aluno') {
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
- <script>
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyUeNIl6R-7mNE7VzgTTmlBUIUagwySd50f_Hh5xsKUuyXpElGwE7-Ecvqn8T4MW_ditA/exec';
+
+fetch(API_URL, {
+  method: 'POST',
+  body: new URLSearchParams({
+    acao: 'buscarAluno',
+    email: usuario.email
+  })
+})
+.then(r => r.json())
+.then(res => {
+  if (res.status !== 'sucesso') {
+    alert(res.msg);
+    return;
+  }
+
+  const a = res.dados;
+
+  document.getElementById('nome').value = a.nome;
+  document.getElementById('dataNascimento').value = a.dataNascimento;
+  document.getElementById('sexo').value = a.sexo;
+  document.getElementById('telefone').value = a.telefone;
+  document.getElementById('endereco').value = a.endereco;
+  document.getElementById('tipoSanguineo').value = a.tipoSanguineo;
+  document.getElementById('rg').value = a.rg;
+  document.getElementById('cpf').value = a.cpf;
+  document.getElementById('email').value = a.email;
+  document.getElementById('faixa').value = a.faixa || 'Não definida';
+
+  // guarda link da pasta para uso futuro
+  window.pastaDriveAluno = a.pastaDrive;
+})
+.catch(() => {
+  alert('Erro ao carregar dados do aluno');
+});
+
+// LOGOUT
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'index.html';
+}
+
+// SALVAR ALTERAÇÕES (vamos implementar já já)
+function salvarDados() {
+  alert('Salvar dados será o próximo passo 🙂');
+}
+</script>
+
+
+
+		
+<!--
+<script>
     const firebaseConfig = {
       apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
       authDomain: "sistema-taekwondo-1.firebaseapp.com",
@@ -183,5 +237,6 @@ if (!usuario || usuario.tipo !== 'aluno') {
       });
     }
   </script>
+		-->
 	</body>
 </html>

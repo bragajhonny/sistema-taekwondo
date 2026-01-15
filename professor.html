@@ -95,9 +95,21 @@ fetch(API_URL, {
   <td>${a.nome}</td>
   <td>${a.email}</td>
   <td>
-    <input type="text" value="${a.faixa || ''}" 
-           onchange="salvarFaixa('${a.idAluno}', this.value)">
-  </td>
+  <select onchange="salvarFaixa('${a.idAluno}', this.value)">
+    <option value="">-</option>
+    <option value="branca" ${a.faixa === 'branca' ? 'selected' : ''}>Branca</option>
+    <option value="amarela" ${a.faixa === 'amarela' ? 'selected' : ''}>Amarela</option>
+    <option value="amarela/verde" ${a.faixa === 'amarela/verde' ? 'selected' : ''}>Amarela/Verde</option>
+    <option value="verde" ${a.faixa === 'verde' ? 'selected' : ''}>Verde</option>
+    <option value="verde/azul" ${a.faixa === 'verde/azul' ? 'selected' : ''}>Verde/Azul</option>
+    <option value="azul" ${a.faixa === 'azul' ? 'selected' : ''}>Azul</option>
+    <option value="azul/vermelha" ${a.faixa === 'azul/vermelha' ? 'selected' : ''}>Azul/Vermelha</option>
+    <option value="vermelha" ${a.faixa === 'vermelha' ? 'selected' : ''}>Vermelha</option>
+    <option value="vermelha/preta" ${a.faixa === 'vermelha/preta' ? 'selected' : ''}>Vermelha/Preta</option>
+    <option value="preta" ${a.faixa === 'preta' ? 'selected' : ''}>Preta</option>
+  </select>
+</td>
+
   <td>
     <a href="${a.pastaDrive}" target="_blank">Abrir</a>
   </td>

@@ -71,7 +71,7 @@
 			  window.location.href = 'index.html';
 			}
 			
-			const API_URL = 'https://script.google.com/macros/s/AKfycbznEkKxg1Ewx4gloGZsrjVynYmURVJEqIx6k6lNaTmanZd2V8FL78E_od1QVRJyKqMqaA/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbz-b5pOCdrbm-fwosWnFlfeUrBR56n5kQVuFNA5vnUAqPjEnXOAH-02zcXEAxOyZRV3WA/exec';
 			
 			fetch(API_URL, {
 			  method: 'POST',
@@ -145,7 +145,7 @@
 		  		window.location.href = 'index.html';
 			}
 
-				function verArquivos(pastaId, nomeAluno) {
+function verArquivos(pastaId, nomeAluno) {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
@@ -160,13 +160,22 @@
       return;
     }
 
-    let html = `Arquivos de ${nomeAluno}\n\n`;
+    let html = `<strong>Arquivos de ${nomeAluno}</strong><br><br>`;
 
     res.dados.forEach(a => {
-      html += `• ${a.nome}\n${a.url}\n\n`;
+      const downloadUrl = `https://drive.google.com/uc?export=download&id=${a.id}`;
+
+      html += `
+        📄 ${a.nome}<br>
+        <a href="${a.url}" target="_blank">Abrir</a> |
+        <a href="${downloadUrl}" target="_blank">Download</a>
+        <br><br>
+      `;
     });
 
-    alert(html);
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
   })
   .catch(() => {
     alert('Erro ao carregar arquivos');

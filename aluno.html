@@ -155,7 +155,34 @@ function logout() {
 
 // SALVAR ALTERAÇÕES (vamos implementar já já)
 function salvarDados() {
-  alert('Salvar dados será o próximo passo 🙂');
+  const dados = {
+    acao: 'atualizarAluno',
+    email: usuario.email,
+    nome: document.getElementById('nome').value,
+    dataNascimento: document.getElementById('dataNascimento').value,
+    sexo: document.getElementById('sexo').value,
+    telefone: document.getElementById('telefone').value,
+    endereco: document.getElementById('endereco').value,
+    tipoSanguineo: document.getElementById('tipoSanguineo').value,
+    rg: document.getElementById('rg').value,
+    cpf: document.getElementById('cpf').value
+  };
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams(dados)
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status === 'sucesso') {
+      alert('Dados salvos com sucesso');
+    } else {
+      alert(res.msg);
+    }
+  })
+  .catch(() => {
+    alert('Erro ao salvar dados');
+  });
 }
 </script>
 

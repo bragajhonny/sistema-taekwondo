@@ -91,15 +91,23 @@ fetch(API_URL, {
     return;
   }
 
-  res.dados.forEach(data => {
-    const dataObj = new Date(data);
-    const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+  const datasUnicas = new Set();
 
-    const opt = document.createElement('option');
-    opt.value = data;              // valor real
-    opt.textContent = dataFormatada; // só a data visível
-    select.appendChild(opt);
-  });
+res.dados.forEach(data => {
+  const dataLimpa = String(data).substring(0, 10); // yyyy-MM-dd
+
+  if (datasUnicas.has(dataLimpa)) return;
+  datasUnicas.add(dataLimpa);
+
+  const [ano, mes, dia] = dataLimpa.split('-');
+  const dataFormatada = `${dia}/${mes}/${ano}`;
+
+  const opt = document.createElement('option');
+  opt.value = dataLimpa;          // valor real usado no backend
+  opt.textContent = dataFormatada; // só a data visível
+  select.appendChild(opt);
+});
+
 })
 .catch(() => {
   select.innerHTML = '<option value="">Erro ao carregar datas</option>';

@@ -79,8 +79,9 @@ if (!usuario || usuario.tipo !== 'professor') {
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbw3iRxCxjsjc78Lnnu-bT43lVO2ZP6L2jd01LJ1_R8R4Vox4LO-HQ1z9P1-YSs4gjHrpw/exec';
 
-document.getElementById('dataAula').value =
-  new Date().toISOString().split('T')[0];
+const hoje = new Date();
+hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
+document.getElementById('dataAula').value = hoje.toISOString().split('T')[0];
 
 	fetch(API_URL, {
   method: 'POST',

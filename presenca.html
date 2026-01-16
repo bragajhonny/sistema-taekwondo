@@ -77,7 +77,7 @@ if (!usuario || usuario.tipo !== 'professor') {
   window.location.href = 'index.html';
 }
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxxwNF5Bewp4NhNSQ251wEIv72x2mmSIxEWF5ZY7Vf4XpN91cb9aitoCEZJMfh1hs1Aeg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbw3iRxCxjsjc78Lnnu-bT43lVO2ZP6L2jd01LJ1_R8R4Vox4LO-HQ1z9P1-YSs4gjHrpw/exec';
 
 document.getElementById('dataAula').value =
   new Date().toISOString().split('T')[0];
@@ -93,26 +93,30 @@ document.getElementById('dataAula').value =
   const tbody = document.getElementById('listaAlunos');
   tbody.innerHTML = '';
 
-  res.dados.forEach(a => {
-    const tr = document.createElement('tr');
-    const checkboxId = `presenca-${a.idAluno}`;
+  res.dados.forEach(pessoa => {
+  const tr = document.createElement('tr');
+  const checkboxId = `presenca-${pessoa.id}`;
 
-tr.innerHTML = `
-  <td>${a.nome}</td>
-  <td style="text-align:left">
-    <input 
-      type="checkbox"
-      id="${checkboxId}"
-      data-id="${a.idAluno}"
-      data-nome="${a.nome}"
-    >
-    <label for="${checkboxId}"></label>
-  </td>
-`;
+  tr.innerHTML = `
+    <td>
+      ${pessoa.nome}
+      <small style="opacity:0.6">(${pessoa.tipo})</small>
+    </td>
+    <td style="text-align:left">
+      <input
+        type="checkbox"
+        id="${checkboxId}"
+        data-id="${pessoa.id}"
+        data-nome="${pessoa.nome}"
+        data-tipo="${pessoa.tipo}"
+      >
+      <label for="${checkboxId}"></label>
+    </td>
+  `;
 
-    tbody.appendChild(tr);
-  });
+  tbody.appendChild(tr);
 });
+
 
 function salvarPresenca() {
   const data = document.getElementById('dataAula').value;
@@ -156,133 +160,6 @@ function salvarPresenca() {
 	}
 				
 </script>
-
-
-
-
-
-
-
-
-<!--
-<script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-      authDomain: "sistema-taekwondo-1.firebaseapp.com",
-      projectId: "sistema-taekwondo-1",
-      messagingSenderId: "635745416768",
-      appId: "1:635745416768:web:58d23eca722878f047d1a5"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    let professorUID = null;
-
-    //Proteção de acesso
-    auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = "index.html";
-
-      professorUID = user.uid;
-
-      db.collection("alunos").doc(user.uid).get()
-        .then(doc => {
-          if (!doc.exists || doc.data().perfil !== "professor") {
-            alert("Acesso negado");
-            window.location.href = "index.html";
-            return;
-          }
-          carregarAlunos();
-          definirDataHoje();
-        });
-    });
-
-    function definirDataHoje() {
-      const hoje = new Date().toISOString().split("T")[0];
-      document.getElementById("dataAula").value = hoje;
-    }
-
-    //Carregar alunos
-    function carregarAlunos() {
-    const tbody = document.getElementById("listaAlunos");
-    tbody.innerHTML = "";
-
-    db.collection("alunos")
-        .where("perfil", "in", ["aluno", "professor"])
-        .orderBy("nome")
-        .get()
-        .then(snapshot => {
-
-            if (snapshot.empty) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="2">Nenhum aluno cadastrado</td>
-                    </tr>
-                `;
-                return;
-            }
-
-            snapshot.forEach(doc => {
-                const aluno = doc.data();
-                const checkboxId = `presenca-${doc.id}`;
-
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${aluno.nome}</td>
-                    <td style="text-align:center;">
-                        <input 
-                            type="checkbox"
-                            id="${checkboxId}"
-                            name="${checkboxId}"
-                            data-nome="${aluno.nome}">
-                        <label for="${checkboxId}"></label>
-                    </td>
-                `;
-
-                tbody.appendChild(tr);
-            });
-        });
-}
-
-    //Salvar presença
-    function salvarPresenca() {
-      const data = document.getElementById("dataAula").value;
-
-      if (!data) {
-        alert("Selecione a data");
-        return;
-      }
-
-      const registros = {};
-      document.querySelectorAll("input[type='checkbox']").forEach(cb => {
-        const alunoId = cb.id.replace("presenca-", "");
-        registros[alunoId] = cb.checked;
-      });
-
-      db.collection("presencas").doc(data).set({
-        data,
-        professorId: professorUID,
-        registros,
-        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => alert("Presença salva com sucesso"))
-      .catch(err => {
-        console.error(err);
-        alert("Erro ao salvar presença");
-      });
-    }
-
-    function voltar() {
-      window.location.href = "professor.html";
-    }
-
-    function logout() {
-      auth.signOut().then(() => window.location.href = "index.html");
-    }
-  </script>
-  -->
 			
 	</body>
 </html>

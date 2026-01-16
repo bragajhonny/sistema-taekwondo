@@ -90,23 +90,30 @@ fetch(API_URL, {
     select.innerHTML += '<option value="">Nenhuma data encontrada</option>';
     return;
   }
+const datasUnicas = new Set();
 
-  const datasUnicas = new Set();
-
+/* remove duplicadas */
 res.dados.forEach(data => {
   const dataLimpa = String(data).substring(0, 10); // yyyy-MM-dd
-
-  if (datasUnicas.has(dataLimpa)) return;
   datasUnicas.add(dataLimpa);
+});
 
-  const [ano, mes, dia] = dataLimpa.split('-');
+/* ordena (DESC) */
+const datasOrdenadas = Array.from(datasUnicas).sort((a, b) => {
+  return new Date(b) - new Date(a);
+});
+
+/* monta o select */
+datasOrdenadas.forEach(data => {
+  const [ano, mes, dia] = data.split('-');
   const dataFormatada = `${dia}/${mes}/${ano}`;
 
   const opt = document.createElement('option');
-  opt.value = dataLimpa;          // valor real usado no backend
-  opt.textContent = dataFormatada; // só a data visível
+  opt.value = data;
+  opt.textContent = dataFormatada;
   select.appendChild(opt);
 });
+
 
 })
 .catch(() => {

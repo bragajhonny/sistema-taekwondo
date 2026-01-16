@@ -69,8 +69,7 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-
-			<script>
+<script>
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 
 if (!usuario || usuario.tipo !== 'professor') {
@@ -79,11 +78,14 @@ if (!usuario || usuario.tipo !== 'professor') {
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbw3iRxCxjsjc78Lnnu-bT43lVO2ZP6L2jd01LJ1_R8R4Vox4LO-HQ1z9P1-YSs4gjHrpw/exec';
 
+/* DATA LOCAL (SEM UTC) */
 const hoje = new Date();
 hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
-document.getElementById('dataAula').value = hoje.toISOString().split('T')[0];
+document.getElementById('dataAula').value =
+  hoje.toISOString().split('T')[0];
 
-	fetch(API_URL, {
+/* LISTAR ALUNOS + PROFESSORES */
+fetch(API_URL, {
   method: 'POST',
   body: new URLSearchParams({
     acao: 'listarAlunosPresenca'
@@ -94,31 +96,41 @@ document.getElementById('dataAula').value = hoje.toISOString().split('T')[0];
   const tbody = document.getElementById('listaAlunos');
   tbody.innerHTML = '';
 
+  if (!res.dados || !res.dados.length) {
+    tbody.innerHTML = '<tr><td colspan="2">Nenhum registro encontrado</td></tr>';
+    return;
+  }
+
   res.dados.forEach(pessoa => {
-  const tr = document.createElement('tr');
-  const checkboxId = `presenca-${pessoa.id}`;
+    const tr = document.createElement('tr');
+    const checkboxId = `presenca-${pessoa.id}`;
 
-  tr.innerHTML = `
-    <td>
-      ${pessoa.nome}
-      <small style="opacity:0.6">(${pessoa.tipo})</small>
-    </td>
-    <td style="text-align:left">
-      <input
-        type="checkbox"
-        id="${checkboxId}"
-        data-id="${pessoa.id}"
-        data-nome="${pessoa.nome}"
-        data-tipo="${pessoa.tipo}"
-      >
-      <label for="${checkboxId}"></label>
-    </td>
-  `;
+    tr.innerHTML = `
+      <td>
+        ${pessoa.nome}
+        <small style="opacity:0.6">(${pessoa.tipo})</small>
+      </td>
+      <td style="text-align:left">
+        <input
+          type="checkbox"
+          id="${checkboxId}"
+          data-id="${pessoa.id}"
+          data-nome="${pessoa.nome}"
+          data-tipo="${pessoa.tipo}"
+        >
+        <label for="${checkboxId}"></label>
+      </td>
+    `;
 
-  tbody.appendChild(tr);
+    tbody.appendChild(tr);
+  });
+})
+.catch(() => {
+  document.getElementById('listaAlunos').innerHTML =
+    '<tr><td colspan="2">Erro ao carregar lista</td></tr>';
 });
 
-
+/* SALVAR PRESENÇA */
 function salvarPresenca() {
   const data = document.getElementById('dataAula').value;
   if (!data) {
@@ -132,6 +144,7 @@ function salvarPresenca() {
     .forEach(cb => {
       registros[cb.dataset.id] = {
         nome: cb.dataset.nome,
+        tipo: cb.dataset.tipo,
         presente: cb.checked
       };
     });
@@ -149,18 +162,19 @@ function salvarPresenca() {
     if (res.status === 'sucesso') {
       alert('Presença salva com sucesso');
     } else {
-      alert(res.msg);
+      alert(res.msg || 'Erro ao salvar presença');
     }
   })
   .catch(() => alert('Erro ao salvar presença'));
 }
 
-	function logout() {
-  		localStorage.removeItem('usuario');
-  		window.location.href = 'index.html';
-	}
-				
+/* LOGOUT */
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'index.html';
+}
 </script>
+
 			
 	</body>
 </html>

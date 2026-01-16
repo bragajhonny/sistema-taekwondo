@@ -145,7 +145,7 @@
 		  		window.location.href = 'index.html';
 			}
 
-function verArquivos(pastaId, nomeAluno) {
+			</*function verArquivos(pastaId, nomeAluno) {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
@@ -180,6 +180,64 @@ function verArquivos(pastaId, nomeAluno) {
   .catch(() => {
     alert('Erro ao carregar arquivos');
   });
+}*/
+	function verArquivos(pastaId, nomeAluno) {
+  document.getElementById('tituloModalArquivos').innerText =
+    `Arquivos de ${nomeAluno}`;
+
+  document.getElementById('conteudoArquivos').innerHTML =
+    'Carregando arquivos...';
+
+  document.getElementById('modalArquivos').style.display = 'block';
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'listarArquivosAluno',
+      pastaId: pastaId
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status !== 'sucesso') {
+      document.getElementById('conteudoArquivos').innerHTML =
+        'Erro ao carregar arquivos.';
+      return;
+    }
+
+    if (res.dados.length === 0) {
+      document.getElementById('conteudoArquivos').innerHTML =
+        'Nenhum arquivo encontrado.';
+      return;
+    }
+
+    let html = '<ul>';
+
+    res.dados.forEach(a => {
+      const downloadUrl =
+        `https://drive.google.com/uc?export=download&id=${a.id}`;
+
+      html += `
+        <li>
+          📄 ${a.nome}<br>
+          <a href="${a.url}" target="_blank">Abrir</a> |
+          <a href="${downloadUrl}" target="_blank">Download</a>
+        </li><br>
+      `;
+    });
+
+    html += '</ul>';
+
+    document.getElementById('conteudoArquivos').innerHTML = html;
+  })
+  .catch(() => {
+    document.getElementById('conteudoArquivos').innerHTML =
+      'Erro ao carregar arquivos.';
+  });
+}
+
+function fecharModalArquivos() {
+  document.getElementById('modalArquivos').style.display = 'none';
 }
 
 		</script>

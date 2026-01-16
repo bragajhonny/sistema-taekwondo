@@ -66,14 +66,23 @@
 			<script src="assets/js/main.js"></script>
 
   <script>
-fetch(API_URL, {
-  method: 'POST',
-  body: new URLSearchParams({ acao: 'listarDatasPresenca' })
-})
-.then(r => r.json())
-.then(res => {
-  const select = document.getElementById('dataPresenca');
-  select.innerHTML = `<option value="">Selecione a data</option>`;
+	  const API_URL = 'https://script.google.com/macros/s/AKfycbwd6s4SfFZzqc5UDhsJa-fO2a31zQnZc56etnjKAWmLZMeJsrpbSHm7mnjw1i5WQINRtA/exec';
+	  const usuario = JSON.parse(localStorage.getItem('usuario'));
+	  
+	  if (!usuario || usuario.tipo !== 'professor') {
+		window.location.href = 'index.html';
+	  }
+
+	const select = document.getElementById('dataPresenca');
+	select.innerHTML = '<option value="">Carregando datas...</option>';
+	fetch(API_URL, {
+		method: 'POST',
+		body: new URLSearchParams({ acao: 'listarDatasPresenca' })
+	})
+	.then(r => r.json())
+	.then(res => {
+	const select = document.getElementById('dataPresenca');
+	select.innerHTML = `<option value="">Selecione a data</option>`;
 
   res.dados.forEach(data => {
     const opt = document.createElement('option');

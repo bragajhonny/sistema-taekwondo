@@ -66,75 +66,93 @@
 			<script src="assets/js/main.js"></script>
 
   <script>
-	  const API_URL = 'https://script.google.com/macros/s/AKfycbwd6s4SfFZzqc5UDhsJa-fO2a31zQnZc56etnjKAWmLZMeJsrpbSHm7mnjw1i5WQINRtA/exec';
-	  const usuario = JSON.parse(localStorage.getItem('usuario'));
-	  
-	  if (!usuario || usuario.tipo !== 'professor') {
-		window.location.href = 'index.html';
-	  }
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwd6s4SfFZzqc5UDhsJa-fO2a31zQnZc56etnjKAWmLZMeJsrpbSHm7mnjw1i5WQINRtA/exec';
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-	const select = document.getElementById('dataPresenca');
-	select.innerHTML = '<option value="">Carregando datas...</option>';
-	fetch(API_URL, {
-		method: 'POST',
-		body: new URLSearchParams({ acao: 'listarDatasPresenca' })
-	})
-	.then(r => r.json())
-	.then(res => {
-	const select = document.getElementById('dataPresenca');
-	select.innerHTML = `<option value="">Selecione a data</option>`;
-
-  res.dados.forEach(data => {
-    const opt = document.createElement('option');
-    opt.value = data;
-    opt.textContent = data;
-    select.appendChild(opt);
-  });
-});
-
-	  function carregarPresenca() {
-  const data = document.getElementById('dataPresenca').value;
-  const lista = document.getElementById('listaAlunos');
-
-  lista.innerHTML = '';
-
-  if (!data) {
-    lista.innerHTML = '<li>Selecione uma data</li>';
-    return;
+  // Proteção de acesso
+  if (!usuario || usuario.tipo !== 'professor') {
+    window.location.href = 'index.html';
   }
+
+  // Carregar datas de presença
+  const select = document.getElementById('dataPresenca');
+  select.innerHTML = '<option value="">Carregando datas...</option>';
 
   fetch(API_URL, {
     method: 'POST',
-    body: new URLSearchParams({
-      acao: 'listarPresencaPorData',
-      data: data
-    })
+    body: new URLSearchParams({ acao: 'listarDatasPresenca' })
   })
   .then(r => r.json())
   .then(res => {
-    if (!res.dados.length) {
-      lista.innerHTML = '<li>Nenhum aluno presente</li>';
+    select.innerHTML = '<option value="">Selecione a data</option>';
+
+    if (!res.dados || !res.dados.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'Nenhuma data encontrada';
+      select.appendChild(opt);
       return;
     }
 
-    res.dados.forEach(nome => {
-      const li = document.createElement('li');
-      li.textContent = nome;
-      lista.appendChild(li);
-    });
+    res.dados.forEach(data => {
+		const dataObj = new Date(data);
+		const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+		const opt = document.createElement('option');
+		opt.value = data; // mantém o valor original para busca
+		opt.textContent = dataFormatada; // exibe só a data
+		select.appendChild(opt);
+	});
   })
   .catch(() => {
-    lista.innerHTML = '<li>Erro ao carregar presença</li>';
+    select.innerHTML = '<option value="">Erro ao carregar datas</option>';
   });
-}
 
+  // Carregar presença por data
+  function carregarPresenca() {
+    const data = document.getElementById('dataPresenca').value;
+    const lista = document.getElementById('listaAlunos');
 
-	function logout() {
-  		localStorage.removeItem('usuario');
-  		window.location.href = 'index.html';
-	}
+    lista.innerHTML = '';
 
+    if (!data) {
+      lista.innerHTML = '<li>Selecione uma data</li>';
+      return;
+    }
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: new URLSearchParams({
+        acao: 'listarPresencaPorData',
+        data: data
+      })
+    })
+    .then(r => r.json())
+    .then(res => {
+      const alunos = Object.values(res.dados || {});
+
+      if (!alunos.length) {
+        lista.innerHTML = '<li>Nenhum aluno presente</li>';
+        return;
+      }
+
+      alunos.forEach(a => {
+        const li = document.createElement('li');
+        li.textContent = a.nome;
+        lista.appendChild(li);
+      });
+    })
+    .catch(() => {
+      lista.innerHTML = '<li>Erro ao carregar presença</li>';
+    });
+  }
+
+  // Logout
+  function logout() {
+    localStorage.removeItem('usuario');
+    window.location.href = 'index.html';
+  }
 </script>
+
 
 	</body>
 </html>

@@ -69,14 +69,15 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-<script>
-const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+			<script>
+				const usuario = JSON.parse(localStorage.getItem('usuario'));
 
 if (!usuario || usuario.tipo !== 'professor') {
   window.location.href = 'index.html';
 }
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbw3iRxCxjsjc78Lnnu-bT43lVO2ZP6L2jd01LJ1_R8R4Vox4LO-HQ1z9P1-YSs4gjHrpw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzr_nkTdssaXVpwaF30G4FdXL7RkdmarHcJEg4enY7Lfroq7AKIxzEIqgcaCjsXiTWuIQ/exec';
 
 /* DATA LOCAL (SEM UTC) */
 const hoje = new Date();
@@ -96,27 +97,18 @@ fetch(API_URL, {
   const tbody = document.getElementById('listaAlunos');
   tbody.innerHTML = '';
 
-  if (!res.dados || !res.dados.length) {
-    tbody.innerHTML = '<tr><td colspan="2">Nenhum registro encontrado</td></tr>';
-    return;
-  }
-
   res.dados.forEach(pessoa => {
     const tr = document.createElement('tr');
     const checkboxId = `presenca-${pessoa.id}`;
 
     tr.innerHTML = `
-      <td>
-        ${pessoa.nome}
-        <small style="opacity:0.6">(${pessoa.tipo})</small>
-      </td>
+      <td>${pessoa.nome}</td>
       <td style="text-align:left">
         <input
           type="checkbox"
           id="${checkboxId}"
           data-id="${pessoa.id}"
           data-nome="${pessoa.nome}"
-          data-tipo="${pessoa.tipo}"
         >
         <label for="${checkboxId}"></label>
       </td>
@@ -124,11 +116,8 @@ fetch(API_URL, {
 
     tbody.appendChild(tr);
   });
-})
-.catch(() => {
-  document.getElementById('listaAlunos').innerHTML =
-    '<tr><td colspan="2">Erro ao carregar lista</td></tr>';
 });
+
 
 /* SALVAR PRESENÇA */
 function salvarPresenca() {

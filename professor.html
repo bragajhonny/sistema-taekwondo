@@ -72,7 +72,7 @@
 			  window.location.href = 'index.html';
 			}
 			
-			const API_URL = 'https://script.google.com/macros/s/AKfycbym9ekZsM6nyIl7-7jlwLc1jaddjI6q6aZrptSyPb1QW15f3wNlQz_GvYJRs8CqtemC6Q/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbzL-sRRzx9hKIfCY6k95Fcic9XV2sXoOV8xXoXvPb-BP7Do0pKv-IL6hI58MlidXAEyJw/exec';
 			
 			fetch(API_URL, {
 			  method: 'POST',
@@ -113,8 +113,7 @@
 			
 					<td>
 						<a href="${a.pastaDrive}" target="_blank">Abrir pasta</a>
-						
-						<button onclick="verArquivos('${a.pastaId}', '${a.nome}')">Arquivos</button>	
+						<button onclick="abrirModalArquivosProfessor( '${a.pastaId}', '${a.nome}', '${a.email}')">Arquivos</button>
 					</td>
 				`;
 				tbody.appendChild(tr);
@@ -249,23 +248,155 @@ function trocarSenha() {
     alert('Erro ao trocar senha');
   });
 }
+
+let pastaAtualId = '';
+let emailAlunoAtual = '';
+
+function abrirModalArquivosProfessor(pastaId, nomeAluno, emailAluno) {
+  pastaAtualId = pastaId;
+  emailAlunoAtual = emailAluno;
+
+  document.getElementById('tituloModalArquivos').innerText =
+    `Arquivos de ${nomeAluno}`;
+
+  document.getElementById('modalArquivos').style.display = 'block';
+  listarArquivos();
+}
+
+function listarArquivos() {
+  document.getElementById('conteudoArquivos').innerHTML = 'Carregando...';
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'listarArquivosAluno',
+      pastaId: pastaAtualId
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status !== 'sucesso') {
+      document.getElementById('conteudoArquivos').innerText =
+        'Erro ao carregar arquivos';
+      return;
+    }
+
+    if (res.dados.length === 0) {
+      document.getElementById('conteudoArquivos').innerText =
+        'Nenhum arquivo encontrado.';
+      return;
+    }
+
+    let html = '<ul>';
+
+    res.dados.forEach(a => {
+      const downloadUrl =
+        `https://drive.google.com/uc?export=download&id=${a.id}`;
+
+      html += `
+        <li>
+          📄 ${a.nome}<br>
+          <a href="${a.url}" target="_blank">Abrir</a> |
+          <a href="${downloadUrl}" target="_blank">Download</a> |
+          <a href="#" onclick="excluirArquivo('${a.id}')">Excluir</a>
+        </li><br>
+      `;
+    });
+
+    html += '</ul>';
+
+    document.getElementById('conteudoArquivos').innerHTML = html;
+  })
+  .catch(() => {
+    document.getElementById('conteudoArquivos').innerText =
+      'Erro ao carregar arquivos';
+  });
+}
+
+function enviarArquivo() {
+  const input = document.getElementById('arquivoUpload');
+  const file = input.files[0];
+
+  if (!file) {
+    alert('Selecione um arquivo');
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    const base64 = reader.result.split(',')[1];
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: new URLSearchParams({
+        acao: 'uploadArquivoAluno',
+        email: emailAlunoAtual,
+        nomeArquivo: file.name,
+        tipoArquivo: file.type,
+        conteudo: base64
+      })
+    })
+    .then(r => r.json())
+    .then(res => {
+      if (res.status === 'sucesso') {
+        input.value = '';
+        listarArquivos();
+      } else {
+        alert(res.msg);
+      }
+    })
+    .catch(() => alert('Erro ao enviar arquivo'));
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function excluirArquivo(arquivoId) {
+  if (!confirm('Deseja excluir este arquivo?')) return;
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'excluirArquivoAluno',
+      arquivoId: arquivoId
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status === 'sucesso') {
+      listarArquivos();
+    } else {
+      alert(res.msg);
+    }
+  });
+}
+
+				
 		</script>
 
-			<!-- Modal Arquivos do Aluno -->
+<!-- Modal Arquivos -->
 <div id="modalArquivos" class="modal">
   <div class="modal-content">
     <span class="close" onclick="fecharModalArquivos()">&times;</span>
 
-    <h2 id="tituloModalArquivos">Arquivos do aluno</h2>
+    <h2 id="tituloModalArquivos">Arquivos</h2>
 
-    <div id="conteudoArquivos">
-      Carregando arquivos...
+    <!-- Upload -->
+    <div class="field">
+      <input type="file" id="arquivoUpload" />
+      <button class="button small" onclick="enviarArquivo()">Enviar arquivo</button>
     </div>
+
+    <hr>
+
+    <div id="conteudoArquivos">Carregando arquivos...</div>
 
     <br>
     <button class="button" onclick="fecharModalArquivos()">Fechar</button>
   </div>
 </div>
+
 
 			<!-- Modal Trocar Senha -->
 <div id="modalTrocarSenha" class="modal">

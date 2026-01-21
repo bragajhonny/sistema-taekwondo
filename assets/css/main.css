@@ -3363,3 +3363,24 @@ input, select, textarea {
   font-weight: bold;
   cursor: pointer;
 }
+
+/* ===== Modal Ficha do Aluno ===== */
+
+.modal-content.ficha-aluno {
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* Desktop */
+@media screen and (min-width: 980px) {
+  .modal-content.ficha-aluno {
+    max-width: 500px;
+  }
+}
+
+.modal-content.ficha-aluno table td {
+  padding: 0.4em 0.6em;
+  font-size: 0.95em;
+}

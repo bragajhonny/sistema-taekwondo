@@ -3367,20 +3367,21 @@ input, select, textarea {
 /* ===== Modal Ficha do Aluno ===== */
 
 .modal-content.ficha-aluno {
-  width: 90%;
-  max-width: 600px;
-  max-height: 85vh;
+  width: 92%;
+  max-width: 520px;
+  max-height: 80vh;
   overflow-y: auto;
 }
 
 /* Desktop */
 @media screen and (min-width: 980px) {
   .modal-content.ficha-aluno {
-    max-width: 500px;
+    max-width: 420px;
+    max-height: 75vh;
   }
-}
 
-.modal-content.ficha-aluno table td {
-  padding: 0.4em 0.6em;
-  font-size: 0.95em;
+  .modal-content.ficha-aluno table td {
+    padding: 0.35em 0.5em;
+    font-size: 0.9em;
+  }
 }

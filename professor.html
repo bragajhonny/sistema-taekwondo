@@ -113,6 +113,7 @@
 			
 					<td>
 						<a href="${a.pastaDrive}" target="_blank">Abrir pasta</a>
+						<button class="small" onclick="abrirFichaAluno('${a.email}')">Ficha</button>
 						<button onclick="abrirModalArquivosProfessor( '${a.pastaId}', '${a.nome}', '${a.email}')">Arquivos</button>
 					</td>
 				`;
@@ -372,6 +373,46 @@ function excluirArquivo(arquivoId) {
   });
 }
 
+				function abrirFichaAluno(emailAluno) {
+  document.getElementById('modalFichaAluno').style.display = 'block';
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'buscarAluno',
+      email: emailAluno
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status !== 'sucesso') {
+      alert(res.msg);
+      return;
+    }
+
+    const a = res.dados;
+
+    document.getElementById('f_nome').innerText = a.nome;
+    document.getElementById('f_dataNascimento').innerText = a.dataNascimento;
+    document.getElementById('f_sexo').innerText = a.sexo;
+    document.getElementById('f_telefone').innerText = a.telefone;
+    document.getElementById('f_endereco').innerText = a.endereco;
+    document.getElementById('f_tipoSanguineo').innerText = a.tipoSanguineo;
+    document.getElementById('f_rg').innerText = a.rg;
+    document.getElementById('f_cpf').innerText = a.cpf;
+    document.getElementById('f_email').innerText = a.email;
+    document.getElementById('f_faixa').innerText = a.faixa || 'Não definida';
+  })
+  .catch(() => {
+    alert('Erro ao carregar ficha do aluno');
+  });
+}
+
+function fecharFichaAluno() {
+  document.getElementById('modalFichaAluno').style.display = 'none';
+}
+
+
 				
 		</script>
 
@@ -418,6 +459,35 @@ function excluirArquivo(arquivoId) {
     <br>
     <button class="button primary" onclick="trocarSenha()">Salvar</button>
     <button class="button" onclick="fecharModalTrocarSenha()">Cancelar</button>
+  </div>
+</div>
+
+			<!-- Modal Ficha do Aluno -->
+<div id="modalFichaAluno" class="modal">
+  <div class="modal-content large">
+
+    <span class="close" onclick="fecharFichaAluno()">&times;</span>
+
+    <h2>Ficha do Aluno</h2>
+
+    <table>
+      <tbody>
+        <tr><td>Nome</td><td id="f_nome"></td></tr>
+        <tr><td>Data de nascimento</td><td id="f_dataNascimento"></td></tr>
+        <tr><td>Sexo</td><td id="f_sexo"></td></tr>
+        <tr><td>Telefone</td><td id="f_telefone"></td></tr>
+        <tr><td>Endereço</td><td id="f_endereco"></td></tr>
+        <tr><td>Tipo sanguíneo</td><td id="f_tipoSanguineo"></td></tr>
+        <tr><td>RG</td><td id="f_rg"></td></tr>
+        <tr><td>CPF</td><td id="f_cpf"></td></tr>
+        <tr><td>E-mail</td><td id="f_email"></td></tr>
+        <tr><td>Faixa</td><td id="f_faixa"></td></tr>
+      </tbody>
+    </table>
+
+    <br>
+    <button class="button" onclick="fecharFichaAluno()">Fechar</button>
+
   </div>
 </div>
 

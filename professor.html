@@ -373,7 +373,7 @@ function excluirArquivo(arquivoId) {
   });
 }
 
-				function abrirFichaAluno(emailAluno) {
+function abrirFichaAluno(emailAluno) {
   document.getElementById('modalFichaAluno').style.display = 'block';
 
   fetch(API_URL, {
@@ -393,7 +393,7 @@ function excluirArquivo(arquivoId) {
     const a = res.dados;
 
     document.getElementById('f_nome').innerText = a.nome;
-    document.getElementById('f_dataNascimento').innerText = a.dataNascimento;
+    document.getElementById('f_dataNascimento').innerText = formatarDataBR(a.dataNascimento);
     document.getElementById('f_sexo').innerText = a.sexo;
     document.getElementById('f_telefone').innerText = a.telefone;
     document.getElementById('f_endereco').innerText = a.endereco;
@@ -412,6 +412,15 @@ function fecharFichaAluno() {
   document.getElementById('modalFichaAluno').style.display = 'none';
 }
 
+function formatarDataBR(dataISO) {
+  if (!dataISO) return '';
+
+  const data = new Date(dataISO);
+
+  return data.toLocaleDateString('pt-BR', {
+    timeZone: 'America/Sao_Paulo'
+  });
+}
 
 				
 		</script>

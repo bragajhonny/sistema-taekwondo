@@ -33,6 +33,7 @@
 			<nav>
 				<ul>
 					<li><a href="#menu">Menu</a></li>
+					<li><a href="#" onclick="abrirModalTrocarSenha()">Trocar senha</a></li>
 				</ul>
 			</nav>
 		</header>
@@ -114,7 +115,7 @@
 			<script src="assets/js/main.js"></script>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyU6GO3aaUgGkyHoqOPXuqpejavlDW2BCt_G3DOxK90Buqmr-C2GYy7iEjYBm-DCKA7yg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbym9ekZsM6nyIl7-7jlwLc1jaddjI6q6aZrptSyPb1QW15f3wNlQz_GvYJRs8CqtemC6Q/exec';
 
 fetch(API_URL, {
   method: 'POST',
@@ -231,87 +232,75 @@ function salvarDados() {
 
   reader.readAsDataURL(file);
 }
+
+	function abrirModalTrocarSenha() {
+  document.getElementById('senhaAtual').value = '';
+  document.getElementById('novaSenha').value = '';
+  document.getElementById('modalTrocarSenha').style.display = 'block';
+}
+
+function fecharModalTrocarSenha() {
+  document.getElementById('modalTrocarSenha').style.display = 'none';
+}
+
+function trocarSenha() {
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+  const senhaAtual = document.getElementById('senhaAtual').value.trim();
+  const novaSenha = document.getElementById('novaSenha').value.trim();
+
+  if (!senhaAtual || !novaSenha) {
+    alert('Preencha todos os campos');
+    return;
+  }
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'trocarSenha',
+      email: usuario.email,
+      senhaAtual: senhaAtual,
+      novaSenha: novaSenha
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status === 'sucesso') {
+      alert(res.msg);
+      fecharModalTrocarSenha();
+    } else {
+      alert(res.msg);
+    }
+  })
+  .catch(() => {
+    alert('Erro ao trocar senha');
+  });
+}
 	
 </script>
 
+		<!-- Modal Trocar Senha -->
+<div id="modalTrocarSenha" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="fecharModalTrocarSenha()">&times;</span>
 
+    <h2>Trocar senha</h2>
 
-		
-<!--
-<script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-      authDomain: "sistema-taekwondo-1.firebaseapp.com",
-      projectId: "sistema-taekwondo-1",
-      messagingSenderId: "635745416768",
-      appId: "1:635745416768:web:58d23eca722878f047d1a5"
-    };
+    <div class="field">
+      <label>Senha atual</label>
+      <input type="password" id="senhaAtual" />
+    </div>
 
-    firebase.initializeApp(firebaseConfig);
+    <div class="field">
+      <label>Nova senha</label>
+      <input type="password" id="novaSenha" />
+    </div>
 
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    let alunoUID = null;
+    <br>
+    <button class="button primary" onclick="trocarSenha()">Salvar</button>
+    <button class="button" onclick="fecharModalTrocarSenha()">Cancelar</button>
+  </div>
+</div>
 
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      alunoUID = user.uid;
-
-      db.collection("alunos").doc(alunoUID).get()
-        .then(doc => {
-          if (!doc.exists || doc.data().perfil !== "aluno") {
-            alert("Acesso negado");
-            window.location.href = "index.html";
-            return;
-          }
-
-          preencherFormulario(doc.data());
-        });
-    });
-
-    function preencherFormulario(data) {
-  nome.value = data.nome || "";
-  dataNascimento.value = data.dataNascimento || "";
-  sexo.value = data.sexo || "";
-  endereco.value = data.endereco || "";
-  telefone.value = data.telefone || "";
-  tipoSanguineo.value = data.tipoSanguineo || "";
-  faixa.value = data.faixa || "";
-  email.value = data.email || "";
-  rg.value = data.rg || "";
-  cpf.value = data.cpf || "";
-}
-
-
-    function salvarDados() {
-  db.collection("alunos").doc(alunoUID).update({
-    nome: nome.value,
-    dataNascimento: dataNascimento.value,
-    sexo: sexo.value,
-    endereco: endereco.value,
-    telefone: telefone.value,
-    tipoSanguineo: tipoSanguineo.value,
-    rg: rg.value,
-    cpf: cpf.value
-  })
-  .then(() => alert("Dados atualizados com sucesso"))
-  .catch((erro) => {
-    console.error(erro);
-    alert("Erro ao salvar dados");
-  });
-}
-
-
-    function logout() {
-      auth.signOut().then(() => {
-        window.location.href = "index.html";
-      });
-    }
-  </script>
-		-->
 	</body>
 </html>

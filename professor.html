@@ -112,7 +112,7 @@
 					</td>
 			
 					<td>
-						<a href="${a.pastaDrive}" target="_blank">Abrir pasta</a>
+						<!-- <a href="${a.pastaDrive}" target="_blank">Abrir pasta</a> -->
 						<button class="small" onclick="abrirFichaAluno('${a.email}')">Ficha</button>
 						<button onclick="abrirModalArquivosProfessor( '${a.pastaId}', '${a.nome}', '${a.email}')">Arquivos</button>
 					</td>
@@ -464,8 +464,7 @@ function fecharFichaAluno() {
 
 			<!-- Modal Ficha do Aluno -->
 <div id="modalFichaAluno" class="modal">
-  <div class="modal-content large">
-
+  <div class="modal-content ficha-aluno">
     <span class="close" onclick="fecharFichaAluno()">&times;</span>
 
     <h2>Ficha do Aluno</h2>

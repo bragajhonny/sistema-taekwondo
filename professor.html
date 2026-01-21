@@ -145,45 +145,9 @@
 		  		window.location.href = 'index.html';
 			}
 
-			/*<function verArquivos(pastaId, nomeAluno) {
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: 'listarArquivosAluno',
-      pastaId: pastaId
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (res.status !== 'sucesso') {
-      alert(res.msg);
-      return;
-    }
-
-    let html = `<strong>Arquivos de ${nomeAluno}</strong><br><br>`;
-
-    res.dados.forEach(a => {
-      const downloadUrl = `https://drive.google.com/uc?export=download&id=${a.id}`;
-
-      html += `
-        📄 ${a.nome}<br>
-        <a href="${a.url}" target="_blank">Abrir</a> |
-        <a href="${downloadUrl}" target="_blank">Download</a>
-        <br><br>
-      `;
-    });
-
-    const win = window.open("", "_blank");
-    win.document.write(html);
-    win.document.close();
-  })
-  .catch(() => {
-    alert('Erro ao carregar arquivos');
-  });
-}*/
 	function verArquivos(pastaId, nomeAluno) {
   document.getElementById('tituloModalArquivos').innerText =
-    `Arquivos de ${nomeAluno}`;
+    `Arquivos de '</br>' ${nomeAluno}`;
 
   document.getElementById('conteudoArquivos').innerHTML =
     'Carregando arquivos...';

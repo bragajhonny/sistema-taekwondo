@@ -94,15 +94,12 @@
 							<td>Faixa</td>
 							<td><input type="text" id="faixa" disabled></td>
 						</tr>
-						<tr>
-							<td><input type="file" id="arquivoAluno"></td>
-							<td><input type="button" value="Enviar arquivo" class="primary" onclick="enviarArquivo()"></td>
-						</tr>
 					</tbody>
 				</table>
 				<ul class="actions">
 					<li><input type="button" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
 					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveAluno, '_blank')" /></li>
+					<li><input type="button" value="Meus arquivos" onclick="abrirModalArquivosAluno()" /> </li>
 				</ul>
 			</div>
 		</div>
@@ -115,7 +112,7 @@
 			<script src="assets/js/main.js"></script>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbym9ekZsM6nyIl7-7jlwLc1jaddjI6q6aZrptSyPb1QW15f3wNlQz_GvYJRs8CqtemC6Q/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzL-sRRzx9hKIfCY6k95Fcic9XV2sXoOV8xXoXvPb-BP7Do0pKv-IL6hI58MlidXAEyJw/exec';
 
 fetch(API_URL, {
   method: 'POST',
@@ -276,6 +273,136 @@ function trocarSenha() {
     alert('Erro ao trocar senha');
   });
 }
+
+	let pastaAtualId = '';
+
+function abrirModalArquivosAluno() {
+  if (!window.pastaDriveAluno) {
+    alert('Pasta do aluno não encontrada');
+    return;
+  }
+
+  const match = window.pastaDriveAluno.match(/[-\w]{25,}/);
+  pastaAtualId = match ? match[0] : '';
+
+  document.getElementById('modalArquivos').style.display = 'block';
+  listarArquivos();
+}
+
+function fecharModalArquivos() {
+  document.getElementById('modalArquivos').style.display = 'none';
+}
+
+	function listarArquivos() {
+  document.getElementById('conteudoArquivos').innerHTML = 'Carregando...';
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'listarArquivosAluno',
+      pastaId: pastaAtualId
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status !== 'sucesso') {
+      document.getElementById('conteudoArquivos').innerText =
+        'Erro ao carregar arquivos';
+      return;
+    }
+
+    if (res.dados.length === 0) {
+      document.getElementById('conteudoArquivos').innerText =
+        'Nenhum arquivo enviado.';
+      return;
+    }
+
+    let html = '<ul>';
+
+    res.dados.forEach(a => {
+      const downloadUrl =
+        `https://drive.google.com/uc?export=download&id=${a.id}`;
+
+      html += `
+        <li>
+          📄 ${a.nome}<br>
+          <a href="${a.url}" target="_blank">Abrir</a> |
+          <a href="${downloadUrl}" target="_blank">Download</a> |
+          <a href="#" onclick="excluirArquivo('${a.id}')">Excluir</a>
+        </li><br>
+      `;
+    });
+
+    html += '</ul>';
+
+    document.getElementById('conteudoArquivos').innerHTML = html;
+  })
+  .catch(() => {
+    document.getElementById('conteudoArquivos').innerText =
+      'Erro ao carregar arquivos';
+  });
+}
+
+	function enviarArquivo() {
+  const input = document.getElementById('arquivoUpload');
+  const file = input.files[0];
+
+  if (!file) {
+    alert('Selecione um arquivo');
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    const base64 = reader.result.split(',')[1];
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: new URLSearchParams({
+        acao: 'uploadArquivoAluno',
+        email: usuario.email,
+        nomeArquivo: file.name,
+        tipoArquivo: file.type,
+        conteudo: base64
+      })
+    })
+    .then(r => r.json())
+    .then(res => {
+      if (res.status === 'sucesso') {
+        input.value = '';
+        listarArquivos();
+      } else {
+        alert(res.msg);
+      }
+    })
+    .catch(() => alert('Erro ao enviar arquivo'));
+  };
+
+  reader.readAsDataURL(file);
+}
+
+	function excluirArquivo(arquivoId) {
+  if (!confirm('Deseja excluir este arquivo?')) return;
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'excluirArquivoAluno',
+      arquivoId: arquivoId
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status === 'sucesso') {
+      listarArquivos();
+    } else {
+      alert(res.msg);
+    }
+  })
+  .catch(() => alert('Erro ao excluir arquivo'));
+}
+
 	
 </script>
 
@@ -301,6 +428,29 @@ function trocarSenha() {
     <button class="button" onclick="fecharModalTrocarSenha()">Cancelar</button>
   </div>
 </div>
+
+		<!-- Modal Arquivos do Aluno -->
+<div id="modalArquivos" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="fecharModalArquivos()">&times;</span>
+
+    <h2>Meus arquivos</h2>
+
+    <!-- Upload -->
+    <div class="field">
+      <input type="file" id="arquivoUpload" />
+      <button class="button small" onclick="enviarArquivo()">Enviar arquivo</button>
+    </div>
+
+    <hr>
+
+    <div id="conteudoArquivos">Carregando arquivos...</div>
+
+    <br>
+    <button class="button" onclick="fecharModalArquivos()">Fechar</button>
+  </div>
+</div>
+
 
 	</body>
 </html>

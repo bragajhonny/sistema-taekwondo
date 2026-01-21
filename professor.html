@@ -71,7 +71,7 @@
 			  window.location.href = 'index.html';
 			}
 			
-			const API_URL = 'https://script.google.com/macros/s/AKfycbwErHdyvTEYqiEm-zxWnYg3V5Gu9cBATALI-LyhMtsPIKICKnjTgCspz7pFrrvO0DKPLQ/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbym9ekZsM6nyIl7-7jlwLc1jaddjI6q6aZrptSyPb1QW15f3wNlQz_GvYJRs8CqtemC6Q/exec';
 			
 			fetch(API_URL, {
 			  method: 'POST',
@@ -204,6 +204,50 @@ function fecharModalArquivos() {
   document.getElementById('modalArquivos').style.display = 'none';
 }
 
+
+				function abrirModalTrocarSenha() {
+  document.getElementById('senhaAtual').value = '';
+  document.getElementById('novaSenha').value = '';
+  document.getElementById('modalTrocarSenha').style.display = 'block';
+}
+
+function fecharModalTrocarSenha() {
+  document.getElementById('modalTrocarSenha').style.display = 'none';
+}
+
+function trocarSenha() {
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+  const senhaAtual = document.getElementById('senhaAtual').value.trim();
+  const novaSenha = document.getElementById('novaSenha').value.trim();
+
+  if (!senhaAtual || !novaSenha) {
+    alert('Preencha todos os campos');
+    return;
+  }
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'trocarSenha',
+      email: usuario.email,
+      senhaAtual: senhaAtual,
+      novaSenha: novaSenha
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status === 'sucesso') {
+      alert(res.msg);
+      fecharModalTrocarSenha();
+    } else {
+      alert(res.msg);
+    }
+  })
+  .catch(() => {
+    alert('Erro ao trocar senha');
+  });
+}
 		</script>
 
 			<!-- Modal Arquivos do Aluno -->
@@ -221,6 +265,30 @@ function fecharModalArquivos() {
     <button class="button" onclick="fecharModalArquivos()">Fechar</button>
   </div>
 </div>
+
+			<!-- Modal Trocar Senha -->
+<div id="modalTrocarSenha" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="fecharModalTrocarSenha()">&times;</span>
+
+    <h2>Trocar senha</h2>
+
+    <div class="field">
+      <label>Senha atual</label>
+      <input type="password" id="senhaAtual" />
+    </div>
+
+    <div class="field">
+      <label>Nova senha</label>
+      <input type="password" id="novaSenha" />
+    </div>
+
+    <br>
+    <button class="button primary" onclick="trocarSenha()">Salvar</button>
+    <button class="button" onclick="fecharModalTrocarSenha()">Cancelar</button>
+  </div>
+</div>
+
 
 	</body>
 </html>

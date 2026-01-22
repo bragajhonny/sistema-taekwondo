@@ -100,8 +100,6 @@
 					<li><input type="button" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
 					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveAluno, '_blank')" /></li>
 					<li><input type="button" value="Documentos" onclick="abrirModalArquivosAluno()" /> </li>
-					<li><input type="file" id="foto" accept="image/*"></li>
-					<li><img id="preview" style="max-width:120px;border-radius:50%;"></li>
 				</ul>
 			</div>
 		</div>
@@ -114,7 +112,7 @@
 			<script src="assets/js/main.js"></script>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbzDViYiAonVM4EgCcg2CJWfqqYcVGCdE0EQik6PiP0-e_yU-dlkUc59QypLyY3V6nqe1w/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycby6CB-_UFI2IxRqn7ACVTZPopEzrHEg2bIM7GqNvL_DUy5Tgrs4F8eZPiAnRPaXURCv7Q/exec';
 
 fetch(API_URL, {
   method: 'POST',
@@ -402,25 +400,80 @@ function enviarArquivo() {
   .catch(() => alert('Erro ao excluir arquivo'));
 }
 
-	document.getElementById('foto').addEventListener('change', function(e){
+document.getElementById('fotoPerfil').addEventListener('change', function(e){
   const file = e.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
   reader.onload = function(){
-    document.getElementById('preview').src = reader.result;
+    const img = document.getElementById('previewFoto');
+    img.src = reader.result;
+    img.style.display = 'block';
   };
   reader.readAsDataURL(file);
 });
+
+	function enviarFotoPerfil() {
+  const input = document.getElementById('fotoPerfil');
+  const file = input.files[0];
+
+  if (!file) {
+    alert('Selecione uma foto');
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert('A imagem deve ter no máximo 2MB');
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    const base64 = reader.result;
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: new URLSearchParams({
+        acao: 'uploadFotoPerfilAluno',
+        email: usuario.email,
+        imagem: base64
+      })
+    })
+    .then(r => r.json())
+    .then(res => {
+      if (res.status === 'sucesso') {
+        alert('Foto atualizada com sucesso');
+        input.value = '';
+      } else {
+        alert(res.msg);
+      }
+    })
+    .catch(() => alert('Erro ao enviar foto'));
+  };
+
+  reader.readAsDataURL(file);
+}
 	
 </script>
 
-		<!-- Modal Trocar Senha -->
+<!-- Modal Trocar Senha e Foto -->
 <div id="modalTrocarSenha" class="modal">
   <div class="modal-content">
     <span class="close" onclick="fecharModalTrocarSenha()">&times;</span>
 
-    <h2>Trocar senha</h2>
+    <h2>Conta do aluno</h2>
+
+    <h3>Foto de perfil</h3>
+    <input type="file" id="fotoPerfil" accept="image/*">
+    <br><br>
+    <img id="previewFoto" style="max-width:120px;border-radius:50%;display:none;">
+    <br><br>
+    <button class="button small" onclick="enviarFotoPerfil()">Salvar foto</button>
+
+    <hr>
+
+    <h3>Trocar senha</h3>
 
     <div class="field">
       <label>Senha atual</label>
@@ -433,10 +486,11 @@ function enviarArquivo() {
     </div>
 
     <br>
-    <button class="button primary" onclick="trocarSenha()">Salvar</button>
+    <button class="button primary" onclick="trocarSenha()">Salvar senha</button>
     <button class="button" onclick="fecharModalTrocarSenha()">Cancelar</button>
   </div>
 </div>
+
 
 		<!-- Modal Arquivos do Aluno -->
 <div id="modalArquivos" class="modal">

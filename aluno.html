@@ -52,7 +52,7 @@
 			<div class="inner">
 				<h1>Painel do Aluno</h1>
 				<div class="perfil-aluno">
-				  <img id="fotoTopoAluno" src="images/avatar-default.png" alt="Foto do aluno">
+				  <img id="fotoTopoAluno" alt="Foto do aluno">
 				  <h3 id="nomeTopoAluno"></h3>
 				</div>
 
@@ -120,8 +120,25 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycby6CB-_UFI2IxRqn7ACVTZPopEzrHEg2bIM7GqNvL_DUy5Tgrs4F8eZPiAnRPaXURCv7Q/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwjK_OWQlJqp_mmNgvR6OSeWPQysNIakJtPWV366oSGvsUtDj0OrHB_hPIYUqxpanlW_Q/exec';
 let pastaAtualId = '';
+
+	function mascaraData(input) {
+  input.addEventListener('input', () => {
+    let valor = input.value.replace(/\D/g, '');
+
+    if (valor.length > 8) valor = valor.slice(0, 8);
+
+    if (valor.length >= 5) {
+      input.value = valor.replace(/(\d{2})(\d{2})(\d{0,4})/, '$1/$2/$3');
+    } else if (valor.length >= 3) {
+      input.value = valor.replace(/(\d{2})(\d{0,2})/, '$1/$2');
+    } else {
+      input.value = valor;
+    }
+  });
+}
+
 
 /* =========================
    INIT
@@ -131,6 +148,15 @@ document.addEventListener('DOMContentLoaded', initAluno);
 function initAluno() {
   carregarAluno();
   configurarEventos();
+
+const fotoTopo = document.getElementById('fotoTopoAluno');
+
+if (a.fotoPerfil) {
+  fotoTopo.src = a.fotoPerfil;
+} else {
+  fotoTopo.src = 'images/foto-padrao.png';
+}
+
 }
 
 /* =========================
@@ -141,7 +167,13 @@ function configurarEventos() {
   if (foto) {
     foto.addEventListener('change', previewFoto);
   }
+
+  const dataNasc = document.getElementById('dataNascimento');
+  if (dataNasc) {
+    mascaraData(dataNasc);
+  }
 }
+
 
 /* =========================
    ALUNO
@@ -192,13 +224,18 @@ function carregarAluno() {
 }
 
 function salvarDados() {
+	if (dataNascimento.value.length !== 10) {
+  		alert('Data de nascimento inválida');
+	  return;
+	}
+
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
       acao: 'atualizarAluno',
       email: usuario.email,
       nome: nome.value,
-      dataNascimento: dataNascimento.value,
+      dataNascimento: dataBRParaISO(dataNascimento.value),
       sexo: sexo.value,
       telefone: telefone.value,
       endereco: endereco.value,
@@ -385,6 +422,13 @@ function formatarDataBR(dataISO) {
 
   return `${dia}/${mes}/${ano}`;
 }
+
+function dataBRParaISO(dataBR) {
+  if (!dataBR) return '';
+  const [dia, mes, ano] = dataBR.split('/');
+  return `${ano}-${mes}-${dia}`;
+}
+
 /* =========================
    LOGOUT
 ========================= */

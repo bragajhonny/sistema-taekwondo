@@ -146,61 +146,6 @@
 		  		window.location.href = 'index.html';
 			}
 
-	function verArquivos(pastaId, nomeAluno) {
-  document.getElementById('tituloModalArquivos').innerText =
-    `Arquivos de \n ${nomeAluno}`;
-
-  document.getElementById('conteudoArquivos').innerHTML =
-    'Carregando arquivos...';
-
-  document.getElementById('modalArquivos').style.display = 'block';
-
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: 'listarArquivosAluno',
-      pastaId: pastaId
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (res.status !== 'sucesso') {
-      document.getElementById('conteudoArquivos').innerHTML =
-        'Erro ao carregar arquivos.';
-      return;
-    }
-
-    if (res.dados.length === 0) {
-      document.getElementById('conteudoArquivos').innerHTML =
-        'Nenhum arquivo encontrado.';
-      return;
-    }
-
-    let html = '<ul>';
-
-    res.dados.forEach(a => {
-      const downloadUrl =
-        `https://drive.google.com/uc?export=download&id=${a.id}`;
-
-      html += `
-        <li>
-          📄 ${a.nome}<br>
-          <a href="${a.url}" target="_blank">Abrir</a> |
-          <a href="${downloadUrl}" target="_blank">Download</a>
-        </li><br>
-      `;
-    });
-
-    html += '</ul>';
-
-    document.getElementById('conteudoArquivos').innerHTML = html;
-  })
-  .catch(() => {
-    document.getElementById('conteudoArquivos').innerHTML =
-      'Erro ao carregar arquivos.';
-  });
-}
-
 function fecharModalArquivos() {
   document.getElementById('modalArquivos').style.display = 'none';
 }
@@ -275,22 +220,19 @@ function listarArquivos() {
   .then(r => r.json())
   .then(res => {
     if (res.status !== 'sucesso') {
-      document.getElementById('conteudoArquivos').innerText =
-        'Erro ao carregar arquivos';
+      document.getElementById('conteudoArquivos').innerText = 'Erro ao carregar arquivos';
       return;
     }
 
     if (res.dados.length === 0) {
-      document.getElementById('conteudoArquivos').innerText =
-        'Nenhum arquivo encontrado.';
+      document.getElementById('conteudoArquivos').innerText = 'Nenhum arquivo encontrado.';
       return;
     }
 
     let html = '<ul>';
 
     res.dados.forEach(a => {
-      const downloadUrl =
-        `https://drive.google.com/uc?export=download&id=${a.id}`;
+      const downloadUrl = `https://drive.google.com/uc?export=download&id=${a.id}`;
 
       html += `
         <li>
@@ -307,8 +249,7 @@ function listarArquivos() {
     document.getElementById('conteudoArquivos').innerHTML = html;
   })
   .catch(() => {
-    document.getElementById('conteudoArquivos').innerText =
-      'Erro ao carregar arquivos';
+    document.getElementById('conteudoArquivos').innerText = 'Erro ao carregar arquivos';
   });
 }
 
@@ -432,8 +373,7 @@ function formatarDataBR(dataISO) {
 
 			<!-- Upload -->
 			<div class="field">
-		      <input type="file" id="arquivoUpload" />
-				<input type="file" id="arquivoUpload" accept="image/*,application/pdf" capture/>
+				<input type="file" id="arquivoUpload">
 				<button class="button small" onclick="enviarArquivo()">Enviar arquivo</button>
     		</div>
     		<hr>
@@ -479,12 +419,13 @@ function formatarDataBR(dataISO) {
         <tr><td>Nome</td><td id="f_nome"></td></tr>
         <tr><td>Data de nascimento</td><td id="f_dataNascimento"></td></tr>
         <tr><td>Sexo</td><td id="f_sexo"></td></tr>
+		  <tr><td>Endereço</td><td id="f_endereco"></td></tr>
+		  <tr><td>E-mail</td><td id="f_email"></td></tr>
         <tr><td>Telefone</td><td id="f_telefone"></td></tr>
-        <tr><td>Endereço</td><td id="f_endereco"></td></tr>
         <tr><td>Tipo sanguíneo</td><td id="f_tipoSanguineo"></td></tr>
         <tr><td>RG</td><td id="f_rg"></td></tr>
         <tr><td>CPF</td><td id="f_cpf"></td></tr>
-        <tr><td>E-mail</td><td id="f_email"></td></tr>
+        
         <tr><td>Faixa</td><td id="f_faixa"></td></tr>
       </tbody>
     </table>

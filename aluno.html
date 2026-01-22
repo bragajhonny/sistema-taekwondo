@@ -468,13 +468,12 @@ document.getElementById('fotoPerfil').addEventListener('change', function(e){
     <input type="file" id="fotoPerfil" accept="image/*">
     <br><br>
     <img id="previewFoto" style="max-width:120px;border-radius:50%;display:none;">
-    <br><br>
+    <br>
     <button class="button small" onclick="enviarFotoPerfil()">Salvar foto</button>
 
     <hr>
 
     <h3>Trocar senha</h3>
-
     <div class="field">
       <label>Senha atual</label>
       <input type="password" id="senhaAtual" />
@@ -486,13 +485,13 @@ document.getElementById('fotoPerfil').addEventListener('change', function(e){
     </div>
 
     <br>
-    <button class="button primary" onclick="trocarSenha()">Salvar senha</button>
-    <button class="button" onclick="fecharModalTrocarSenha()">Cancelar</button>
+    <button class="button primary small" onclick="trocarSenha()">Salvar senha</button>
+    <button class="button small" onclick="fecharModalTrocarSenha()">Cancelar</button>
   </div>
 </div>
 
 
-		<!-- Modal Arquivos do Aluno -->
+<!-- Modal Arquivos do Aluno -->
 <div id="modalArquivos" class="modal">
   <div class="modal-content">
     <span class="close" onclick="fecharModalArquivos()">&times;</span>

@@ -121,7 +121,6 @@
    CONFIG
 ========================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycby6CB-_UFI2IxRqn7ACVTZPopEzrHEg2bIM7GqNvL_DUy5Tgrs4F8eZPiAnRPaXURCv7Q/exec';
-const usuario = JSON.parse(localStorage.getItem('usuario'));
 let pastaAtualId = '';
 
 /* =========================
@@ -165,7 +164,7 @@ function carregarAluno() {
     const a = res.dados;
 
     nome.value = a.nome || '';
-    dataNascimento.value = a.dataNascimento || '';
+    dataNascimento.value = formatarDataBR(a.dataNascimento);
     sexo.value = a.sexo || '';
     telefone.value = a.telefone || '';
     endereco.value = a.endereco || '';
@@ -369,6 +368,16 @@ function trocarSenha() {
   .then(res => alert(res.msg));
 }
 
+function formatarDataBR(dataISO) {
+  if (!dataISO) return '';
+
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+
+  return `${dia}/${mes}/${ano}`;
+}
 /* =========================
    LOGOUT
 ========================= */
@@ -376,6 +385,7 @@ function logout() {
   localStorage.removeItem('usuario');
   window.location.href = 'index.html';
 }
+	
 </script>
 
 <!-- Modal Trocar Senha e Foto -->

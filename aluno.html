@@ -186,51 +186,7 @@ function salvarDados() {
   });
 }
 
-	function logout() {
-  localStorage.removeItem('usuario');
-  window.location.href = 'index.html';
-}
-
-	function enviarArquivo() {
-  const input = document.getElementById('arquivoAluno');
-  const file = input.files[0];
-
-  if (!file) {
-    alert('Selecione um arquivo');
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = function () {
-    const base64 = reader.result.split(',')[1];
-
-    fetch(API_URL, {
-      method: 'POST',
-      body: new URLSearchParams({
-        acao: 'uploadArquivoAluno',
-        email: usuario.email,
-        nomeArquivo: file.name,
-        tipoArquivo: file.type,
-        conteudo: base64
-      })
-    })
-    .then(r => r.json())
-    .then(res => {
-      if (res.status === 'sucesso') {
-        alert('Arquivo enviado com sucesso');
-        input.value = '';
-      } else {
-        alert(res.msg);
-      }
-    })
-    .catch(() => alert('Erro ao enviar arquivo'));
-  };
-
-  reader.readAsDataURL(file);
-}
-
-	function abrirModalTrocarSenha() {
+function abrirModalTrocarSenha() {
   document.getElementById('senhaAtual').value = '';
   document.getElementById('novaSenha').value = '';
   document.getElementById('modalTrocarSenha').style.display = 'block';
@@ -400,17 +356,22 @@ function enviarArquivo() {
   .catch(() => alert('Erro ao excluir arquivo'));
 }
 
-document.getElementById('fotoPerfil').addEventListener('change', function(e){
-  const file = e.target.files[0];
-  if (!file) return;
+document.addEventListener('DOMContentLoaded', function () {
+  const inputFoto = document.getElementById('fotoPerfil');
+  if (!inputFoto) return;
 
-  const reader = new FileReader();
-  reader.onload = function(){
-    const img = document.getElementById('previewFoto');
-    img.src = reader.result;
-    img.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+  inputFoto.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      const img = document.getElementById('previewFoto');
+      img.src = reader.result;
+      img.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
 });
 
 function enviarFotoPerfil() {

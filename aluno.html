@@ -99,7 +99,9 @@
 				<ul class="actions">
 					<li><input type="button" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
 					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveAluno, '_blank')" /></li>
-					<li><input type="button" value="Meus arquivos" onclick="abrirModalArquivosAluno()" /> </li>
+					<li><input type="button" value="Documentos" onclick="abrirModalArquivosAluno()" /> </li>
+					<li><input type="file" id="foto" accept="image/*"></li>
+					<li><img id="preview" style="max-width:120px;border-radius:50%;"></li>
 				</ul>
 			</div>
 		</div>
@@ -112,7 +114,7 @@
 			<script src="assets/js/main.js"></script>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbzL-sRRzx9hKIfCY6k95Fcic9XV2sXoOV8xXoXvPb-BP7Do0pKv-IL6hI58MlidXAEyJw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzDViYiAonVM4EgCcg2CJWfqqYcVGCdE0EQik6PiP0-e_yU-dlkUc59QypLyY3V6nqe1w/exec';
 
 fetch(API_URL, {
   method: 'POST',
@@ -293,7 +295,7 @@ function fecharModalArquivos() {
   document.getElementById('modalArquivos').style.display = 'none';
 }
 
-	function listarArquivos() {
+function listarArquivos() {
   document.getElementById('conteudoArquivos').innerHTML = 'Carregando...';
 
   fetch(API_URL, {
@@ -306,14 +308,12 @@ function fecharModalArquivos() {
   .then(r => r.json())
   .then(res => {
     if (res.status !== 'sucesso') {
-      document.getElementById('conteudoArquivos').innerText =
-        'Erro ao carregar arquivos';
+      document.getElementById('conteudoArquivos').innerText = 'Erro ao carregar arquivos';
       return;
     }
 
     if (res.dados.length === 0) {
-      document.getElementById('conteudoArquivos').innerText =
-        'Nenhum arquivo enviado.';
+      document.getElementById('conteudoArquivos').innerText = 'Nenhum arquivo enviado.';
       return;
     }
 
@@ -338,12 +338,11 @@ function fecharModalArquivos() {
     document.getElementById('conteudoArquivos').innerHTML = html;
   })
   .catch(() => {
-    document.getElementById('conteudoArquivos').innerText =
-      'Erro ao carregar arquivos';
+    document.getElementById('conteudoArquivos').innerText = 'Erro ao carregar arquivos';
   });
 }
 
-	function enviarArquivo() {
+function enviarArquivo() {
   const input = document.getElementById('arquivoUpload');
   const file = input.files[0];
 
@@ -403,6 +402,16 @@ function fecharModalArquivos() {
   .catch(() => alert('Erro ao excluir arquivo'));
 }
 
+	document.getElementById('foto').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(){
+    document.getElementById('preview').src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
 	
 </script>
 

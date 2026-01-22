@@ -51,6 +51,11 @@
 		<div id="main">
 			<div class="inner">
 				<h1>Painel do Aluno</h1>
+				<div class="perfil-aluno">
+				  <img id="fotoTopoAluno" src="images/avatar-default.png" alt="Foto do aluno">
+				  <h3 id="nomeTopoAluno"></h3>
+				</div>
+
 						
 				<table>
 					<tbody>
@@ -172,9 +177,17 @@ function carregarAluno() {
 
     window.pastaDriveAluno = a.pastaDrive || '';
 
-    if (a.fotoPerfil) {
-      previewFotoBase64(a.fotoPerfil);
-    }
+    // FOTO NO TOPO
+	const fotoTopo = document.getElementById('fotoTopoAluno');
+	const nomeTopo = document.getElementById('nomeTopoAluno');
+	
+	nomeTopo.innerText = a.nome || '';
+	
+	if (a.fotoPerfil) {
+	  fotoTopo.src = a.fotoPerfil;
+	  previewFotoBase64(a.fotoPerfil);
+	}
+
   })
   .catch(() => alert('Erro ao carregar dados do aluno'));
 }

@@ -225,9 +225,16 @@ function previewFoto(e) {
 }
 
 function previewFotoBase64(base64) {
-  const img = document.getElementById('previewFoto');
-  img.src = base64;
-  img.style.display = 'block';
+  const imgModal = document.getElementById('previewFoto');
+  if (imgModal) {
+    imgModal.src = base64;
+    imgModal.style.display = 'block';
+  }
+
+  const imgTopo = document.getElementById('fotoTopoAluno');
+  if (imgTopo) {
+    imgTopo.src = base64;
+  }
 }
 
 function enviarFotoPerfil() {

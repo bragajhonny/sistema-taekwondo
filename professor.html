@@ -94,7 +94,7 @@
 			
 			    tr.innerHTML = `
 				  <td>${a.nome}</td>
-				  <td>${a.email}</td>
+				  <td>${a.telefone}</td>
 				  <td>
 					  <select onchange="salvarFaixa('${a.idAluno}', this.value)">
 					    <option value="">-</option>
@@ -201,7 +201,7 @@ function abrirModalArquivosProfessor(pastaId, nomeAluno, emailAluno) {
   pastaAtualId = pastaId;
   emailAlunoAtual = emailAluno;
 
-  document.getElementById('tituloModalArquivos').innerText = `Arquivos de ${nomeAluno}`;
+  document.getElementById('tituloModalArquivos').innerText = `Arquivos de \n ${nomeAluno}`;
 
   document.getElementById('modalArquivos').style.display = 'block';
   listarArquivos();

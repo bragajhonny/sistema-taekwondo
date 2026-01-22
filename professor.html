@@ -205,8 +205,7 @@ function fecharModalArquivos() {
   document.getElementById('modalArquivos').style.display = 'none';
 }
 
-
-				function abrirModalTrocarSenha() {
+function abrirModalTrocarSenha() {
   document.getElementById('senhaAtual').value = '';
   document.getElementById('novaSenha').value = '';
   document.getElementById('modalTrocarSenha').style.display = 'block';
@@ -257,8 +256,7 @@ function abrirModalArquivosProfessor(pastaId, nomeAluno, emailAluno) {
   pastaAtualId = pastaId;
   emailAlunoAtual = emailAluno;
 
-  document.getElementById('tituloModalArquivos').innerText =
-    `Arquivos de ${nomeAluno}`;
+  document.getElementById('tituloModalArquivos').innerText = `Arquivos de ${nomeAluno}`;
 
   document.getElementById('modalArquivos').style.display = 'block';
   listarArquivos();
@@ -425,27 +423,25 @@ function formatarDataBR(dataISO) {
 				
 		</script>
 
-<!-- Modal Arquivos -->
-<div id="modalArquivos" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="fecharModalArquivos()">&times;</span>
+	<!-- Modal Arquivos -->
+	<div id="modalArquivos" class="modal">
+		<div class="modal-content">
+			<span class="close" onclick="fecharModalArquivos()">&times;</span>
 
-    <h2 id="tituloModalArquivos">Arquivos</h2>
+			<h2 id="tituloModalArquivos">Arquivos</h2>
 
-    <!-- Upload -->
-    <div class="field">
-      <input type="file" id="arquivoUpload" />
-      <button class="button small" onclick="enviarArquivo()">Enviar arquivo</button>
-    </div>
-
-    <hr>
-
-    <div id="conteudoArquivos">Carregando arquivos...</div>
-
-    <br>
-    <button class="button" onclick="fecharModalArquivos()">Fechar</button>
-  </div>
-</div>
+			<!-- Upload -->
+			<div class="field">
+		      <input type="file" id="arquivoUpload" />
+				<input type="file" id="arquivoUpload" accept="image/*,application/pdf" capture/>
+				<button class="button small" onclick="enviarArquivo()">Enviar arquivo</button>
+    		</div>
+    		<hr>
+    		<div id="conteudoArquivos">Carregando arquivos...</div>
+    		<br>
+    		<button class="button small" onclick="fecharModalArquivos()">Fechar</button>
+		</div>
+	</div>
 
 
 			<!-- Modal Trocar Senha -->
@@ -494,7 +490,7 @@ function formatarDataBR(dataISO) {
     </table>
 
     <br>
-    <button class="button" onclick="fecharFichaAluno()">Fechar</button>
+    <button class="button small" onclick="fecharFichaAluno()">Fechar</button>
 
   </div>
 </div>

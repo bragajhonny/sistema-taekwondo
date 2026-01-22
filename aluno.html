@@ -148,15 +148,6 @@ document.addEventListener('DOMContentLoaded', initAluno);
 function initAluno() {
   carregarAluno();
   configurarEventos();
-
-const fotoTopo = document.getElementById('fotoTopoAluno');
-
-if (a.fotoPerfil) {
-  fotoTopo.src = a.fotoPerfil;
-} else {
-  fotoTopo.src = 'images/foto-padrao.png';
-}
-
 }
 
 /* =========================
@@ -216,8 +207,10 @@ function carregarAluno() {
 	
 	if (a.fotoPerfil) {
 	  fotoTopo.src = a.fotoPerfil;
-	  previewFotoBase64(a.fotoPerfil);
+	} else {
+	  fotoTopo.src = 'images/foto-padrao.png';
 	}
+
 
   })
   .catch(() => alert('Erro ao carregar dados do aluno'));

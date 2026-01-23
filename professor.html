@@ -43,6 +43,11 @@
 			<!-- Main -->
 			<div id="main">
 				<div class="inner">
+					<h1>Painel do professor</h1>
+					<div class="perfil-professor">
+					  <img id="fotoTopoProfessor" src="images/avatar-default.png">
+					  <h3 id="nomeTopoProfessor"></h3>
+					</div>
 					<h1>Alunos cadastrados</h1>
 					<table>
         					<thead>
@@ -71,8 +76,38 @@
 			if (!usuario || usuario.tipo !== 'professor') {
 			  window.location.href = 'index.html';
 			}
+			fetch(API_URL, {
+				method: 'POST',
+				body: new URLSearchParams({
+				acao: 'login',
+				email: usuario.email,
+				senha: usuario.senha || ''
+			})
+		});
+
+				fetch(API_URL, {
+				  method: 'POST',
+				  body: new URLSearchParams({
+				    acao: 'buscarUsuario',
+				    email: usuario.email
+				  })
+				})
+				.then(r => r.json())
+				.then(res => {
+				  if (res.status !== 'sucesso') return;
+				
+				  const u = res.dados;
+				
+				  document.getElementById('nomeTopoProfessor').innerText = u.nome;
+				
+				  if (u.fotoPerfil) {
+				    document.getElementById('fotoTopoProfessor').src =
+				      `https://drive.google.com/thumbnail?id=${u.fotoPerfil}&sz=w300`;
+				  }
+				});
+
 			
-			const API_URL = 'https://script.google.com/macros/s/AKfycbzr1bPis1W1mGdoDrQEzsUmi4EIz9tz2HTDUY738Brl0o08dZM4cFFFNxEpU5l5kcqG4Q/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbzdylQFKMpqdFz02j6KQUQwr8u9gv7ZbPAti4VpTKiWaeeiPfgXH7LReOx-qOOfPEVvAg/exec';
 			
 			fetch(API_URL, {
 			  method: 'POST',

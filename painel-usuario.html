@@ -30,9 +30,7 @@
   <!-- MENU -->
   <nav id="menu">
     <h2>Menu</h2>
-    <ul id="menuLinks">
-      <!-- links inseridos via JS -->
-    </ul>
+    <ul id="menuLinks"></ul>
     <input type="button" value="Sair" class="primary" onclick="logout()" />
   </nav>
 
@@ -41,9 +39,11 @@
     <div class="inner">
 
       <!-- PERFIL -->
-      <section class="perfil-aluno" style="text-align:center">
-        <img id="fotoPerfil" src="images/foto-padrao.png"
+      <section style="text-align:center">
+        <img id="fotoPerfil"
+             src="images/foto-padrao.png"
              style="width:120px;height:120px;border-radius:50%;object-fit:cover" />
+
         <h2 id="nomeUsuario">Carregando...</h2>
         <p id="tipoUsuario" style="opacity:.7"></p>
       </section>
@@ -52,47 +52,20 @@
 
       <!-- FICHA -->
       <section>
-        <h3>Ficha do Usuário</h3>
+        <h3>Ficha cadastral</h3>
 
         <table>
           <tbody>
-            <tr>
-              <td>Nome</td>
-              <td><input type="text" id="nome"></td>
-            </tr>
-            <tr>
-              <td>Data de nascimento</td>
-              <td><input type="text" id="dataNascimento"></td>
-            </tr>
-            <tr>
-              <td>Sexo</td>
-              <td><input type="text" id="sexo"></td>
-            </tr>
-            <tr>
-              <td>Telefone</td>
-              <td><input type="text" id="telefone"></td>
-            </tr>
-            <tr>
-              <td>Endereço</td>
-              <td><input type="text" id="endereco"></td>
-            </tr>
-            <tr>
-              <td>Tipo sanguíneo</td>
-              <td><input type="text" id="tipoSanguineo"></td>
-            </tr>
-            <tr>
-              <td>E-mail</td>
-              <td><input type="email" id="email" disabled></td>
-            </tr>
+            <tr><td>Nome</td><td id="f_nome"></td></tr>
+            <tr><td>Data de nascimento</td><td id="f_dataNascimento"></td></tr>
+            <tr><td>Sexo</td><td id="f_sexo"></td></tr>
+            <tr><td>Telefone</td><td id="f_telefone"></td></tr>
+            <tr><td>Endereço</td><td id="f_endereco"></td></tr>
+            <tr><td>Tipo sanguíneo</td><td id="f_tipoSanguineo"></td></tr>
+            <tr><td>E-mail</td><td id="f_email"></td></tr>
+            <tr id="linhaFaixa"><td>Faixa</td><td id="f_faixa"></td></tr>
           </tbody>
         </table>
-
-        <ul class="actions">
-          <li>
-            <input type="button" value="Salvar alterações"
-                   class="primary" onclick="salvarDados()" />
-          </li>
-        </ul>
       </section>
 
     </div>
@@ -111,7 +84,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'SUA_URL_DO_APPS_SCRIPT_AQUI';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzdylQFKMpqdFz02j6KQUQwr8u9gv7ZbPAti4VpTKiWaeeiPfgXH7LReOx-qOOfPEVvAg/exec';
 
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 if (!usuario) {
@@ -127,15 +100,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================
-   MENU
+   MENU DINÂMICO
 ========================= */
 function configurarMenu() {
   const menu = document.getElementById('menuLinks');
 
   menu.innerHTML = `
     <li><a href="painel-usuario.html">Meu perfil</a></li>
-    <li><a href="historico-aluno.html">Histórico</a></li>
   `;
+
+  if (usuario.tipo === 'aluno') {
+    menu.innerHTML += `
+      <li><a href="historico-aluno.html">Histórico de presença</a></li>
+    `;
+  }
 
   if (usuario.tipo === 'professor') {
     menu.innerHTML += `
@@ -146,7 +124,7 @@ function configurarMenu() {
 }
 
 /* =========================
-   CARREGAR USUÁRIO
+   CARREGAR DADOS
 ========================= */
 function carregarUsuario() {
   fetch(API_URL, {
@@ -167,38 +145,26 @@ function carregarUsuario() {
 
     nomeUsuario.innerText = u.nome || '';
     tipoUsuario.innerText = usuario.tipo.toUpperCase();
-    nome.value = u.nome || '';
-    dataNascimento.value = u.dataNascimento || '';
-    sexo.value = u.sexo || '';
-    telefone.value = u.telefone || '';
-    endereco.value = u.endereco || '';
-    tipoSanguineo.value = u.tipoSanguineo || '';
-    email.value = u.email || '';
+
+    document.getElementById('f_nome').innerText = u.nome || '-';
+    document.getElementById('f_dataNascimento').innerText = formatarDataBR(u.dataNascimento);
+    document.getElementById('f_sexo').innerText = u.sexo || '-';
+    document.getElementById('f_telefone').innerText = u.telefone || '-';
+    document.getElementById('f_endereco').innerText = u.endereco || '-';
+    document.getElementById('f_tipoSanguineo').innerText = u.tipoSanguineo || '-';
+    document.getElementById('f_email').innerText = u.email || '-';
+
+    if (usuario.tipo === 'aluno') {
+      document.getElementById('f_faixa').innerText = u.faixa || '-';
+    } else {
+      document.getElementById('linhaFaixa').style.display = 'none';
+    }
 
     if (u.fotoPerfil) {
       fotoPerfil.src = linkDriveParaImagem(u.fotoPerfil);
     }
   })
   .catch(() => alert('Erro ao carregar perfil'));
-}
-
-/* =========================
-   SALVAR
-========================= */
-function salvarDados() {
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: 'atualizarUsuario',
-      tipo: usuario.tipo,
-      email: usuario.email,
-      nome: nome.value,
-      telefone: telefone.value,
-      endereco: endereco.value
-    })
-  })
-  .then(r => r.json())
-  .then(res => alert(res.msg || 'Dados salvos'));
 }
 
 /* =========================
@@ -209,6 +175,12 @@ function linkDriveParaImagem(url) {
   return match
     ? `https://drive.google.com/uc?export=view&id=${match[0]}`
     : 'images/foto-padrao.png';
+}
+
+function formatarDataBR(dataISO) {
+  if (!dataISO) return '-';
+  const d = new Date(dataISO);
+  return d.toLocaleDateString('pt-BR');
 }
 
 /* =========================

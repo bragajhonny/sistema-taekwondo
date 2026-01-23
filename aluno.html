@@ -52,7 +52,7 @@
 			<div class="inner">
 				<h1>Painel do Aluno</h1>
 				<div class="perfil-aluno">
-				  <img id="fotoTopoAluno" alt="Foto do aluno">
+				  <img id="fotoTopoAluno" alt="Foto do aluno" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
 				  <h3 id="nomeTopoAluno"></h3>
 				</div>
 
@@ -168,25 +168,26 @@ function configurarEventos() {
 function linkDriveParaImagem(idOuUrl) {
   if (!idOuUrl) return '';
 
-  // Se já for só o ID
-  if (!idOuUrl.startsWith('http')) {
-    return `https://drive.google.com/uc?export=view&id=${idOuUrl}`;
+  let id = idOuUrl;
+
+  // Se vier URL completa, extrai o ID
+  if (idOuUrl.startsWith('http')) {
+    const match = idOuUrl.match(/[-\w]{25,}/);
+    if (!match) return '';
+    id = match[0];
   }
 
-  // Se for URL completa
-  const match = idOuUrl.match(/[-\w]{25,}/);
-  if (!match) return '';
-
-  return `https://drive.google.com/uc?export=view&id=${match[0]}`;
+  // Usa thumbnail do Drive (mais confiável para <img>)
+  return `https://drive.google.com/thumbnail?id=${id}&sz=w300`;
 }
-
-
-
 
 /* =========================
    ALUNO
 ========================= */
 function carregarAluno() {
+	console.log('fotoPerfil (Sheets):', a.fotoPerfil);
+	console.log('img final:', linkDriveParaImagem(a.fotoPerfil));
+
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({

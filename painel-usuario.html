@@ -1,0 +1,224 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Painel do Usuário - CT Gerivaldo Silva</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+
+<body class="is-preload">
+<div id="wrapper">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="inner">
+      <a href="painel-usuario.html" class="logo">
+        <span class="symbol"><img src="images/logo.svg" alt="" /></span>
+        <span class="title">CT Gerivaldo Silva</span>
+      </a>
+    </div>
+
+    <nav>
+      <ul>
+        <li><a href="#menu">Menu</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- MENU -->
+  <nav id="menu">
+    <h2>Menu</h2>
+    <ul id="menuLinks">
+      <!-- links inseridos via JS -->
+    </ul>
+    <input type="button" value="Sair" class="primary" onclick="logout()" />
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div class="inner">
+
+      <!-- PERFIL -->
+      <section class="perfil-aluno" style="text-align:center">
+        <img id="fotoPerfil" src="images/foto-padrao.png"
+             style="width:120px;height:120px;border-radius:50%;object-fit:cover" />
+        <h2 id="nomeUsuario">Carregando...</h2>
+        <p id="tipoUsuario" style="opacity:.7"></p>
+      </section>
+
+      <hr>
+
+      <!-- FICHA -->
+      <section>
+        <h3>Ficha do Usuário</h3>
+
+        <table>
+          <tbody>
+            <tr>
+              <td>Nome</td>
+              <td><input type="text" id="nome"></td>
+            </tr>
+            <tr>
+              <td>Data de nascimento</td>
+              <td><input type="text" id="dataNascimento"></td>
+            </tr>
+            <tr>
+              <td>Sexo</td>
+              <td><input type="text" id="sexo"></td>
+            </tr>
+            <tr>
+              <td>Telefone</td>
+              <td><input type="text" id="telefone"></td>
+            </tr>
+            <tr>
+              <td>Endereço</td>
+              <td><input type="text" id="endereco"></td>
+            </tr>
+            <tr>
+              <td>Tipo sanguíneo</td>
+              <td><input type="text" id="tipoSanguineo"></td>
+            </tr>
+            <tr>
+              <td>E-mail</td>
+              <td><input type="email" id="email" disabled></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ul class="actions">
+          <li>
+            <input type="button" value="Salvar alterações"
+                   class="primary" onclick="salvarDados()" />
+          </li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- SCRIPTS BASE -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+
+<script>
+/* =========================
+   CONFIG
+========================= */
+const API_URL = 'SUA_URL_DO_APPS_SCRIPT_AQUI';
+
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+if (!usuario) {
+  window.location.href = 'index.html';
+}
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener('DOMContentLoaded', () => {
+  configurarMenu();
+  carregarUsuario();
+});
+
+/* =========================
+   MENU
+========================= */
+function configurarMenu() {
+  const menu = document.getElementById('menuLinks');
+
+  menu.innerHTML = `
+    <li><a href="painel-usuario.html">Meu perfil</a></li>
+    <li><a href="historico-aluno.html">Histórico</a></li>
+  `;
+
+  if (usuario.tipo === 'professor') {
+    menu.innerHTML += `
+      <li><a href="presenca.html">Presença</a></li>
+      <li><a href="alunos.html">Alunos</a></li>
+    `;
+  }
+}
+
+/* =========================
+   CARREGAR USUÁRIO
+========================= */
+function carregarUsuario() {
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: usuario.tipo === 'professor' ? 'buscarProfessor' : 'buscarAluno',
+      email: usuario.email
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status !== 'sucesso') {
+      alert(res.msg);
+      return;
+    }
+
+    const u = res.dados;
+
+    nomeUsuario.innerText = u.nome || '';
+    tipoUsuario.innerText = usuario.tipo.toUpperCase();
+    nome.value = u.nome || '';
+    dataNascimento.value = u.dataNascimento || '';
+    sexo.value = u.sexo || '';
+    telefone.value = u.telefone || '';
+    endereco.value = u.endereco || '';
+    tipoSanguineo.value = u.tipoSanguineo || '';
+    email.value = u.email || '';
+
+    if (u.fotoPerfil) {
+      fotoPerfil.src = linkDriveParaImagem(u.fotoPerfil);
+    }
+  })
+  .catch(() => alert('Erro ao carregar perfil'));
+}
+
+/* =========================
+   SALVAR
+========================= */
+function salvarDados() {
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'atualizarUsuario',
+      tipo: usuario.tipo,
+      email: usuario.email,
+      nome: nome.value,
+      telefone: telefone.value,
+      endereco: endereco.value
+    })
+  })
+  .then(r => r.json())
+  .then(res => alert(res.msg || 'Dados salvos'));
+}
+
+/* =========================
+   UTIL
+========================= */
+function linkDriveParaImagem(url) {
+  const match = url.match(/[-\w]{25,}/);
+  return match
+    ? `https://drive.google.com/uc?export=view&id=${match[0]}`
+    : 'images/foto-padrao.png';
+}
+
+/* =========================
+   LOGOUT
+========================= */
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'index.html';
+}
+</script>
+
+</body>
+</html>

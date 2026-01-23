@@ -45,7 +45,6 @@
              style="width:120px;height:120px;border-radius:50%;object-fit:cover" />
 
         <h2 id="nomeUsuario">Carregando...</h2>
-        <p id="tipoUsuario" style="opacity:.7"></p>
       </section>
 
       <hr>
@@ -140,7 +139,6 @@ function carregarUsuario() {
     const u = res.dados;
 
     nomeUsuario.innerText = u.nome || '';
-    tipoUsuario.innerText = usuario.tipo === 'professor' ? 'Professor' : 'Aluno';
 
     document.getElementById('f_nome').innerText = u.nome || '-';
     document.getElementById('f_dataNascimento').innerText = formatarDataBR(u.dataNascimento);
@@ -157,8 +155,9 @@ function carregarUsuario() {
     }
 
     if (u.fotoPerfil) {
-      fotoPerfil.src = linkDriveParaImagem(u.fotoPerfil);
+      document.getElementById('fotoPerfil').src = linkDriveParaImagem(u.fotoPerfil);
     }
+
   })
   .catch(() => alert('Erro ao carregar perfil'));
 }
@@ -166,11 +165,25 @@ function carregarUsuario() {
 /* =========================
    UTIL
 ========================= */
-function linkDriveParaImagem(url) {
-  const match = url.match(/[-\w]{25,}/);
-  return match
-    ? `https://drive.google.com/uc?export=view&id=${match[0]}`
-    : 'images/foto-padrao.png';
+function linkDriveParaImagem(valor) {
+  if (!valor) return 'images/foto-padrao.png';
+
+  // Se já for um link direto
+  if (valor.startsWith('http')) {
+    // tenta extrair ID
+    const match = valor.match(/[-\w]{25,}/);
+    if (match) {
+      return `https://drive.google.com/uc?export=view&id=${match[0]}`;
+    }
+    return valor;
+  }
+
+  // Se for apenas o ID
+  if (valor.length > 20) {
+    return `https://drive.google.com/uc?export=view&id=${valor}`;
+  }
+
+  return 'images/foto-padrao.png';
 }
 
 function formatarDataBR(dataISO) {

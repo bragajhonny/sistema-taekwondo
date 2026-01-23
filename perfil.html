@@ -14,7 +14,7 @@
   <!-- HEADER -->
   <header id="header">
     <div class="inner">
-      <a href="painel-usuario.html" class="logo">
+      <a href="perfil.html" class="logo">
         <span class="symbol"><img src="images/logo.svg" alt="" /></span>
         <span class="title">CT Gerivaldo Silva</span>
       </a>
@@ -104,21 +104,17 @@ document.addEventListener('DOMContentLoaded', () => {
 ========================= */
 function configurarMenu() {
   const menu = document.getElementById('menuLinks');
+  menu.innerHTML = '';
 
-  menu.innerHTML = `
-    <li><a href="painel-usuario.html">Meu perfil</a></li>
-  `;
+  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
 
   if (usuario.tipo === 'aluno') {
-    menu.innerHTML += `
-      <li><a href="historico-aluno.html">Histórico de presença</a></li>
-    `;
+    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
   }
 
   if (usuario.tipo === 'professor') {
-    menu.innerHTML += `
-      <li><a href="presenca.html">Presença</a></li>
-      <li><a href="alunos.html">Alunos</a></li>
+    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+    <li><a href="alunos.html">Alunos</a></li>
     `;
   }
 }
@@ -144,7 +140,7 @@ function carregarUsuario() {
     const u = res.dados;
 
     nomeUsuario.innerText = u.nome || '';
-    tipoUsuario.innerText = usuario.tipo.toUpperCase();
+    tipoUsuario.innerText = usuario.tipo === 'professor' ? 'Professor' : 'Aluno';
 
     document.getElementById('f_nome').innerText = u.nome || '-';
     document.getElementById('f_dataNascimento').innerText = formatarDataBR(u.dataNascimento);

@@ -120,7 +120,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbwjK_OWQlJqp_mmNgvR6OSeWPQysNIakJtPWV366oSGvsUtDj0OrHB_hPIYUqxpanlW_Q/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzftCg1I71A3yXX8oFiG0b5mpA8uvVu4L80zysEgtGBbOfJ0aNFtKXZeH1LvoZFglpBMA/exec';
 let pastaAtualId = '';
 
 	function mascaraData(input) {
@@ -165,14 +165,21 @@ function configurarEventos() {
   }
 }
 
-function linkDriveParaImagem(url) {
-  if (!url) return '';
+function linkDriveParaImagem(idOuUrl) {
+  if (!idOuUrl) return '';
 
-  const match = url.match(/[-\w]{25,}/);
+  // Se já for só o ID
+  if (!idOuUrl.startsWith('http')) {
+    return `https://drive.google.com/uc?export=view&id=${idOuUrl}`;
+  }
+
+  // Se for URL completa
+  const match = idOuUrl.match(/[-\w]{25,}/);
   if (!match) return '';
 
   return `https://drive.google.com/uc?export=view&id=${match[0]}`;
 }
+
 
 
 
@@ -216,10 +223,11 @@ function carregarAluno() {
 	nomeTopo.innerText = a.nome || '';
 	
 	if (a.fotoPerfil) {
-  fotoTopo.src = linkDriveParaImagem(a.fotoPerfil);
-} else {
-  fotoTopo.src = 'images/foto-padrao.png';
-}
+		const img = linkDriveParaImagem(a.fotoPerfil);
+		fotoTopo.src = img || 'images/foto-padrao.png';
+	} else {
+		fotoTopo.src = 'images/foto-padrao.png';
+	}
 
   })
   .catch(() => alert('Erro ao carregar dados do aluno'));

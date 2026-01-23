@@ -6,11 +6,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-<!-- 
-		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
--->
 	</head>
 
 	<body class="is-preload">
@@ -55,99 +50,40 @@
 		<script src="assets/js/util.js"></script>
 		<script src="assets/js/main.js"></script>
 
-
-<script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxHkuMDuZuqciXCKjBcl6jTF_rZFT5PoTN6P71O_cqYMNKeK6qmo6ZLYGgVLO5vtx5y9Q/exec';
-
-function login() {
-  const email = document.getElementById('email').value;
-  const senha = document.getElementById('senha').value;
-
-  const formData = new FormData();
-  formData.append('acao', 'login');
-  formData.append('email', email);
-  formData.append('senha', senha);
-
-  fetch(API_URL, {
-    method: 'POST',
-    body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === 'sucesso') {
-      localStorage.setItem('usuario', JSON.stringify(data.dados));
-
-      if (data.dados.tipo === 'professor') {
-        window.location.href = 'professor.html';
-      } else {
-        window.location.href = 'aluno.html';
-      }
-    } else {
-      alert(data.msg);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('Erro ao conectar com o servidor');
-  });
-}
-
-</script>
-
-
-
-		
-<!-- <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDTcmFtCpgb-krAJ6OniJSXIXnkoxGzWF4",
-      authDomain: "sistema-taekwondo-1.firebaseapp.com",
-      projectId: "sistema-taekwondo-1",
-      messagingSenderId: "635745416768",
-      appId: "1:635745416768:web:58d23eca722878f047d1a5"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    function login() {
-      const email = document.getElementById("email").value.trim();
-      const senha = document.getElementById("senha").value.trim();
-
-      if (!email || !senha) {
-        alert("Preencha email e senha");
-        return;
-      }
-
-      auth.signInWithEmailAndPassword(email, senha)
-        .then(cred => {
-          return db.collection("alunos").doc(cred.user.uid).get();
-        })
-        .then(doc => {
-          if (!doc.exists) {
-            alert("Perfil não encontrado");
-            auth.signOut();
-            return;
-          }
-
-          const dados = doc.data();
-
-          if (dados.perfil === "professor") {
-            window.location.href = "professor.html";
-          } else {
-            window.location.href = "aluno.html";
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Email ou senha inválidos");
-        });
-    }
-  </script> -->
-
+		<script>
+			const API_URL = 'https://script.google.com/macros/s/AKfycbzdylQFKMpqdFz02j6KQUQwr8u9gv7ZbPAti4VpTKiWaeeiPfgXH7LReOx-qOOfPEVvAg/exec';
+			
+			function login() {
+				const email = document.getElementById('email').value;
+				const senha = document.getElementById('senha').value;
+				
+				const formData = new FormData();
+				formData.append('acao', 'login');
+				formData.append('email', email);
+				formData.append('senha', senha);
+				
+				fetch(API_URL, {
+					method: 'POST',
+					body: formData
+				})
+				.then(res => res.json())
+				.then(data => {
+				if (data.status === 'sucesso') {
+					localStorage.setItem('usuario', JSON.stringify(data.dados));
+					window.location.href = 'perfil.html';
+				} else {
+					alert(data.msg);
+				}
+				})
+				.catch(err => {
+				console.error(err);
+				alert('Erro ao conectar com o servidor');
+				});
+			}
+		</script>
 	</body>
 </html>
+
 
 
 

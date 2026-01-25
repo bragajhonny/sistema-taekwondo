@@ -1,37 +1,35 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-  <title>Painel do Usuário - CT Gerivaldo Silva</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <link rel="stylesheet" href="assets/css/main.css" />
-  <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-</head>
-
+  <head>
+		<title>Painel do usuário - CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+  
 <body class="is-preload">
-<div id="wrapper">
-
-  <!-- HEADER -->
-  <header id="header">
-    <div class="inner">
-      <a href="perfil.html" class="logo">
-        <span class="symbol"><img src="images/logo.svg" alt="" /></span>
-        <span class="title">CT Gerivaldo Silva</span>
-      </a>
-    </div>
-
-    <nav>
-      <ul>
-        <li><a href="#menu">Menu</a></li>
-      </ul>
+  <div id="wrapper">
+    <header id="header">
+      <div class="inner">
+        <a href="perfil.html" class="logo">
+          <span class="symbol"><img src="images/logo.svg" alt="" /></span>
+          <span class="title">CT Gerivaldo Silva</span>
+        </a>
+      </div>
+      
+      <nav>
+        <ul>
+          <li><a href="#menu">Menu</a></li>
+        </ul>
     </nav>
-  </header>
+    </header>
 
   <!-- MENU -->
   <nav id="menu">
     <h2>Menu</h2>
     <ul id="menuLinks"></ul>
-    <li><a href="editar-dados.html">Editar dados</a></li>
+    
     <input type="button" value="Sair" class="primary" onclick="logout()" />
   </nav>
 
@@ -107,7 +105,7 @@ function configurarMenu() {
   menu.innerHTML = '';
 
   menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-
+  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
   if (usuario.tipo === 'aluno') {
     menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
   }

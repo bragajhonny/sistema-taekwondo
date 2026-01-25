@@ -261,11 +261,10 @@
 			}
 			
 			function salvarDados() {
-				if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataNascimento.value)) {
-  					alert('Data de nascimento inválida');
-  					return;
+				if (dataNascimento.value.length !== 10) {
+			  		alert('Data de nascimento inválida');
+				  return;
 				}
-			}
 			
 			  fetch(API_URL, {
 			    method: 'POST',
@@ -294,14 +293,12 @@
 			  const file = e.target.files[0];
 			  if (!file) return;
 			
-			  if (!file.type.startsWith('image/')) {
-			    alert('Selecione uma imagem válida');
-			    return;
-			  }
-			
 			  const reader = new FileReader();
 			  reader.onload = () => {
+			    // Preview imediato
 			    fotoTopoUsuario.src = reader.result;
+			
+			    // Envia para o servidor
 			    enviarFotoPerfil(reader.result);
 			  };
 			  reader.readAsDataURL(file);
@@ -429,47 +426,19 @@
 			}
 			
 			function trocarSenha() {
-			  const atual = senhaAtual.value.trim();
-			  const nova = novaSenha.value.trim();
-			  const confirmar = confirmarNovaSenha.value.trim();
-			
-			  if (!atual || !nova || !confirmar) {
-			    alert('Preencha todos os campos de senha');
-			    return;
-			  }
-			
-			  if (nova.length < 4) {
-			    alert('A nova senha deve ter pelo menos 4 caracteres');
-			    return;
-			  }
-			
-			  if (nova !== confirmar) {
-			    alert('A confirmação da senha não confere');
-			    return;
-			  }
-			
 			  fetch(API_URL, {
 			    method: 'POST',
 			    body: new URLSearchParams({
 			      acao: 'trocarSenha',
 			      email: usuario.email,
-			      senhaAtual: atual,
-			      novaSenha: nova
+			      senhaAtual: senhaAtual.value,
+			      novaSenha: novaSenha.value
 			    })
 			  })
 			  .then(r => r.json())
-			  .then(res => {
-			    alert(res.msg);
-			
-			    if (res.status === 'sucesso') {
-			      senhaAtual.value = '';
-			      novaSenha.value = '';
-			      confirmarNovaSenha.value = '';
-			    }
-			  })
-			  .catch(() => alert('Erro ao trocar senha'));
+			  .then(res => alert(res.msg));
 			}
-
+			
 			function formatarDataBR(dataISO) {
 			  if (!dataISO) return '';
 			

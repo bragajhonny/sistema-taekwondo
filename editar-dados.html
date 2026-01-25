@@ -50,15 +50,22 @@
 			<div class="inner">
 				<h1>Editar dados</h1>
 				<div>
-					<img id="fotoTopoUsuario"
-     alt="Foto do usuário"
-     style="width:120px;height:120px;border-radius:50%;object-fit:cover;cursor:pointer"
-     onclick="document.getElementById('fotoPerfil').click()">
-
-				  <h3 id="nomeTopoUsuario"></h3>
+					<div class="perfil-aluno">
+					  <img id="fotoTopoUsuario"
+					       alt="Foto do usuário"
+					       style="width:120px;height:120px;border-radius:50%;object-fit:cover;cursor:pointer"
+					       onclick="document.getElementById('fotoPerfil').click()">
+					
+					  <h3 id="nomeTopoUsuario"></h3>
+					
+					  <!-- INPUT INVISÍVEL (OBRIGATÓRIO) -->
+					  <input type="file"
+					         id="fotoPerfil"
+					         accept="image/*"
+					         style="display:none">
+					</div>
 				</div>
 
-						
 				<table>
 					<tbody>
 						<tr>

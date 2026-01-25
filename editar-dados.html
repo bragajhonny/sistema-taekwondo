@@ -49,7 +49,7 @@
 		<div id="main">
 			<div class="inner">
 				<h1>Editar dados</h1>
-				<div class="perfil-aluno">
+				<div>
 				  <img id="fotoTopoUsuario" alt="Foto do aluno" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
 				  <h3 id="nomeTopoUsuario"></h3>
 				</div>
@@ -118,350 +118,350 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
-<script>
-/* =========================
-   CONFIG
-========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbzftCg1I71A3yXX8oFiG0b5mpA8uvVu4L80zysEgtGBbOfJ0aNFtKXZeH1LvoZFglpBMA/exec';
-let pastaAtualId = '';
-
-	function mascaraData(input) {
-  input.addEventListener('input', () => {
-    let valor = input.value.replace(/\D/g, '');
-
-    if (valor.length > 8) valor = valor.slice(0, 8);
-
-    if (valor.length >= 5) {
-      input.value = valor.replace(/(\d{2})(\d{2})(\d{0,4})/, '$1/$2/$3');
-    } else if (valor.length >= 3) {
-      input.value = valor.replace(/(\d{2})(\d{0,2})/, '$1/$2');
-    } else {
-      input.value = valor;
-    }
-  });
-}
-
-
-/* =========================
-   INIT
-========================= */
-document.addEventListener('DOMContentLoaded', init);
-
-function init() {
-  carregarDados();
-  configurarEventos();
-}
-/* =========================
-   EVENTOS
-========================= */
-function configurarEventos() {
-  const foto = document.getElementById('fotoPerfil');
-  if (foto) {
-    foto.addEventListener('change', previewFoto);
-  }
-
-  const dataNasc = document.getElementById('dataNascimento');
-  if (dataNasc) {
-    mascaraData(dataNasc);
-  }
-}
-
-function linkDriveParaImagem(idOuUrl) {
-  if (!idOuUrl) return '';
-
-  let id = idOuUrl;
-
-  // Se vier URL, extrai o ID
-  if (idOuUrl.startsWith('http')) {
-    const match = idOuUrl.match(/[-\w]{25,}/);
-    if (!match) return '';
-    id = match[0];
-  }
-
-  // Link direto de imagem do Google
-  return `https://lh3.googleusercontent.com/d/${id}`;
-}
-
-/* =========================
-   USUARIO
-========================= */
-function carregarDados() {
-  const acao = usuario.tipo === 'aluno' ? 'buscarAluno' : 'buscarProfessor';
-
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: acao,
-      email: usuario.email
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (res.status !== 'sucesso') {
-      alert(res.msg);
-      return;
-    }
-
-    const d = res.dados;
-
-    nome.value = d.nome || '';
-    dataNascimento.value = formatarDataBR(d.dataNascimento);
-    sexo.value = d.sexo || '';
-    telefone.value = d.telefone || '';
-    endereco.value = d.endereco || '';
-    tipoSanguineo.value = d.tipoSanguineo || '';
-    rg.value = d.rg || '';
-    cpf.value = d.cpf || '';
-    email.value = d.email || '';
-
-    faixa.value = d.faixa || '';
-
-    window.pastaDriveUsuario = d.pastaDrive || '';
-
-    nomeTopoUsuario.innerText = d.nome || '';
-
-    if (d.fotoPerfil) {
-      fotoTopoUsuario.src = linkDriveParaImagem(d.fotoPerfil);
-    } else {
-      fotoTopoUsuario.src = 'images/foto-padrao.png';
-    }
-  });
-	if (usuario.tipo !== 'aluno') {
-	  document.getElementById('faixa').closest('tr').style.display = 'none';
-	}
-
-}
-
-
-function salvarDados() {
-	if (dataNascimento.value.length !== 10) {
-  		alert('Data de nascimento inválida');
-	  return;
-	}
-
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: usuario.tipo === 'aluno' ? 'atualizarAluno' : 'atualizarProfessor',
-      email: usuario.email,
-      nome: nome.value,
-      dataNascimento: dataBRParaISO(dataNascimento.value),
-      sexo: sexo.value,
-      telefone: telefone.value,
-      endereco: endereco.value,
-      tipoSanguineo: tipoSanguineo.value,
-      rg: rg.value,
-      cpf: cpf.value
-    })
-  })
-  .then(r => r.json())
-  .then(res => alert(res.msg || 'Dados salvos'))
-  .catch(() => alert('Erro ao salvar dados'));
-}
-
-/* =========================
-   FOTO PERFIL
-========================= */
-function previewFoto(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => previewFotoBase64(reader.result);
-  reader.readAsDataURL(file);
-}
-
-function previewFotoBase64(base64) {
-  const imgModal = document.getElementById('previewFoto');
-  if (imgModal) {
-    imgModal.src = base64;
-    imgModal.style.display = 'block';
-  }
-
-  const imgTopo = document.getElementById('fotoTopoUsuario');
-  if (imgTopo) {
-    imgTopo.src = base64;
-  }
-}
-
-function enviarFotoPerfil() {
-  const input = document.getElementById('fotoPerfil');
-  const file = input.files[0];
-
-  if (!file) {
-    alert('Selecione uma foto');
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    fetch(API_URL, {
-      method: 'POST',
-      body: new URLSearchParams({
-        acao: usuario.tipo === 'aluno' ? 'uploadFotoPerfilAluno' : 'uploadFotoPerfilProfessor',
-        email: usuario.email,
-        imagem: reader.result
-      })
-    })
-    .then(r => r.json())
-    .then(res => alert(res.msg))
-    .catch(() => alert('Erro ao enviar foto'));
-  };
-
-  reader.readAsDataURL(file);
-}
-
-/* =========================
-   ARQUIVOS
-========================= */
-function abrirModalArquivos() {
-  if (!window.pastaDriveUsuario) {
-    alert('Pasta não encontrada');
-    return;
-  }
-
-  const match = window.pastaDriveUsuario.match(/[-\w]{25,}/);
-  pastaAtualId = match ? match[0] : '';
-
-  modalArquivos.style.display = 'block';
-  listarArquivos();
-}
-
-function listarArquivos() {
-  conteudoArquivos.innerHTML = 'Carregando...';
-
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: 'listarArquivosUsuario',
-      pastaId: pastaAtualId
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (res.status !== 'sucesso' || !res.dados.length) {
-      conteudoArquivos.innerText = 'Nenhum arquivo encontrado.';
-      return;
-    }
-
-    conteudoArquivos.innerHTML = `
-      <ul>
-        ${res.dados.map(a => `
-          <li>
-            📄 ${a.nome}<br>
-            <a href="${a.url}" target="_blank">Abrir</a> |
-            <a href="https://drive.google.com/uc?export=download&id=${a.id}" target="_blank">Download</a> |
-            <a href="#" onclick="excluirArquivo('${a.id}')">Excluir</a>
-          </li><br>
-        `).join('')}
-      </ul>
-    `;
-  });
-}
-
-function enviarArquivo() {
-  const file = arquivoUpload.files[0];
-  if (!file) return alert('Selecione um arquivo');
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    fetch(API_URL, {
-      method: 'POST',
-      body: new URLSearchParams({
-        acao: 'uploadArquivoUsuario',
-        email: usuario.email,
-        nomeArquivo: file.name,
-        tipoArquivo: file.type,
-        conteudo: reader.result.split(',')[1]
-      })
-    })
-    .then(() => listarArquivos());
-  };
-  reader.readAsDataURL(file);
-}
-
-function excluirArquivo(id) {
-  if (!confirm('Excluir arquivo?')) return;
-
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: 'excluirArquivoUsuario',
-      arquivoId: id
-    })
-  })
-  .then(() => listarArquivos());
-}
-
-/* =========================
-   MODAIS / CONTA
-========================= */
-function fecharModalArquivos() {
-  modalArquivos.style.display = 'none';
-}
-
-function trocarSenha() {
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: 'trocarSenha',
-      email: usuario.email,
-      senhaAtual: senhaAtual.value,
-      novaSenha: novaSenha.value
-    })
-  })
-  .then(r => r.json())
-  .then(res => alert(res.msg));
-}
-
-function formatarDataBR(dataISO) {
-  if (!dataISO) return '';
-
-  const data = new Date(dataISO);
-  const dia = String(data.getDate()).padStart(2, '0');
-  const mes = String(data.getMonth() + 1).padStart(2, '0');
-  const ano = data.getFullYear();
-
-  return `${dia}/${mes}/${ano}`;
-}
-
-function dataBRParaISO(dataBR) {
-  if (!dataBR) return '';
-  const [dia, mes, ano] = dataBR.split('/');
-  return `${ano}-${mes}-${dia}`;
-}
-
-/* =========================
-   LOGOUT
-========================= */
-function logout() {
-  localStorage.removeItem('usuario');
-  window.location.href = 'index.html';
-}
-	
-</script>
-
-<!-- Modal Arquivos do Aluno -->
-<div id="modalArquivos" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="fecharModalArquivos()">&times;</span>
-
-    <h2>Meus arquivos</h2>
-
-    <!-- Upload -->
-    <div class="field">
-      <input type="file" id="arquivoUpload" />
-      <button class="button small" onclick="enviarArquivo()">Enviar arquivo</button>
-    </div>
-
-    <hr>
-
-    <div id="conteudoArquivos">Carregando arquivos...</div>
-
-    <br>
-    <button class="button" onclick="fecharModalArquivos()">Fechar</button>
-  </div>
-</div>
+			<script>
+			/* =========================
+			   CONFIG
+			========================= */
+			const API_URL = 'https://script.google.com/macros/s/AKfycbzftCg1I71A3yXX8oFiG0b5mpA8uvVu4L80zysEgtGBbOfJ0aNFtKXZeH1LvoZFglpBMA/exec';
+			let pastaAtualId = '';
+			
+				function mascaraData(input) {
+			  input.addEventListener('input', () => {
+			    let valor = input.value.replace(/\D/g, '');
+			
+			    if (valor.length > 8) valor = valor.slice(0, 8);
+			
+			    if (valor.length >= 5) {
+			      input.value = valor.replace(/(\d{2})(\d{2})(\d{0,4})/, '$1/$2/$3');
+			    } else if (valor.length >= 3) {
+			      input.value = valor.replace(/(\d{2})(\d{0,2})/, '$1/$2');
+			    } else {
+			      input.value = valor;
+			    }
+			  });
+			}
+			
+			
+			/* =========================
+			   INIT
+			========================= */
+			document.addEventListener('DOMContentLoaded', init);
+			
+			function init() {
+			  carregarDados();
+			  configurarEventos();
+			}
+			/* =========================
+			   EVENTOS
+			========================= */
+			function configurarEventos() {
+			  const foto = document.getElementById('fotoPerfil');
+			  if (foto) {
+			    foto.addEventListener('change', previewFoto);
+			  }
+			
+			  const dataNasc = document.getElementById('dataNascimento');
+			  if (dataNasc) {
+			    mascaraData(dataNasc);
+			  }
+			}
+			
+			function linkDriveParaImagem(idOuUrl) {
+			  if (!idOuUrl) return '';
+			
+			  let id = idOuUrl;
+			
+			  // Se vier URL, extrai o ID
+			  if (idOuUrl.startsWith('http')) {
+			    const match = idOuUrl.match(/[-\w]{25,}/);
+			    if (!match) return '';
+			    id = match[0];
+			  }
+			
+			  // Link direto de imagem do Google
+			  return `https://lh3.googleusercontent.com/d/${id}`;
+			}
+			
+			/* =========================
+			   USUARIO
+			========================= */
+			function carregarDados() {
+			  const acao = usuario.tipo === 'aluno' ? 'buscarAluno' : 'buscarProfessor';
+			
+			  fetch(API_URL, {
+			    method: 'POST',
+			    body: new URLSearchParams({
+			      acao: acao,
+			      email: usuario.email
+			    })
+			  })
+			  .then(r => r.json())
+			  .then(res => {
+			    if (res.status !== 'sucesso') {
+			      alert(res.msg);
+			      return;
+			    }
+			
+			    const d = res.dados;
+			
+			    nome.value = d.nome || '';
+			    dataNascimento.value = formatarDataBR(d.dataNascimento);
+			    sexo.value = d.sexo || '';
+			    telefone.value = d.telefone || '';
+			    endereco.value = d.endereco || '';
+			    tipoSanguineo.value = d.tipoSanguineo || '';
+			    rg.value = d.rg || '';
+			    cpf.value = d.cpf || '';
+			    email.value = d.email || '';
+			
+			    faixa.value = d.faixa || '';
+			
+			    window.pastaDriveUsuario = d.pastaDrive || '';
+			
+			    nomeTopoUsuario.innerText = d.nome || '';
+			
+			    if (d.fotoPerfil) {
+			      fotoTopoUsuario.src = linkDriveParaImagem(d.fotoPerfil);
+			    } else {
+			      fotoTopoUsuario.src = 'images/foto-padrao.png';
+			    }
+			  });
+				if (usuario.tipo !== 'aluno') {
+				  document.getElementById('faixa').closest('tr').style.display = 'none';
+				}
+			
+			}
+			
+			
+			function salvarDados() {
+				if (dataNascimento.value.length !== 10) {
+			  		alert('Data de nascimento inválida');
+				  return;
+				}
+			
+			  fetch(API_URL, {
+			    method: 'POST',
+			    body: new URLSearchParams({
+			      acao: usuario.tipo === 'aluno' ? 'atualizarAluno' : 'atualizarProfessor',
+			      email: usuario.email,
+			      nome: nome.value,
+			      dataNascimento: dataBRParaISO(dataNascimento.value),
+			      sexo: sexo.value,
+			      telefone: telefone.value,
+			      endereco: endereco.value,
+			      tipoSanguineo: tipoSanguineo.value,
+			      rg: rg.value,
+			      cpf: cpf.value
+			    })
+			  })
+			  .then(r => r.json())
+			  .then(res => alert(res.msg || 'Dados salvos'))
+			  .catch(() => alert('Erro ao salvar dados'));
+			}
+			
+			/* =========================
+			   FOTO PERFIL
+			========================= */
+			function previewFoto(e) {
+			  const file = e.target.files[0];
+			  if (!file) return;
+			
+			  const reader = new FileReader();
+			  reader.onload = () => previewFotoBase64(reader.result);
+			  reader.readAsDataURL(file);
+			}
+			
+			function previewFotoBase64(base64) {
+			  const imgModal = document.getElementById('previewFoto');
+			  if (imgModal) {
+			    imgModal.src = base64;
+			    imgModal.style.display = 'block';
+			  }
+			
+			  const imgTopo = document.getElementById('fotoTopoUsuario');
+			  if (imgTopo) {
+			    imgTopo.src = base64;
+			  }
+			}
+			
+			function enviarFotoPerfil() {
+			  const input = document.getElementById('fotoPerfil');
+			  const file = input.files[0];
+			
+			  if (!file) {
+			    alert('Selecione uma foto');
+			    return;
+			  }
+			
+			  const reader = new FileReader();
+			  reader.onload = () => {
+			    fetch(API_URL, {
+			      method: 'POST',
+			      body: new URLSearchParams({
+			        acao: usuario.tipo === 'aluno' ? 'uploadFotoPerfilAluno' : 'uploadFotoPerfilProfessor',
+			        email: usuario.email,
+			        imagem: reader.result
+			      })
+			    })
+			    .then(r => r.json())
+			    .then(res => alert(res.msg))
+			    .catch(() => alert('Erro ao enviar foto'));
+			  };
+			
+			  reader.readAsDataURL(file);
+			}
+			
+			/* =========================
+			   ARQUIVOS
+			========================= */
+			function abrirModalArquivos() {
+			  if (!window.pastaDriveUsuario) {
+			    alert('Pasta não encontrada');
+			    return;
+			  }
+			
+			  const match = window.pastaDriveUsuario.match(/[-\w]{25,}/);
+			  pastaAtualId = match ? match[0] : '';
+			
+			  modalArquivos.style.display = 'block';
+			  listarArquivos();
+			}
+			
+			function listarArquivos() {
+			  conteudoArquivos.innerHTML = 'Carregando...';
+			
+			  fetch(API_URL, {
+			    method: 'POST',
+			    body: new URLSearchParams({
+			      acao: 'listarArquivosUsuario',
+			      pastaId: pastaAtualId
+			    })
+			  })
+			  .then(r => r.json())
+			  .then(res => {
+			    if (res.status !== 'sucesso' || !res.dados.length) {
+			      conteudoArquivos.innerText = 'Nenhum arquivo encontrado.';
+			      return;
+			    }
+			
+			    conteudoArquivos.innerHTML = `
+			      <ul>
+			        ${res.dados.map(a => `
+			          <li>
+			            📄 ${a.nome}<br>
+			            <a href="${a.url}" target="_blank">Abrir</a> |
+			            <a href="https://drive.google.com/uc?export=download&id=${a.id}" target="_blank">Download</a> |
+			            <a href="#" onclick="excluirArquivo('${a.id}')">Excluir</a>
+			          </li><br>
+			        `).join('')}
+			      </ul>
+			    `;
+			  });
+			}
+			
+			function enviarArquivo() {
+			  const file = arquivoUpload.files[0];
+			  if (!file) return alert('Selecione um arquivo');
+			
+			  const reader = new FileReader();
+			  reader.onload = () => {
+			    fetch(API_URL, {
+			      method: 'POST',
+			      body: new URLSearchParams({
+			        acao: 'uploadArquivoUsuario',
+			        email: usuario.email,
+			        nomeArquivo: file.name,
+			        tipoArquivo: file.type,
+			        conteudo: reader.result.split(',')[1]
+			      })
+			    })
+			    .then(() => listarArquivos());
+			  };
+			  reader.readAsDataURL(file);
+			}
+			
+			function excluirArquivo(id) {
+			  if (!confirm('Excluir arquivo?')) return;
+			
+			  fetch(API_URL, {
+			    method: 'POST',
+			    body: new URLSearchParams({
+			      acao: 'excluirArquivoUsuario',
+			      arquivoId: id
+			    })
+			  })
+			  .then(() => listarArquivos());
+			}
+			
+			/* =========================
+			   MODAIS / CONTA
+			========================= */
+			function fecharModalArquivos() {
+			  modalArquivos.style.display = 'none';
+			}
+			
+			function trocarSenha() {
+			  fetch(API_URL, {
+			    method: 'POST',
+			    body: new URLSearchParams({
+			      acao: 'trocarSenha',
+			      email: usuario.email,
+			      senhaAtual: senhaAtual.value,
+			      novaSenha: novaSenha.value
+			    })
+			  })
+			  .then(r => r.json())
+			  .then(res => alert(res.msg));
+			}
+			
+			function formatarDataBR(dataISO) {
+			  if (!dataISO) return '';
+			
+			  const data = new Date(dataISO);
+			  const dia = String(data.getDate()).padStart(2, '0');
+			  const mes = String(data.getMonth() + 1).padStart(2, '0');
+			  const ano = data.getFullYear();
+			
+			  return `${dia}/${mes}/${ano}`;
+			}
+			
+			function dataBRParaISO(dataBR) {
+			  if (!dataBR) return '';
+			  const [dia, mes, ano] = dataBR.split('/');
+			  return `${ano}-${mes}-${dia}`;
+			}
+			
+			/* =========================
+			   LOGOUT
+			========================= */
+			function logout() {
+			  localStorage.removeItem('usuario');
+			  window.location.href = 'index.html';
+			}
+				
+			</script>
+			
+			<!-- Modal Arquivos do Aluno -->
+			<div id="modalArquivos" class="modal">
+			  <div class="modal-content">
+			    <span class="close" onclick="fecharModalArquivos()">&times;</span>
+			
+			    <h2>Meus arquivos</h2>
+			
+			    <!-- Upload -->
+			    <div class="field">
+			      <input type="file" id="arquivoUpload" />
+			      <button class="button small" onclick="enviarArquivo()">Enviar arquivo</button>
+			    </div>
+			
+			    <hr>
+			
+			    <div id="conteudoArquivos">Carregando arquivos...</div>
+			
+			    <br>
+			    <button class="button" onclick="fecharModalArquivos()">Fechar</button>
+			  </div>
+			</div>
 
 
 	</body>

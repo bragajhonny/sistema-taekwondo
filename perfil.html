@@ -79,7 +79,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbwxXxnpih-ToOGOn7pHi9BeaxoUoMBRJ0lHoLIzawHsEdhRTuPgvAF3L0TyH3RtgjSU1g/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwhCJ6yA6gPH8kvrH-jyTeLbDDfxKJ_kFA-61r3XPcJIuJlpU3v0978y5qf7BwnLi4yIQ/exec';
 
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 if (!usuario) {
@@ -119,13 +119,13 @@ function configurarMenu() {
    CARREGAR DADOS
 ========================= */
 function carregarUsuario() {
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: usuario.tipo === 'professor' ? 'buscarProfessor' : 'buscarAluno',
-      email: usuario.email
-    })
-  })
+	fetch(API_URL, {
+		method: 'POST',
+		body: new URLSearchParams({
+			acao: 'buscarUsuario',
+			email: usuario.email
+		})
+	})
   .then(r => r.json())
   .then(res => {
     if (res.status !== 'sucesso') {

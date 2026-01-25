@@ -115,6 +115,27 @@
 					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveUsuario, '_blank')" /></li>
 					<li><input type="button" value="Documentos" onclick="abrirModalArquivos()" /> </li>
 				</ul>
+
+				<hr>
+
+				<section>
+				  <h3>Segurança da conta</h3>
+				
+				  <table>
+				    <tbody>
+				      <tr>
+				        <td>Senha atual</td>
+				        <td><input type="password" id="senhaAtual" placeholder="Senha atual"></td>
+				      </tr>
+				      <tr>
+				        <td>Nova senha</td>
+				        <td><input type="password" id="novaSenha" placeholder="Nova senha"></td>
+				      </tr>
+				    </tbody>
+				  </table>
+				  <input type="button" value="Alterar senha" class="button" onclick="trocarSenha()">
+				</section>
+
 			</div>
 		</div>
 
@@ -129,7 +150,7 @@
 			/* =========================
 			   CONFIG
 			========================= */
-			const API_URL = 'https://script.google.com/macros/s/AKfycbwhCJ6yA6gPH8kvrH-jyTeLbDDfxKJ_kFA-61r3XPcJIuJlpU3v0978y5qf7BwnLi4yIQ/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbxDUz4XarKPnzrkOsV2ku96BUpE8OWyO966QEbVznYHO7lDvJkQTWTyWNOQkuUXk_tZ/exec';
 			let pastaAtualId = '';
 			
 				function mascaraData(input) {

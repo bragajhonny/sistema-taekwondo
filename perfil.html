@@ -39,10 +39,7 @@
 
       <!-- PERFIL -->
       <section style="text-align:center">
-        <img id="fotoPerfil"
-             src="images/avatar-default.png"
-             style="width:120px;height:120px;border-radius:50%;object-fit:cover" />
-
+        <img id="fotoPerfil" src="" alt="Foto de perfil" class="foto-perfil"/>
         <h2 id="nomeUsuario">Carregando...</h2>
       </section>
 
@@ -106,6 +103,7 @@ function configurarMenu() {
 
   menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
   menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+	
   if (usuario.tipo === 'aluno') {
     menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
   }
@@ -154,7 +152,8 @@ function carregarUsuario() {
     }
 
     if (u.fotoPerfil) {
-      document.getElementById('fotoPerfil').src = linkDriveParaImagem(u.fotoPerfil);
+      document.getElementById('fotoPerfil').src = u.fotoPerfil ? linkDriveParaImagem(u.fotoPerfil) : 'images/foto-padrao.png';
+
     }
 
   })
@@ -187,8 +186,8 @@ function linkDriveParaImagem(valor) {
 
 function formatarDataBR(dataISO) {
   if (!dataISO) return '-';
-  const d = new Date(dataISO);
-  return d.toLocaleDateString('pt-BR');
+  const [ano, mes, dia] = dataISO.split('-');
+  return `${dia}/${mes}/${ano}`;
 }
 
 /* =========================
@@ -198,6 +197,7 @@ function logout() {
   localStorage.removeItem('usuario');
   window.location.href = 'index.html';
 }
+
 </script>
 
 </body>

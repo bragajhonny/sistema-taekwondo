@@ -3329,10 +3329,7 @@ input, select, textarea {
 
 		}
 
-/* ===============================
-   Modal - Arquivos do Aluno
-   =============================== */
-
+/* =============================== Modal - Arquivos do Aluno =============================== */
 .modal {
   display: none;
   position: fixed;
@@ -3375,30 +3372,30 @@ input, select, textarea {
 
 /* Desktop */
 @media screen and (min-width: 980px) {
-  .modal-content.ficha-aluno {
+  .modal-content.ficha-usuario {
     max-width: 480px;   /* mais largo */
     max-height: 65vh;   /* mais baixo */
   }
 
-  .modal-content.ficha-aluno table td {
+  .modal-content.ficha-usuario table td {
     padding: 0.3em 0.5em;
     font-size: 0.9em;
   }
 
-  .modal-content.ficha-aluno h2 {
+  .modal-content.ficha-usuario h2 {
     margin-bottom: 0.4em;
     font-size: 1.2em;
   }
 }
 
-.perfil-aluno {
+.perfil-usuario {
   display: flex;
   align-items: center;
   gap: 15px;
   margin-bottom: 30px;
 }
 
-.perfil-aluno img {
+.perfil-usuario img {
   width: 90px;
   height: 90px;
   border-radius: 50%;
@@ -3406,8 +3403,9 @@ input, select, textarea {
   border: 3px solid #ddd;
 }
 
-.perfil-aluno h3 {
+.perfil-usuario h3 {
   margin: 0;
   font-size: 1.2em;
   line-height: 1.2;
 }
+

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Painel do Aluno - CT Gerivaldo Silva</title>
+		<title>Editar dados - CT Gerivaldo Silva</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -9,9 +9,9 @@
 
 		<script>
 			const usuario = JSON.parse(localStorage.getItem('usuario'));
-
-			if (!usuario || usuario.tipo !== 'aluno') {
-  				window.location.href = 'index.html';
+			
+			if (!usuario || (usuario.tipo !== 'aluno' && usuario.tipo !== 'professor')) {
+				window.location.href = 'index.html';
 			}
 		</script>
 
@@ -41,8 +41,6 @@
 		<nav id="menu">
 			<h2>Menu</h2>
 			<ul>
-				<li><a href="historico-aluno.html">Histórico de presença</a></li>
-				<li><a href="#" onclick="abrirModalTrocarSenha()">Trocar senha</a></li>
 				<input type="button" value="Sair" class="primary" onclick="logout()" />
 			</ul>
 		</nav>
@@ -50,10 +48,10 @@
 		<!-- Main -->
 		<div id="main">
 			<div class="inner">
-				<h1>Painel do Aluno</h1>
+				<h1>Editar dados</h1>
 				<div class="perfil-aluno">
-				  <img id="fotoTopoAluno" alt="Foto do aluno" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-				  <h3 id="nomeTopoAluno"></h3>
+				  <img id="fotoTopoUsuario" alt="Foto do aluno" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+				  <h3 id="nomeTopoUsuario"></h3>
 				</div>
 
 						
@@ -99,12 +97,16 @@
 							<td>Faixa</td>
 							<td><input type="text" id="faixa" disabled></td>
 						</tr>
+						<tr>
+							<td>Alterar foto</td>
+							<td><input type="file" id="fotoPerfil" accept="image/*" style="display:none"></td>
+						</tr>
 					</tbody>
 				</table>
 				<ul class="actions">
 					<li><input type="button" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
-					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveAluno, '_blank')" /></li>
-					<li><input type="button" value="Documentos" onclick="abrirModalArquivosAluno()" /> </li>
+					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveUsuario, '_blank')" /></li>
+					<li><input type="button" value="Documentos" onclick="abrirModalArquivos()" /> </li>
 				</ul>
 			</div>
 		</div>
@@ -143,13 +145,12 @@ let pastaAtualId = '';
 /* =========================
    INIT
 ========================= */
-document.addEventListener('DOMContentLoaded', initAluno);
+document.addEventListener('DOMContentLoaded', init);
 
-function initAluno() {
-  carregarAluno();
+function init() {
+  carregarDados();
   configurarEventos();
 }
-
 /* =========================
    EVENTOS
 ========================= */
@@ -182,13 +183,15 @@ function linkDriveParaImagem(idOuUrl) {
 }
 
 /* =========================
-   ALUNO
+   USUARIO
 ========================= */
-function carregarAluno() {
+function carregarDados() {
+  const acao = usuario.tipo === 'aluno' ? 'buscarAluno' : 'buscarProfessor';
+
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'buscarAluno',
+      acao: acao,
       email: usuario.email
     })
   })
@@ -199,37 +202,36 @@ function carregarAluno() {
       return;
     }
 
-    const a = res.dados;
+    const d = res.dados;
 
-    nome.value = a.nome || '';
-    dataNascimento.value = formatarDataBR(a.dataNascimento);
-    sexo.value = a.sexo || '';
-    telefone.value = a.telefone || '';
-    endereco.value = a.endereco || '';
-    tipoSanguineo.value = a.tipoSanguineo || '';
-    rg.value = a.rg || '';
-    cpf.value = a.cpf || '';
-    email.value = a.email || '';
-    faixa.value = a.faixa || 'Não definida';
+    nome.value = d.nome || '';
+    dataNascimento.value = formatarDataBR(d.dataNascimento);
+    sexo.value = d.sexo || '';
+    telefone.value = d.telefone || '';
+    endereco.value = d.endereco || '';
+    tipoSanguineo.value = d.tipoSanguineo || '';
+    rg.value = d.rg || '';
+    cpf.value = d.cpf || '';
+    email.value = d.email || '';
 
-    window.pastaDriveAluno = a.pastaDrive || '';
+    faixa.value = d.faixa || '';
 
-    // FOTO NO TOPO
-	const fotoTopo = document.getElementById('fotoTopoAluno');
-	const nomeTopo = document.getElementById('nomeTopoAluno');
-	
-	nomeTopo.innerText = a.nome || '';
-	
-	if (a.fotoPerfil) {
-		const img = linkDriveParaImagem(a.fotoPerfil);
-		fotoTopo.src = img || 'images/foto-padrao.png';
-	} else {
-		fotoTopo.src = 'images/foto-padrao.png';
+    window.pastaDriveUsuario = d.pastaDrive || '';
+
+    nomeTopoUsuario.innerText = d.nome || '';
+
+    if (d.fotoPerfil) {
+      fotoTopoUsuario.src = linkDriveParaImagem(d.fotoPerfil);
+    } else {
+      fotoTopoUsuario.src = 'images/foto-padrao.png';
+    }
+  });
+	if (usuario.tipo !== 'aluno') {
+	  document.getElementById('faixa').closest('tr').style.display = 'none';
 	}
 
-  })
-  .catch(() => alert('Erro ao carregar dados do aluno'));
 }
+
 
 function salvarDados() {
 	if (dataNascimento.value.length !== 10) {
@@ -240,7 +242,7 @@ function salvarDados() {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'atualizarAluno',
+      acao: usuario.tipo === 'aluno' ? 'atualizarAluno' : 'atualizarProfessor',
       email: usuario.email,
       nome: nome.value,
       dataNascimento: dataBRParaISO(dataNascimento.value),
@@ -276,7 +278,7 @@ function previewFotoBase64(base64) {
     imgModal.style.display = 'block';
   }
 
-  const imgTopo = document.getElementById('fotoTopoAluno');
+  const imgTopo = document.getElementById('fotoTopoUsuario');
   if (imgTopo) {
     imgTopo.src = base64;
   }
@@ -296,7 +298,7 @@ function enviarFotoPerfil() {
     fetch(API_URL, {
       method: 'POST',
       body: new URLSearchParams({
-        acao: 'uploadFotoPerfilAluno',
+        acao: usuario.tipo === 'aluno' ? 'uploadFotoPerfilAluno' : 'uploadFotoPerfilProfessor',
         email: usuario.email,
         imagem: reader.result
       })
@@ -312,13 +314,13 @@ function enviarFotoPerfil() {
 /* =========================
    ARQUIVOS
 ========================= */
-function abrirModalArquivosAluno() {
-  if (!window.pastaDriveAluno) {
+function abrirModalArquivos() {
+  if (!window.pastaDriveUsuario) {
     alert('Pasta não encontrada');
     return;
   }
 
-  const match = window.pastaDriveAluno.match(/[-\w]{25,}/);
+  const match = window.pastaDriveUsuario.match(/[-\w]{25,}/);
   pastaAtualId = match ? match[0] : '';
 
   modalArquivos.style.display = 'block';
@@ -331,7 +333,7 @@ function listarArquivos() {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'listarArquivosAluno',
+      acao: 'listarArquivosUsuario',
       pastaId: pastaAtualId
     })
   })
@@ -366,7 +368,7 @@ function enviarArquivo() {
     fetch(API_URL, {
       method: 'POST',
       body: new URLSearchParams({
-        acao: 'uploadArquivoAluno',
+        acao: 'uploadArquivoUsuario',
         email: usuario.email,
         nomeArquivo: file.name,
         tipoArquivo: file.type,
@@ -384,7 +386,7 @@ function excluirArquivo(id) {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'excluirArquivoAluno',
+      acao: 'excluirArquivoUsuario',
       arquivoId: id
     })
   })
@@ -394,14 +396,6 @@ function excluirArquivo(id) {
 /* =========================
    MODAIS / CONTA
 ========================= */
-function abrirModalTrocarSenha() {
-  modalTrocarSenha.style.display = 'block';
-}
-
-function fecharModalTrocarSenha() {
-  modalTrocarSenha.style.display = 'none';
-}
-
 function fecharModalArquivos() {
   modalArquivos.style.display = 'none';
 }
@@ -446,40 +440,6 @@ function logout() {
 }
 	
 </script>
-
-<!-- Modal Trocar Senha e Foto -->
-<div id="modalTrocarSenha" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="fecharModalTrocarSenha()">&times;</span>
-
-    <h2>Conta do aluno</h2>
-
-    <h3>Foto de perfil</h3>
-    <input type="file" id="fotoPerfil" accept="image/*">
-    <br><br>
-    <img id="previewFoto" style="max-width:120px;border-radius:50%;display:none;">
-    <br>
-    <button class="button small" onclick="enviarFotoPerfil()">Salvar foto</button>
-
-    <hr>
-
-    <h3>Trocar senha</h3>
-    <div class="field">
-      <label>Senha atual</label>
-      <input type="password" id="senhaAtual" />
-    </div>
-
-    <div class="field">
-      <label>Nova senha</label>
-      <input type="password" id="novaSenha" />
-    </div>
-
-    <br>
-    <button class="button primary small" onclick="trocarSenha()">Salvar senha</button>
-    <button class="button small" onclick="fecharModalTrocarSenha()">Cancelar</button>
-  </div>
-</div>
-
 
 <!-- Modal Arquivos do Aluno -->
 <div id="modalArquivos" class="modal">

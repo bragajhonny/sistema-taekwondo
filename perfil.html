@@ -150,12 +150,7 @@ function carregarUsuario() {
     } else {
       document.getElementById('linhaFaixa').style.display = 'none';
     }
-
-    if (u.fotoPerfil) {
-      document.getElementById('fotoPerfil').src = u.fotoPerfil ? linkDriveParaImagem(u.fotoPerfil) : 'images/foto-padrao.png';
-
-    }
-
+    document.getElementById('fotoPerfil').src = linkDriveParaImagem(u.fotoPerfil);
   })
   .catch(() => alert('Erro ao carregar perfil'));
 }
@@ -185,9 +180,9 @@ function linkDriveParaImagem(valor) {
 }
 
 function formatarDataBR(dataISO) {
-  if (!dataISO) return '-';
-  const [ano, mes, dia] = dataISO.split('-');
-  return `${dia}/${mes}/${ano}`;
+	if (!dataISO) return '-';
+	const d = new Date(dataISO);
+	return d.toLocaleDateString('pt-BR');
 }
 
 /* =========================

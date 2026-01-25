@@ -239,7 +239,6 @@
 			
 			}
 			
-			
 			function salvarDados() {
 				if (dataNascimento.value.length !== 10) {
 			  		alert('Data de nascimento inválida');
@@ -275,11 +274,15 @@
 			
 			  const reader = new FileReader();
 			  reader.onload = () => {
+			    // Preview imediato
 			    fotoTopoUsuario.src = reader.result;
+			
+			    // Envia para o servidor
+			    enviarFotoPerfil(reader.result);
 			  };
 			  reader.readAsDataURL(file);
 			}
-			
+
 			function previewFotoBase64(base64) {
 			  const imgModal = document.getElementById('previewFoto');
 			  if (imgModal) {
@@ -293,31 +296,23 @@
 			  }
 			}
 			
-			function enviarFotoPerfil() {
-			  const input = document.getElementById('fotoPerfil');
-			  const file = input.files[0];
-			
-			  if (!file) {
-			    alert('Selecione uma foto');
-			    return;
-			  }
-			
-			  const reader = new FileReader();
-			  reader.onload = () => {
-			    fetch(API_URL, {
-			      method: 'POST',
-			      body: new URLSearchParams({
-			        acao: usuario.tipo === 'aluno' ? 'uploadFotoPerfilAluno' : 'uploadFotoPerfilProfessor',
-			        email: usuario.email,
-			        imagem: reader.result
-			      })
+			function enviarFotoPerfil(base64) {
+			  fetch(API_URL, {
+			    method: 'POST',
+			    body: new URLSearchParams({
+			      acao: 'uploadFotoPerfil',
+			      email: usuario.email,
+			      tipo: usuario.tipo,
+			      imagem: base64
 			    })
-			    .then(r => r.json())
-			    .then(res => alert(res.msg))
-			    .catch(() => alert('Erro ao enviar foto'));
-			  };
-			
-			  reader.readAsDataURL(file);
+			  })
+			  .then(r => r.json())
+			  .then(res => {
+			    if (res.status !== 'sucesso') {
+			      alert(res.msg || 'Erro ao salvar foto');
+			    }
+			  })
+			  .catch(() => alert('Erro ao enviar foto'));
 			}
 			
 			/* =========================

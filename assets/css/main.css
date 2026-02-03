@@ -3409,11 +3409,9 @@ input, select, textarea {
   line-height: 1.2;
 }
 
+/* Forçar exibição da foto de perfil (override Phantom) */
 #fotoPerfil {
-  max-width: 150px;
-  max-height: 150px;
   opacity: 1 !important;
   visibility: visible !important;
-  z-index: 10;
+  display: block !important;
 }
-

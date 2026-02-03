@@ -112,7 +112,7 @@
 				</table>
 				<ul class="actions">
 					<li><input type="button" value="Salvar alterações" class="primary" onclick="salvarDados()" /></li>
-					<li><input type="button" value="Minha pasta" onclick="window.open(window.pastaDriveUsuario, '_blank')" /></li>
+					<li><input type="button" value="Minha pasta" onclick="abrirPastaDrive()" /> </li>
 					<li><input type="button" value="Documentos" onclick="abrirModalArquivos()" /> </li>
 				</ul>
 
@@ -151,8 +151,7 @@
 			   CONFIG
 			========================= */
 			const API_URL = 'https://script.google.com/macros/s/AKfycbxKrv0172PHmUv0qXYdukhLxkoYc7qriZBuBh-bPYWsnKpaggDhD4p7UpfsPrnVQzjoBQ/exec';
-			let pastaAtualId = '';
-			
+						
 				function mascaraData(input) {
 			  input.addEventListener('input', () => {
 			    let valor = input.value.replace(/\D/g, '');
@@ -194,21 +193,21 @@
 			  }
 			}
 			
-			function linkDriveParaImagem(idOuUrl) {
-			  if (!idOuUrl) return '';
+			function linkDriveParaImagem(valor) {
+			  if (!valor) return './images/foto-padrao.png';
 			
-			  let id = idOuUrl;
-			
-			  // Se vier URL, extrai o ID
-			  if (idOuUrl.startsWith('http')) {
-			    const match = idOuUrl.match(/[-\w]{25,}/);
-			    if (!match) return '';
-			    id = match[0];
-			  }
-			
-			  // Link direto de imagem do Google
+			  const id = String(valor).trim();
 			  return `https://lh3.googleusercontent.com/d/${id}`;
 			}
+
+				function abrirPastaDrive() {
+  if (!window.pastaDriveUsuario) {
+    alert('Pasta ainda não criada');
+    return;
+  }
+  window.open(window.pastaDriveUsuario, '_blank');
+}
+
 			
 			/* =========================
 			   USUARIO
@@ -265,6 +264,16 @@
 			  		alert('Data de nascimento inválida');
 				  return;
 				}
+
+				if (
+  nome.value === '' &&
+  telefone.value === '' &&
+  endereco.value === ''
+) {
+  alert('Nenhuma alteração detectada');
+  return;
+}
+
 			
 			  fetch(API_URL, {
 			    method: 'POST',
@@ -304,18 +313,6 @@
 			  reader.readAsDataURL(file);
 			}
 
-			function previewFotoBase64(base64) {
-			  const imgModal = document.getElementById('previewFoto');
-			  if (imgModal) {
-			    imgModal.src = base64;
-			    imgModal.style.display = 'block';
-			  }
-			
-			  const imgTopo = document.getElementById('fotoTopoUsuario');
-			  if (imgTopo) {
-			    imgTopo.src = base64;
-			  }
-			}
 			
 			function enviarFotoPerfil(base64) {
 			  fetch(API_URL, {
@@ -329,12 +326,16 @@
 			  })
 			  .then(r => r.json())
 			  .then(res => {
-			    if (res.status !== 'sucesso') {
-			      alert(res.msg || 'Erro ao salvar foto');
-			    }
-			  })
-			  .catch(() => alert('Erro ao enviar foto'));
-			}
+  if (res.status !== 'sucesso') {
+    alert(res.msg || 'Erro ao salvar foto');
+    return;
+  }
+
+  // Atualiza cache local
+  usuario.fotoPerfil = res.fotoId;
+  localStorage.setItem('usuario', JSON.stringify(usuario));
+})
+
 			
 			/* =========================
 			   ARQUIVOS
@@ -346,7 +347,6 @@
 			  }
 			
 			  const match = window.pastaDriveUsuario.match(/[-\w]{25,}/);
-			  pastaAtualId = match ? match[0] : '';
 			
 			  modalArquivos.style.display = 'block';
 			  listarArquivos();
@@ -359,7 +359,7 @@
 			    method: 'POST',
 			    body: new URLSearchParams({
 			      acao: 'listarArquivosUsuario',
-			      pastaId: pastaAtualId
+			      pastaId: window.pastaDriveUsuario.match(/[-\w]{25,}/)[0]
 			    })
 			  })
 			  .then(r => r.json())

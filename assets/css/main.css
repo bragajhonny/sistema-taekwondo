@@ -3415,3 +3415,9 @@ input, select, textarea {
   visibility: visible !important;
   display: block !important;
 }
+
+/* Input invisível (acessível) */
+.input-invisivel {
+  position: absolute;
+  left: -9999px;
+}

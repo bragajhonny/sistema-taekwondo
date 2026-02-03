@@ -38,12 +38,12 @@
 		</header>
 
 		<!-- Menu -->
-		<nav id="menu">
-			<h2>Menu</h2>
-			<ul>
-				<input type="button" value="Sair" class="primary" onclick="logout()" />
-			</ul>
-		</nav>
+	  <nav id="menu">
+	    <h2>Menu</h2>
+	    <ul id="menuLinks"></ul>
+	    
+	    <input type="button" value="Sair" class="primary" onclick="logout()" />
+	  </nav>
 
 		<!-- Main -->
 		<div id="main">
@@ -179,6 +179,7 @@
 			  carregarDados();
 			  configurarEventos();
 			}
+				
 			/* =========================
 			   EVENTOS
 			========================= */
@@ -334,6 +335,27 @@
 			    }
 			  })
 			  .catch(() => alert('Erro ao enviar foto'));
+			}
+
+			/* =========================
+			MENU DINÂMICO
+			========================= */
+			function configurarMenu() {
+			  const menu = document.getElementById('menuLinks');
+			  menu.innerHTML = '';
+			
+			  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+			  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+				
+			  if (usuario.tipo === 'aluno') {
+			    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+			  }
+			
+			  if (usuario.tipo === 'professor') {
+			    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+			    <li><a href="alunos.html">Alunos</a></li>
+			    `;
+			  }
 			}
 			
 			/* =========================

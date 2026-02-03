@@ -8,7 +8,7 @@
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
   
-<body class="is-preload">
+<body>
   <div id="wrapper">
     <header id="header">
       <div class="inner">
@@ -150,7 +150,15 @@ function carregarUsuario() {
       document.getElementById('linhaFaixa').style.display = 'none';
     }
 	  console.log('ID fotoPerfil recebido:', u.fotoPerfil);
-    document.getElementById('fotoPerfil').src = linkDriveParaImagem(u.fotoPerfil);
+    
+	  const img = document.getElementById('fotoPerfil');
+	  img.src = linkDriveParaImagem(u.fotoPerfil);
+		// força re-render após preload do Phantom
+		img.onload = () => {
+		  img.style.opacity = '1';
+		  img.style.visibility = 'visible';
+		};
+
   })
   .catch(() => alert('Erro ao carregar perfil'));
 }

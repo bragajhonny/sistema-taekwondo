@@ -161,23 +161,11 @@ function carregarUsuario() {
 function linkDriveParaImagem(valor) {
   if (!valor) return 'images/foto-padrao.png';
 
-  // Se já for um link direto
-  if (valor.startsWith('http')) {
-    // tenta extrair ID
-    const match = valor.match(/[-\w]{25,}/);
-    if (match) {
-      return `https://drive.google.com/uc?export=view&id=${match[0]}`;
-    }
-    return valor;
-  }
+  const id = String(valor).trim();
 
-  // Se for apenas o ID
-  if (valor.length > 20) {
-    return `https://drive.google.com/uc?export=view&id=${valor}`;
-  }
-
-  return 'images/foto-padrao.png';
+  return `https://drive.google.com/uc?export=view&id=${id}`;
 }
+
 
 function formatarDataBR(dataISO) {
 	if (!dataISO) return '-';

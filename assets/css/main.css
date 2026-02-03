@@ -3409,3 +3409,11 @@ input, select, textarea {
   line-height: 1.2;
 }
 
+#fotoPerfil {
+  max-width: 150px;
+  max-height: 150px;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 10;
+}
+

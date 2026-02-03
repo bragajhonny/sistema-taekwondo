@@ -79,7 +79,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbwhCJ6yA6gPH8kvrH-jyTeLbDDfxKJ_kFA-61r3XPcJIuJlpU3v0978y5qf7BwnLi4yIQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyP8X3dOPr5pEQQfMokYMfalsVXMaWBBLPB9B1YGxbArKc44_mJZWpennAKQ_8ZgDhI3g/exec';
 
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 if (!usuario) {
@@ -150,6 +150,7 @@ function carregarUsuario() {
     } else {
       document.getElementById('linhaFaixa').style.display = 'none';
     }
+	  console.log('ID fotoPerfil recebido:', u.fotoPerfil);
     document.getElementById('fotoPerfil').src = linkDriveParaImagem(u.fotoPerfil);
   })
   .catch(() => alert('Erro ao carregar perfil'));

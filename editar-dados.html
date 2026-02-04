@@ -267,7 +267,7 @@
 			  fetch(API_URL, {
 			    method: 'POST',
 			    body: new URLSearchParams({
-			      acao: usuario.tipo === 'aluno' ? 'atualizarAluno' : 'atualizarProfessor',
+			      acao: 'atualizarAluno',
 			      email: usuario.email,
 			      nome: nome.value,
 			      dataNascimento: dataBRParaISO(dataNascimento.value),

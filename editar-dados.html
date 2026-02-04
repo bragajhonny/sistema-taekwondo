@@ -146,7 +146,7 @@
 			/* =========================
 			   CONFIG
 			========================= */
-			const API_URL = 'https://script.google.com/macros/s/AKfycby6khklWMEihB1d8l7HDU3DmcDyRid2MfXJcRZFuCky10wTLw3oBGPYHhNRwFoiTA8HxA/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbw8oVFQbdpTYGtuOT02Bxrs4xvk_jjsNLzSBuyC-QvGNT3tYYovBE8EWTpS5mVlPEzNCg/exec';
 			let pastaAtualId = '';
 			
 				function mascaraData(input) {
@@ -172,6 +172,7 @@
 			document.addEventListener('DOMContentLoaded', init);
 			
 			function init() {
+			configurarMenu();
 			  carregarDados();
 			  configurarEventos();
 			}

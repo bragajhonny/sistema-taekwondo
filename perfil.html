@@ -90,7 +90,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyJ5iL1I8SdiuFUjS1_Nk8O17Iu4q-nIMIzfUUUq2fQTATKGUZ4BcX18ZjOD_5I2r6s5A/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwFXGlvfMOJJ70gmQ-L4LOALmKA1rpQ-pdFflK7IILc4OePx7v50DqnF2zqMOAdmbYk5A/exec';
 
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 if (!usuario) {
@@ -131,11 +131,11 @@ function configurarMenu() {
 ========================= */
 function carregarUsuario() {
 	fetch(API_URL, {
-		method: 'POST',
-		body: new URLSearchParams({
-			acao: 'buscarAluno',
-			email: usuario.email
-		})
+	  method: 'POST',
+	  body: new URLSearchParams({
+	    acao: 'buscarUsuario',
+	    email: usuario.email
+	  })
 	})
   .then(r => r.json())
   .then(res => {
@@ -156,17 +156,15 @@ function carregarUsuario() {
     document.getElementById('f_tipoSanguineo').innerText = u.tipoSanguineo || '-';
     document.getElementById('f_email').innerText = u.email || '-';
 
-    if (usuario.tipo === 'aluno') {
-      document.getElementById('f_faixa').innerText = u.faixa || '-';
-    } else {
-      document.getElementById('linhaFaixa').style.display = 'none';
-    }
-	  console.log('ID fotoPerfil recebido:', u.fotoPerfil);
+    if (u.tipo === 'aluno') {
+	  document.getElementById('f_faixa').innerText = u.faixa || '-';
+	} else {
+	  document.getElementById('linhaFaixa').style.display = 'none';
+	}
+	console.log('ID fotoPerfil recebido:', u.fotoPerfil);
     
-	  const foto = document.getElementById('fotoPerfil');
-		foto.style.backgroundImage = `url('${linkDriveParaImagem(u.fotoPerfil)}')`;
-
-
+	const foto = document.getElementById('fotoPerfil');
+	foto.style.backgroundImage = `url('${linkDriveParaImagem(u.fotoPerfil)}')`;
   })
   .catch(() => alert('Erro ao carregar perfil'));
 }

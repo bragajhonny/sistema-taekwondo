@@ -146,7 +146,7 @@
 			/* =========================
 			   CONFIG
 			========================= */
-			const API_URL = 'https://script.google.com/macros/s/AKfycbyJ5iL1I8SdiuFUjS1_Nk8O17Iu4q-nIMIzfUUUq2fQTATKGUZ4BcX18ZjOD_5I2r6s5A/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbwFXGlvfMOJJ70gmQ-L4LOALmKA1rpQ-pdFflK7IILc4OePx7v50DqnF2zqMOAdmbYk5A/exec';
 			let pastaAtualId = '';
 			
 				function mascaraData(input) {
@@ -212,12 +212,10 @@
 			   USUARIO
 			========================= */
 			function carregarDados() {
-			  const acao = 'buscarAluno';
-			
 			  fetch(API_URL, {
 			    method: 'POST',
 			    body: new URLSearchParams({
-			      acao: acao,
+			      acao: 'buscarUsuario',
 			      email: usuario.email
 			    })
 			  })
@@ -244,19 +242,19 @@
 			
 			    window.pastaDriveUsuario = d.pastaDrive || '';
 			
-			    //nomeTopoUsuario.innerText = d.nome || '';
-			
 			    if (d.fotoPerfil) {
 			      fotoTopoUsuario.src = linkDriveParaImagem(d.fotoPerfil);
 			    } else {
 			      fotoTopoUsuario.src = 'images/foto-padrao.png';
 			    }
-			  });
-				if (usuario.tipo !== 'aluno') {
-				  document.getElementById('faixa').closest('tr').style.display = 'none';
-				}
 			
+			    // professor não edita faixa
+			    if (usuario.tipo !== 'aluno') {
+			      document.getElementById('faixa').closest('tr').style.display = 'none';
+			    }
+			  });
 			}
+
 			
 			function salvarDados() {
 				if (dataNascimento.value.length !== 10) {
@@ -264,10 +262,10 @@
 				  return;
 				}
 			
-			  fetch(API_URL, {
+			    fetch(API_URL, {
 			    method: 'POST',
 			    body: new URLSearchParams({
-			      acao: 'atualizarAluno',
+			      acao: 'atualizarUsuario',
 			      email: usuario.email,
 			      nome: nome.value,
 			      dataNascimento: dataBRParaISO(dataNascimento.value),
@@ -321,7 +319,6 @@
 			    body: new URLSearchParams({
 			      acao: 'uploadFotoPerfil',
 			      email: usuario.email,
-			      tipo: usuario.tipo,
 			      imagem: base64
 			    })
 			  })

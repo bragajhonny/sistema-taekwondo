@@ -13,36 +13,35 @@
 		<div id="wrapper">
 			<!-- Header -->
 			<header id="header">
-				
-				<div class="inner">
-				<!-- Logo -->
-					<a href="index.html" class="logo">
-						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
-					</a>
-
-					<!-- Nav -->
-					<nav>
-						<ul>
-							<li><a href="#menu">Menu</a></li>
-						</ul>
-					</nav>
-				</div>
+			  <div class="inner">
+			    <a href="professor.html" class="logo">
+			      <span class="symbol"><img src="images/logo.svg" alt="" /></span>
+			      <span class="title">CT Gerivaldo Silva</span>
+			    </a>
+			  </div>
+			
+			  <nav>
+			    <ul>
+			      <li><a href="#menu">Menu</a></li>
+			    </ul>
+			  </nav>
 			</header>
+
 
 			  <!-- MENU -->
 			  <nav id="menu">
-			    <h2>Menu</h2>
-			    <ul id="menuLinks"></ul>
-			    
-			    <input type="button" value="Sair" class="primary" onclick="logout()" />
-			  </nav>
+			  	<h2>Menu</h2>
+			 	 <ul id="menuLinks"></ul>
+			  	<input type="button" value="Sair" class="primary" onclick="logout()" />
+			</nav>
+
 
 			<!-- Main -->
 			<div id="main">
 				<div class="inner">
 					<h1>Painel do professor</h1>
 					<div class="perfil-professor">
-					  <img id="fotoTopoProfessor" src="images/avatar-default.png">
+					  <img id="fotoTopoProfessor" src="images/foto-padrao.png">
 					  <h3 id="nomeTopoProfessor"></h3>
 					</div>
 					<h1>Alunos cadastrados</h1>
@@ -70,7 +69,18 @@
 			<script>
 				const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
 				const usuario = JSON.parse(localStorage.getItem('usuario'));
-			
+
+				/* =========================
+				INIT
+				========================= */
+				document.addEventListener('DOMContentLoaded', () => {
+					configurarMenu();
+					carregarUsuario();
+				});
+
+
+				//---------------------------
+				
 				if (!usuario || usuario.tipo !== 'professor') {
 				  window.location.href = 'index.html';
 				}
@@ -90,7 +100,7 @@
 				
 				  document.getElementById('nomeTopoProfessor').innerText = u.nome;
 				
-				  const img = document.getElementById('fotoProfessor');
+				  const img = document.getElementById('fotoTopoProfessor');
 
 					if (u.fotoPerfil) {
 					  img.src = `https://lh3.googleusercontent.com/d/${u.fotoPerfil}`;
@@ -181,15 +191,16 @@
 				
 				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
 				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-					
+				
 				  if (usuario.tipo === 'aluno') {
 				    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
 				  }
 				
 				  if (usuario.tipo === 'professor') {
-				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
-					<li><a href="professor.html">Painel do professor</a></li>
-				    <li><a href="alunos.html">Alunos</a></li>
+				    menu.innerHTML += `
+				      <li><a href="presenca.html">Presença</a></li>
+					  <li><a href="professor.html">Painel do professor</a></li>
+				      <li><a href="alunos.html">Alunos</a></li>
 				    `;
 				  }
 				}

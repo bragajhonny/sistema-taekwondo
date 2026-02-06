@@ -146,7 +146,7 @@
 			/* =========================
 			   CONFIG
 			========================= */
-			const API_URL = 'https://script.google.com/macros/s/AKfycbzFv_VvJEF0E_hwOMlBUHBe2MHf6LZePgzBo6AnxfO4dYB8QXU8Q4NC0ROgMeGwO2hkhw/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
 			let pastaAtualId = '';
 			
 				function mascaraData(input) {
@@ -171,8 +171,7 @@
 			========================= */
 			document.addEventListener('DOMContentLoaded', init);
 			
-			function init() {
-			configurarMenu();
+			function init(){ 
 			  carregarDados();
 			  configurarEventos();
 			}
@@ -193,7 +192,7 @@
 			}
 			
 			function linkDriveParaImagem(idOuUrl) {
-			  if (!idOuUrl) return '';
+			  if (!idOuUrl) return 'images/foto-padrao.png';
 			
 			  let id = idOuUrl;
 			
@@ -227,6 +226,10 @@
 			    }
 			
 			    const d = res.dados;
+
+				usuario.tipo = d.tipo;
+				usuario.idUsuario = d.idUsuario;
+				localStorage.setItem('usuario', JSON.stringify(usuario));
 			
 			    nome.value = d.nome || '';
 			    dataNascimento.value = formatarDataBR(d.dataNascimento);
@@ -242,20 +245,16 @@
 			
 			    window.pastaDriveUsuario = d.pastaDrive || '';
 			
-			    if (d.fotoPerfil) {
-			      fotoTopoUsuario.src = linkDriveParaImagem(d.fotoPerfil);
-			    } else {
-			      fotoTopoUsuario.src = 'images/foto-padrao.png';
-			    }
-			
+			    fotoTopoUsuario.src = linkDriveParaImagem(d.fotoPerfil || '');
+				  
 			    // professor não edita faixa
 			    if (usuario.tipo !== 'aluno') {
 			      document.getElementById('faixa').closest('tr').style.display = 'none';
 			    }
+				  configurarMenu();
 			  });
 			}
 
-			
 			function salvarDados() {
 				if (dataNascimento.value.length !== 10) {
 			  		alert('Data de nascimento inválida');
@@ -503,7 +502,5 @@
 			    <button class="button" onclick="fecharModalArquivos()">Fechar</button>
 			  </div>
 			</div>
-
-
 	</body>
 </html>

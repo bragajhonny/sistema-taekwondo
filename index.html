@@ -51,11 +51,21 @@
 		<script src="assets/js/main.js"></script>
 
 		<script>
-		const API_URL = 'https://script.google.com/macros/s/AKfycbzdylQFKMpqdFz02j6KQUQwr8u9gv7ZbPAti4VpTKiWaeeiPfgXH7LReOx-qOOfPEVvAg/exec';
-		
+		const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
+
+		const usuarioLogado = localStorage.getItem('usuario');
+		if (usuarioLogado) {
+		  window.location.href = 'perfil.html';
+		}
+			
 		function login() {
-			const email = document.getElementById('email').value;
-			const senha = document.getElementById('senha').value;
+		  const email = document.getElementById('email').value.trim();
+		  const senha = document.getElementById('senha').value.trim();
+		
+		  if (!email || !senha) {
+			alert('Informe email e senha');
+			return;
+		  }
 			
 			const formData = new FormData();
 			formData.append('acao', 'login');
@@ -82,3 +92,4 @@
 		</script>
 	</body>
 </html>
+

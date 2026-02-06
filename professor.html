@@ -40,11 +40,6 @@
 			<div id="main">
 				<div class="inner">
 					<h1>Painel do professor</h1>
-					<div class="perfil-professor">
-					  <img id="fotoTopoProfessor" src="images/foto-padrao.png">
-					  <h3 id="nomeTopoProfessor"></h3>
-					</div>
-					<h1>Alunos cadastrados</h1>
 					<table>
         					<thead>
           						<tr>
@@ -67,18 +62,45 @@
 			<script src="assets/js/main.js"></script>
 
 			<script>
-				const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
-				const usuario = JSON.parse(localStorage.getItem('usuario'));
-
 				/* =========================
-				INIT
+				   CONFIG
+				========================= */
+				const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
+				
+				const usuario = JSON.parse(localStorage.getItem('usuario'));
+				if (!usuario) {
+				  window.location.href = 'index.html';
+				}
+				
+				/* =========================
+				   INIT
 				========================= */
 				document.addEventListener('DOMContentLoaded', () => {
-					configurarMenu();
-					carregarUsuario();
+				  configurarMenu();
+				  carregarUsuario();
 				});
-
-
+				
+				/* =========================
+				   MENU DINÂMICO
+				========================= */
+				function configurarMenu() {
+				  const menu = document.getElementById('menuLinks');
+				  menu.innerHTML = '';
+				
+				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+					
+				  if (usuario.tipo === 'aluno') {
+				    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+				  }
+				
+				  if (usuario.tipo === 'professor') {
+				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+				    <li><a href="professor.html">Painel do professor</a></li>
+				    `;
+				  }
+				}
+				
 				//---------------------------
 				
 				if (!usuario || usuario.tipo !== 'professor') {
@@ -182,28 +204,7 @@
 			  });
 			}
 
-				/* =========================
-				   MENU DINÂMICO
-				========================= */
-				function configurarMenu() {
-				  const menu = document.getElementById('menuLinks');
-				  menu.innerHTML = '';
 				
-				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-				
-				  if (usuario.tipo === 'aluno') {
-				    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-				  }
-				
-				  if (usuario.tipo === 'professor') {
-				    menu.innerHTML += `
-				      <li><a href="presenca.html">Presença</a></li>
-					  <li><a href="professor.html">Painel do professor</a></li>
-				      <li><a href="alunos.html">Alunos</a></li>
-				    `;
-				  }
-				}
 
 			function logout() {
 		  		localStorage.removeItem('usuario');

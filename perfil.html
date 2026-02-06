@@ -90,7 +90,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbzKjPEIG6iIVQmVPi5RfE7npGBWr9bDzeFXOyGPhU5fTrUam0t4lRHutWa3HZ7YSoykEg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
 
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 if (!usuario) {
@@ -145,6 +145,10 @@ function carregarUsuario() {
     }
 
     const u = res.dados;
+	  
+	usuario.tipo = u.tipo;
+	usuario.idUsuario = u.idUsuario;
+	localStorage.setItem('usuario', JSON.stringify(usuario));
 
     nomeUsuario.innerText = u.nome || '';
 
@@ -165,6 +169,8 @@ function carregarUsuario() {
     
 	const foto = document.getElementById('fotoPerfil');
 	foto.style.backgroundImage = `url('${linkDriveParaImagem(u.fotoPerfil)}')`;
+
+	configurarMenu();
   })
   .catch(() => alert('Erro ao carregar perfil'));
 }

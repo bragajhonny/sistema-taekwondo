@@ -71,19 +71,12 @@
 			<script src="assets/js/main.js"></script>
 
 			<script>
-			const usuario = JSON.parse(localStorage.getItem('usuario'));
+				const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
+				const usuario = JSON.parse(localStorage.getItem('usuario'));
 			
-			if (!usuario || usuario.tipo !== 'professor') {
-			  window.location.href = 'index.html';
-			}
-			fetch(API_URL, {
-				method: 'POST',
-				body: new URLSearchParams({
-				acao: 'login',
-				email: usuario.email,
-				senha: usuario.senha || ''
-			})
-		});
+				if (!usuario || usuario.tipo !== 'professor') {
+				  window.location.href = 'index.html';
+				}
 
 				fetch(API_URL, {
 				  method: 'POST',
@@ -100,14 +93,19 @@
 				
 				  document.getElementById('nomeTopoProfessor').innerText = u.nome;
 				
-				  if (u.fotoPerfil) {
-				    document.getElementById('fotoTopoProfessor').src =
-				      `https://drive.google.com/thumbnail?id=${u.fotoPerfil}&sz=w300`;
-				  }
-				});
+				  const img = document.getElementById('fotoProfessor');
 
-			
-			const API_URL = 'https://script.google.com/macros/s/AKfycbzdylQFKMpqdFz02j6KQUQwr8u9gv7ZbPAti4VpTKiWaeeiPfgXH7LReOx-qOOfPEVvAg/exec';
+					if (u.fotoPerfil) {
+					  img.src = `https://lh3.googleusercontent.com/d/${u.fotoPerfil}`;
+					} else {
+					  img.src = 'images/foto-padrao.png';
+					}
+					
+					img.onerror = () => {
+					  img.src = 'images/foto-padrao.png';
+					};
+
+				});
 			
 			fetch(API_URL, {
 			  method: 'POST',
@@ -123,6 +121,7 @@
 			  }
 			
 			  const tbody = document.getElementById('listaAlunos');
+				tbody.innerHTML = '';
 			
 			  res.dados.forEach(a => {
 			    const tr = document.createElement('tr');
@@ -259,7 +258,7 @@ function listarArquivos() {
       return;
     }
 
-    if (res.dados.length === 0) {
+    if (!Array.isArray(res.dados) || res.dados.length === 0) {
       document.getElementById('conteudoArquivos').innerText = 'Nenhum arquivo encontrado.';
       return;
     }

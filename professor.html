@@ -66,12 +66,11 @@
 				   CONFIG
 				========================= */
 				const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
-				
 				const usuario = JSON.parse(localStorage.getItem('usuario'));
-				if (!usuario) {
+
+				if (!usuario || usuario.tipo !== 'professor') {
 				  window.location.href = 'index.html';
 				}
-				
 				/* =========================
 				   INIT
 				========================= */
@@ -102,9 +101,7 @@
 				
 				//---------------------------
 				
-				if (!usuario || usuario.tipo !== 'professor') {
-				  window.location.href = 'index.html';
-				}
+				
 			
 			fetch(API_URL, {
 			  method: 'POST',

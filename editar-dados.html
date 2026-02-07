@@ -37,13 +37,12 @@
 			</nav>
 		</header>
 
-		<!-- Menu -->
+	<!-- MENU -->
 	  <nav id="menu">
-	    <h2>Menu</h2>
-	    <ul id="menuLinks"></ul>
-	    
-	    <input type="button" value="Sair" class="primary" onclick="logout()" />
-	  </nav>
+		<h2>Menu</h2>
+		 <ul id="menuLinks"></ul>
+		<input type="button" value="Sair" class="primary" onclick="logout()" />
+	</nav>
 
 		<!-- Main -->
 		<div id="main">
@@ -146,7 +145,7 @@
 			/* =========================
 			   CONFIG
 			========================= */
-			const API_URL = 'https://script.google.com/macros/s/AKfycbzpsxS44FL5SZknvlV54nVWgkq3X88vC1nZ_Fwe2BiAo0ZFimrybnBXzgkSpN8yAxqjmA/exec';
+			const API_URL = 'https://script.google.com/macros/s/AKfycbxxffkMxV6KFe9DOMG46NSH5RcEgQ6z9R-Gc5KUq9yLP2RNOqP3iC4r3JAVdHPMuiKnIQ/exec';
 			let pastaAtualId = '';
 			
 				function mascaraData(input) {
@@ -173,12 +172,14 @@
 			
 			function init(){ 
 			  carregarDados();
+			configurarMenu();
 			  configurarEventos();
 			}
 				
 			/* =========================
 			   EVENTOS
 			========================= */
+				
 			function configurarEventos() {
 			  const foto = document.getElementById('fotoPerfil');
 			  if (foto) {
@@ -334,22 +335,22 @@
 			MENU DINÂMICO
 			========================= */
 			function configurarMenu() {
-			  const menu = document.getElementById('menuLinks');
-			  menu.innerHTML = '';
-			
-			  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-			  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+				  const menu = document.getElementById('menuLinks');
+				  menu.innerHTML = '';
 				
-			  if (usuario.tipo === 'aluno') {
-			    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-			  }
-			
-			  if (usuario.tipo === 'professor') {
-			    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
-			    <li><a href="alunos.html">Alunos</a></li>
-			    `;
-			  }
-			}
+				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+					
+				  if (usuario.tipo === 'aluno') {
+				    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+				  }
+				
+				  if (usuario.tipo === 'professor') {
+				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+				    <li><a href="professor.html">Painel do professor</a></li>
+				    `;
+				  }
+				}
 			
 			/* =========================
 			   ARQUIVOS

@@ -28,15 +28,11 @@
 				</div>
 			</header>
 
-			<!-- Menu -->
-			<nav id="menu">
-				<h2>Menu</h2>
-				<ul>
-					<li><a href="professor.html">Painel do professor</a></li>
-					<li><a href="presenca.html">Presença</a></li>
-					<li><a href="historico-aluno.html">Histórico de presença</a></li>
-					<input type="button" value="Sair" class="primary" onclick="logout()" />
-				</ul>
+			  <!-- MENU -->
+			  <nav id="menu">
+			  	<h2>Menu</h2>
+			 	 <ul id="menuLinks"></ul>
+			  	<input type="button" value="Sair" class="primary" onclick="logout()" />
 			</nav>
 
 			<!-- Main -->
@@ -71,14 +67,42 @@
 			<script src="assets/js/main.js"></script>
 
 			<script>
+				/* =========================
+				   CONFIG
+				========================= */
+				const API_URL = 'https://script.google.com/macros/s/AKfycbxxffkMxV6KFe9DOMG46NSH5RcEgQ6z9R-Gc5KUq9yLP2RNOqP3iC4r3JAVdHPMuiKnIQ/exec';
 				const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-if (!usuario || usuario.tipo !== 'professor') {
-  window.location.href = 'index.html';
-}
-
-const API_URL = 'https://script.google.com/macros/s/AKfycbysaJlwTcW_8zcszPxr6LRCj7o_fCiLMutAmGjUF6IJS87r7gDyhx9eR84SCsnJlyb8qw/exec';
-
+				if (!usuario || usuario.tipo !== 'professor') {
+				  window.location.href = 'index.html';
+				}
+				/* =========================
+				   INIT
+				========================= */
+				document.addEventListener('DOMContentLoaded', () => {
+				  configurarMenu();
+				});
+				
+				/* =========================
+				   MENU DINÂMICO
+				========================= */
+				function configurarMenu() {
+				  const menu = document.getElementById('menuLinks');
+				  menu.innerHTML = '';
+				
+				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+					
+				  if (usuario.tipo === 'aluno') {
+				    menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+				  }
+				
+				  if (usuario.tipo === 'professor') {
+				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+				    <li><a href="professor.html">Painel do professor</a></li>
+				    `;
+				  }
+				}
 /* DATA LOCAL (SEM UTC) */
 const hoje = new Date();
 hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());

@@ -3421,3 +3421,10 @@ input, select, textarea {
   position: absolute;
   left: -9999px;
 }
+
+.foto-aluno-tabela {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}

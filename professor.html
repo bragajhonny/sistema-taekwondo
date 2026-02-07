@@ -129,7 +129,7 @@
 				  <td>${a.nome}</td>
 				  <td>${a.telefone}</td>
 				  <td>
-					  <select onchange="salvarFaixa('${a.idAluno}', this.value)">
+					  <select onchange="salvarFaixa('${a.idUsuario}', this.value)">
 					    <option value="">-</option>
 					    <option value="branca" ${a.faixa === 'branca' ? 'selected' : ''}>Branca</option>
 					    <option value="amarela" ${a.faixa === 'amarela' ? 'selected' : ''}>Amarela</option>
@@ -154,12 +154,12 @@
 			  });
 				}).catch(() => { alert('Erro ao carregar alunos'); });
 
-			function salvarFaixa(idAluno, faixa) {
+			function salvarFaixa(idUsuario, faixa) {
 			  fetch(API_URL, {
 			    method: 'POST',
 			    body: new URLSearchParams({
 			      acao: 'atualizarFaixa',
-			      idAluno: idAluno,
+			      idUsuario: idUsuario,
 			      faixa: faixa
 			    })
 			  })

@@ -121,6 +121,7 @@
 				tbody.innerHTML = '';
 			
 			  res.dados.forEach(a => {
+				  console.log(a);
 			    const tr = document.createElement('tr');
 			    const fotoUrl = a.fotoPerfil ? `https://lh3.googleusercontent.com/d/${a.fotoPerfil}` : 'images/foto-padrao.png';
 

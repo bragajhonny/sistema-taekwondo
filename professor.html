@@ -121,7 +121,6 @@
 				tbody.innerHTML = '';
 			
 			  res.dados.forEach(a => {
-				  console.log(a);
 			    const tr = document.createElement('tr');
 			    const fotoUrl = a.fotoPerfil ? `https://lh3.googleusercontent.com/d/${a.fotoPerfil}` : 'images/foto-padrao.png';
 
@@ -354,7 +353,7 @@ function abrirFichaAluno(emailAluno) {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'buscarAluno',
+      acao: 'buscarUsuario',
       email: emailAluno
     })
   })

@@ -42,7 +42,8 @@
 					<h1>Painel do professor</h1>
 					<table>
         					<thead>
-          						<tr>
+          					<tr>
+								<td></td>
 								<th>Nome</th>
 								<th>Telefone</th>
 								<th>Faixa</th>
@@ -121,8 +122,10 @@
 			
 			  res.dados.forEach(a => {
 			    const tr = document.createElement('tr');
-			
-			    tr.innerHTML = `
+			    const fotoUrl = a.fotoPerfil ? `https://lh3.googleusercontent.com/d/${a.fotoPerfil}` : 'images/foto-padrao.png';
+
+				tr.innerHTML = `
+  					<td> <img src="${fotoUrl}" class="foto-aluno-tabela" onerror="this.src='images/foto-padrao.png'" > </td>
 				  <td>${a.nome}</td>
 				  <td>${a.telefone}</td>
 				  <td>

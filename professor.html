@@ -248,7 +248,7 @@ function listarArquivos() {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'listarArquivosAluno',
+      acao: 'listarArquivosUsuario',
       pastaId: pastaAtualId
     })
   })
@@ -395,8 +395,6 @@ function formatarDataBR(dataISO) {
     timeZone: 'America/Sao_Paulo'
   });
 }
-
-				
 		</script>
 
 	<!-- Modal Arquivos -->
@@ -419,28 +417,7 @@ function formatarDataBR(dataISO) {
 	</div>
 
 
-			<!-- Modal Trocar Senha -->
-<div id="modalTrocarSenha" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="fecharModalTrocarSenha()">&times;</span>
-
-    <h2>Trocar senha</h2>
-
-    <div class="field">
-      <label>Senha atual</label>
-      <input type="password" id="senhaAtual" />
-    </div>
-
-    <div class="field">
-      <label>Nova senha</label>
-      <input type="password" id="novaSenha" />
-    </div>
-
-    <br>
-    <button class="button primary" onclick="trocarSenha()">Salvar</button>
-    <button class="button" onclick="fecharModalTrocarSenha()">Cancelar</button>
-  </div>
-</div>
+			
 
 			<!-- Modal Ficha do Aluno -->
 <div id="modalFichaAluno" class="modal">

@@ -121,6 +121,12 @@ fetch(API_URL, {
   const tbody = document.getElementById('listaAlunos');
   tbody.innerHTML = '';
 
+  if (!res || !res.dados || !Array.isArray(res.dados)) {
+    console.error('Resposta inválida da API:', res);
+    tbody.innerHTML = '<tr><td colspan="2">Erro ao carregar lista</td></tr>';
+    return;
+  }
+
   res.dados.forEach(pessoa => {
     const tr = document.createElement('tr');
     const checkboxId = `presenca-${pessoa.id}`;
@@ -128,12 +134,7 @@ fetch(API_URL, {
     tr.innerHTML = `
       <td>${pessoa.nome}</td>
       <td style="text-align:left">
-        <input
-          type="checkbox"
-          id="${checkboxId}"
-          data-id="${pessoa.id}"
-          data-nome="${pessoa.nome}"
-        >
+        <input type="checkbox" id="${checkboxId}" data-id="${pessoa.id}" data-nome="${pessoa.nome}" data-tipo="${pessoa.tipo}" >
         <label for="${checkboxId}"></label>
       </td>
     `;

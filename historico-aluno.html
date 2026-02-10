@@ -65,13 +65,25 @@
 		<script>
 			const API_URL = 'https://script.google.com/macros/s/AKfycbyHeniztA9TghTkzgJDXgwAcYiAFyFyx8Abewk8k8ORhYOhm9rQqeHjZGBjyln_U5UQGA/exec';
 			const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+			/* =========================
+			   INIT
+			========================= */
+			document.addEventListener('DOMContentLoaded', init);
+			
+			function init(){ 
+			  carregarDados();
+			configurarMenu();
+			  configurarEventos();
+			}
 			
 			/* =========================
 			   PROTEÇÃO DE ACESSO
-			========================= */
+			
 			if (!usuario || usuario.tipo !== 'professor') {
 			  window.location.href = 'index.html';
 			}
+			========================= */
 			
 			/* =========================
 			   ELEMENTOS

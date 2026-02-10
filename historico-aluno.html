@@ -28,15 +28,11 @@
 				</div>
 			</header>
 
-			<!-- Menu -->
-			<nav id="menu">
+			<!-- MENU -->
+			  <nav id="menu">
 				<h2>Menu</h2>
-				<ul>
-					<li><a href="professor.html">Painel do professor</a></li>
-					<li><a href="presenca.html">Presença</a></li>
-					<li><a href="historico-aluno.html">Histórico de presença</a></li>
-					<input type="button" value="Sair" class="primary" onclick="logout()" />
-				</ul>
+				 <ul id="menuLinks"></ul>
+				<input type="button" value="Sair" class="primary" onclick="logout()" />
 			</nav>
 
 			<!-- Main -->
@@ -193,6 +189,21 @@
 			    lista.innerHTML = '<li>Erro ao carregar presença</li>';
 			  });
 			}
+
+			function configurarMenu() {
+				  const menu = document.getElementById('menuLinks');
+				  menu.innerHTML = '';
+				
+				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+				
+				  if (usuario.tipo === 'professor') {
+				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+				    <li><a href="professor.html">Painel do professor</a></li>
+				    `;
+				  }
+				}
 			
 			/* =========================
 			   LOGOUT

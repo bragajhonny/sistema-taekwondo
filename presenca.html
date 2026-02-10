@@ -67,83 +67,113 @@
 			<script src="assets/js/main.js"></script>
 
 			<script>
-				/* =========================
-				   CONFIG
-				========================= */
-				const API_URL = 'https://script.google.com/macros/s/AKfycbyHeniztA9TghTkzgJDXgwAcYiAFyFyx8Abewk8k8ORhYOhm9rQqeHjZGBjyln_U5UQGA/exec';
-				const usuario = JSON.parse(localStorage.getItem('usuario'));
+/* =========================
+   CONFIG
+========================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyHeniztA9TghTkzgJDXgwAcYiAFyFyx8Abewk8k8ORhYOhm9rQqeHjZGBjyln_U5UQGA/exec';
+const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-				if (!usuario || usuario.tipo !== 'professor') {
-				  window.location.href = 'index.html';
-				}
-				/* =========================
-				   INIT
-				========================= */
-				document.addEventListener('DOMContentLoaded', () => {
-				  configurarMenu();
-				});
-				
-				/* =========================
-				   MENU DINÂMICO
-				========================= */
-				function configurarMenu() {
-				  const menu = document.getElementById('menuLinks');
-				  menu.innerHTML = '';
-				
-				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-				
-				  if (usuario.tipo === 'professor') {
-				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
-				    <li><a href="professor.html">Painel do professor</a></li>
-				    `;
-				  }
-				}
-/* DATA LOCAL (SEM UTC) */
-const hoje = new Date();
-hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
-document.getElementById('dataAula').value =
-  hoje.toISOString().split('T')[0];
+if (!usuario || usuario.tipo !== 'professor') {
+  window.location.href = 'index.html';
+}
 
-/* LISTAR ALUNOS + PROFESSORES */
-fetch(API_URL, {
-  method: 'POST',
-  body: new URLSearchParams({
-    acao: 'listarUsuariosPresenca'
-  })
-})
-.then(r => r.json())
-.then(res => {
-  const tbody = document.getElementById('listaAlunos');
-  tbody.innerHTML = '';
-
-  if (!res || !res.dados || !Array.isArray(res.dados)) {
-    console.error('Resposta inválida da API:', res);
-    tbody.innerHTML = '<tr><td colspan="2">Erro ao carregar lista</td></tr>';
-    return;
-  }
-
-  res.dados.forEach(pessoa => {
-    const tr = document.createElement('tr');
-    const checkboxId = `presenca-${pessoa.id}`;
-
-    tr.innerHTML = `
-      <td>${pessoa.nome}</td>
-      <td style="text-align:left">
-        <input type="checkbox" id="${checkboxId}" data-id="${pessoa.id}" data-nome="${pessoa.nome}" data-tipo="${pessoa.tipo}" >
-        <label for="${checkboxId}"></label>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-  });
+/* =========================
+   INIT
+========================= */
+document.addEventListener('DOMContentLoaded', () => {
+  configurarMenu();
+  definirDataHoje();
+  listarUsuarios();
 });
 
+/* =========================
+   MENU DINÂMICO
+========================= */
+function configurarMenu() {
+  const menu = document.getElementById('menuLinks');
+  menu.innerHTML = '';
 
-/* SALVAR PRESENÇA */
+  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+  menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+  menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>`;
+  menu.innerHTML += `<li><a href="professor.html">Painel do professor</a></li>`;
+}
+
+/* =========================
+   DATA LOCAL
+========================= */
+function definirDataHoje() {
+  const hoje = new Date();
+  hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
+
+  document.getElementById('dataAula').value =
+    hoje.toISOString().split('T')[0];
+}
+
+/* =========================
+   LISTAR USUÁRIOS
+========================= */
+function listarUsuarios() {
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'listarUsuariosPresenca'
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+
+    const tbody = document.getElementById('listaAlunos');
+    tbody.innerHTML = '';
+
+    if (!res || !Array.isArray(res.dados)) {
+      console.error('Resposta inválida da API:', res);
+      tbody.innerHTML = '<tr><td colspan="2">Erro ao carregar lista</td></tr>';
+      return;
+    }
+
+    if (res.dados.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="2">Nenhum usuário encontrado</td></tr>';
+      return;
+    }
+
+    res.dados.forEach(pessoa => {
+
+      const tr = document.createElement('tr');
+      const checkboxId = `presenca-${pessoa.id}`;
+
+      tr.innerHTML = `
+        <td>${pessoa.nome}</td>
+        <td>
+          <input type="checkbox"
+            id="${checkboxId}"
+            data-id="${pessoa.id}"
+            data-nome="${pessoa.nome}"
+            data-tipo="${pessoa.tipo}">
+          <label for="${checkboxId}"></label>
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  })
+  .catch(err => {
+    console.error('Erro ao buscar usuários:', err);
+    document.getElementById('listaAlunos').innerHTML =
+      '<tr><td colspan="2">Erro ao conectar com servidor</td></tr>';
+  });
+}
+
+/* =========================
+   SALVAR PRESENÇA
+========================= */
 function salvarPresenca() {
+
   const data = document.getElementById('dataAula').value;
+
   if (!data) {
     alert('Selecione a data');
     return;
@@ -153,11 +183,13 @@ function salvarPresenca() {
 
   document.querySelectorAll('#listaAlunos input[type="checkbox"]')
     .forEach(cb => {
+
       registros[cb.dataset.id] = {
         nome: cb.dataset.nome,
         tipo: cb.dataset.tipo,
         presente: cb.checked
       };
+
     });
 
   fetch(API_URL, {
@@ -170,21 +202,26 @@ function salvarPresenca() {
   })
   .then(r => r.json())
   .then(res => {
+
     if (res.status === 'sucesso') {
-      alert('Presença salva com sucesso');
+      alert('Presença salva com sucesso!');
     } else {
       alert(res.msg || 'Erro ao salvar presença');
     }
+
   })
   .catch(() => alert('Erro ao salvar presença'));
 }
 
-/* LOGOUT */
+/* =========================
+   LOGOUT
+========================= */
 function logout() {
   localStorage.removeItem('usuario');
   window.location.href = 'index.html';
 }
 </script>
+
 
 			
 	</body>

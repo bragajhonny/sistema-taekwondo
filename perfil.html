@@ -90,7 +90,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbxxffkMxV6KFe9DOMG46NSH5RcEgQ6z9R-Gc5KUq9yLP2RNOqP3iC4r3JAVdHPMuiKnIQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyHeniztA9TghTkzgJDXgwAcYiAFyFyx8Abewk8k8ORhYOhm9rQqeHjZGBjyln_U5UQGA/exec';
 
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 if (!usuario) {
@@ -108,13 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================
    MENU DINÂMICO
 ========================= */
-function configurarMenu() {
+			function configurarMenu() {
 				  const menu = document.getElementById('menuLinks');
 				  menu.innerHTML = '';
 				
 				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
 				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-				  menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
 				
 				  if (usuario.tipo === 'professor') {
 				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>

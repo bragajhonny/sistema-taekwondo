@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Minhas Presenças - CT Gerivaldo Silva</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+
+<body>
+
+<div id="wrapper">
+  <div id="main">
+    <div class="inner">
+
+      <h1>Minhas Presenças</h1>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Tipo de Treino</th>
+            <th>Avaliação</th>
+          </tr>
+        </thead>
+        <tbody id="listaPresencas"></tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+<script>
+
+const API_URL = 'SUA_URL_AQUI';
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (!usuario || usuario.tipo !== 'aluno') {
+  window.location.href = 'index.html';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  listarPresencas();
+});
+
+function listarPresencas() {
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: new URLSearchParams({
+      acao: 'listarMinhasPresencas',
+      idUsuario: usuario.id
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+
+    const tbody = document.getElementById('listaPresencas');
+    tbody.innerHTML = '';
+
+    if (!res.dados || res.dados.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3">Nenhuma presença encontrada</td></tr>';
+      return;
+    }
+
+    res.dados.forEach(item => {
+
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td>${formatarData(item.data)}</td>
+        <td>${item.tipoTreino}</td>
+        <td>
+          ${item.respondido 
+            ? '✅ Respondido' 
+            : `<button onclick="irParaAvaliacao('${item.data}')">Responder</button>`}
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  });
+}
+
+function irParaAvaliacao(data) {
+  window.location.href = `avaliacao.html?data=${data}`;
+}
+
+function formatarData(dataISO) {
+  const data = new Date(dataISO);
+  return data.toLocaleDateString('pt-BR');
+}
+
+</script>
+
+</body>
+</html>

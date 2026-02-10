@@ -56,101 +56,244 @@
         </div>
       </div>
 
-<script>
+		<script>
+		
+		const API_URL = 'https://script.google.com/macros/s/AKfycbxAAPLWqmKrbuyOT4KgaFlM0IFEPPNVkVlEFq8UZEXSZDw2gunsXSFqevwjt-oWIK2F-w/exec';
+		const usuario = JSON.parse(localStorage.getItem('usuario'));
+		
+		let dataSelecionada = '';
+		let tipoTreinoSelecionado = '';
+		
+		/* =========================
+		   INIT
+		========================= */
+		document.addEventListener('DOMContentLoaded', function () {
+		
+		  if (!usuario) {
+		    window.location.href = 'index.html';
+		    return;
+		  }
+		
+		  configurarMenu();
+		  listarPresencas();
+		
+		  // Listener do formulário (AGORA CORRETO)
+		  const form = document.getElementById('formAvaliacao');
+		  form.addEventListener('submit', salvarFormulario);
+		
+		});
+		
+		
+		/* =========================
+		   MENU
+		========================= */
+		function configurarMenu() {
+		
+		  const menu = document.getElementById('menuLinks');
+		  menu.innerHTML = '';
+		
+		  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+		  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+		  menu.innerHTML += `<li><a href="minhas-presencas.html">Relatórios</a></li>`;
+		  menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+		
+		  if (usuario.tipo === 'professor') {
+		    menu.innerHTML += `
+		      <li><a href="presenca.html">Presença</a></li>
+		      <li><a href="professor.html">Painel do professor</a></li>
+		    `;
+		  }
+		}
+		
+		
+		/* =========================
+		   LISTAR PRESENÇAS
+		========================= */
+		function listarPresencas() {
+		
+		  fetch(API_URL, {
+		    method: 'POST',
+		    body: new URLSearchParams({
+		      acao: 'listarMinhasPresencas',
+		      idUsuario: usuario.idUsuario
+		    })
+		  })
+		  .then(r => r.json())
+		  .then(res => {
+		
+		    const tbody = document.getElementById('listaPresencas');
+		    tbody.innerHTML = '';
+		
+		    if (!res.dados || res.dados.length === 0) {
+		      tbody.innerHTML = '<tr><td colspan="3">Nenhuma presença encontrada</td></tr>';
+		      return;
+		    }
+		
+		    res.dados.forEach(item => {
+		
+		      const tr = document.createElement('tr');
+		
+		      tr.innerHTML = `
+		        <td>${formatarData(item.data)}</td>
+		        <td>${item.tipoTreino || '-'}</td>
+		        <td>
+		          ${item.respondido 
+		            ? '✅ Respondido' 
+		            : `<button onclick="abrirModal('${item.data}', '${item.tipoTreino || ''}')">Responder</button>`
+		          }
+		        </td>
+		      `;
+		
+		      tbody.appendChild(tr);
+		    });
+		
+		  });
+		
+		}
+		
+		
+		/* =========================
+		   MODAL
+		========================= */
+		function abrirModal(data, tipoTreino) {
+		
+		  dataSelecionada = data;
+		  tipoTreinoSelecionado = tipoTreino;
+		
+		  document.getElementById('modalAvaliacao').style.display = 'block';
+		
+		  gerarPerguntas(tipoTreino);
+		}
+		
+		function fecharModal() {
+		  document.getElementById('modalAvaliacao').style.display = 'none';
+		}
+		
+		
+		/* =========================
+		   GERAR PERGUNTAS
+		========================= */
+		function gerarPerguntas(tipoTreino) {
+		
+		  const container = document.getElementById('perguntasContainer');
+		  container.innerHTML = '';
+		
+		  const perguntas = [
+		    "Avalie sua execução dos chutes hoje",
+		    "Avalie seu equilíbrio nas bases",
+		    "Avalie sua potência nos chutes",
+		    "Avalie sua precisão nos chutes",
+		    "Avalie sua disciplina e foco"
+		  ];
+		
+		  perguntas.forEach((texto, index) => {
+		
+		    const numero = index + 1;
+		
+		    const bloco = document.createElement('div');
+		    bloco.innerHTML = `
+		      <label><strong>${numero}. ${texto}</strong></label><br>
+		      ${gerarEscala(numero)}
+		      <hr>
+		    `;
+		
+		    container.appendChild(bloco);
+		
+		  });
+		
+		}
+		
+		function gerarEscala(numeroPergunta) {
+		
+		  let html = '';
+		
+		  for (let i = 1; i <= 5; i++) {
+		    html += `
+		      <label style="margin-right:10px;">
+		        <input type="radio" name="Q${numeroPergunta}" value="${i}" required>
+		        ${i}
+		      </label>
+		    `;
+		  }
+		
+		  return html;
+		}
+		
+		
+		/* =========================
+		   SALVAR FORMULÁRIO
+		========================= */
+		function salvarFormulario(e) {
+		
+		  e.preventDefault();
+		
+		  const formData = new FormData(e.target);
+		  const respostas = {};
+		
+		  for (let [key, value] of formData.entries()) {
+		    respostas[key] = value;
+		  }
+		
+		  fetch(API_URL, {
+		    method: 'POST',
+		    body: new URLSearchParams({
+		      acao: 'salvarAvaliacao',
+		      idUsuario: usuario.idUsuario,
+		      data: dataSelecionada,
+		      tipoTreino: tipoTreinoSelecionado,
+		      respostas: JSON.stringify(respostas)
+		    })
+		  })
+		  .then(r => r.json())
+		  .then(res => {
+		
+		    if (res.status === 'sucesso') {
+		      alert("Avaliação salva com sucesso!");
+		      fecharModal();
+		      listarPresencas();
+		    } else {
+		      alert(res.msg || "Erro ao salvar avaliação.");
+		    }
+		
+		  })
+		  .catch(() => alert("Erro na comunicação com o servidor."));
+		}
+		
+		
+		/* =========================
+		   FORMATAR DATA
+		========================= */
+		function formatarData(dataISO) {
+		  const data = new Date(dataISO);
+		  return data.toLocaleDateString('pt-BR');
+		}
+		
+		
+		/* =========================
+		   LOGOUT
+		========================= */
+		function logout() {
+		  localStorage.removeItem('usuario');
+		  window.location.href = 'index.html';
+		}
+		
+		</script>
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxAAPLWqmKrbuyOT4KgaFlM0IFEPPNVkVlEFq8UZEXSZDw2gunsXSFqevwjt-oWIK2F-w/exec';
-const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-/* =========================
-			   INIT
-			========================= */
-			document.addEventListener('DOMContentLoaded', init);
-			
-			function init(){
-				configurarMenu();
-			}
+	<div id="modalAvaliacao" class="modal">
+  <div class="modal-content">
+    <span class="fechar" onclick="fecharModal()">&times;</span>
+    <h2>Avaliação da Aula</h2>
 
-document.addEventListener('DOMContentLoaded', () => {
-  listarPresencas();
-});
+    <form id="formAvaliacao">
+      <div id="perguntasContainer"></div>
 
-  function configurarMenu() {
-				  const menu = document.getElementById('menuLinks');
-				  menu.innerHTML = '';
-				
-				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-          menu.innerHTML += `<li><a href="minhas-presencas.html">Relatórios</a></li>`;
-					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-				
-				  if (usuario.tipo === 'professor') {
-				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
-				    <li><a href="professor.html">Painel do professor</a></li>
-				    `;
-				  }
-				}
-	
-console.log("ID do usuário:", usuario.idUsuario);
-console.log("Objeto usuario:", usuario);
-	
-function listarPresencas() {
+      <br>
+      <button type="submit" class="primary">Salvar Avaliação</button>
+    </form>
+  </div>
+</div>
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      acao: 'listarMinhasPresencas',
-      idUsuario: usuario.idUsuario
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-
-    const tbody = document.getElementById('listaPresencas');
-    tbody.innerHTML = '';
-
-    if (!res.dados || res.dados.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3">Nenhuma presença encontrada</td></tr>';
-      return;
-    }
-
-    res.dados.forEach(item => {
-
-      const tr = document.createElement('tr');
-
-      tr.innerHTML = `
-        <td>${formatarData(item.data)}</td>
-        <td>${item.tipoTreino}</td>
-        <td>
-          ${item.respondido 
-            ? '✅ Respondido' 
-            : `<button onclick="irParaAvaliacao('${item.data}')">Responder</button>`}
-        </td>
-      `;
-
-      tbody.appendChild(tr);
-    });
-
-  });
-}
-
-function irParaAvaliacao(data) {
-  window.location.href = `avaliacao.html?data=${data}`;
-}
-
-function formatarData(dataISO) {
-  const data = new Date(dataISO);
-  return data.toLocaleDateString('pt-BR');
-}
-
-  /* =========================
-			   LOGOUT
-			========================= */
-			function logout() {
-			  localStorage.removeItem('usuario');
-			  window.location.href = 'index.html';
-			}
-
-</script>
 
 </body>
 </html>

@@ -89,16 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
 				    `;
 				  }
 				}
-
-function listarPresencas() {
-console.log("ID do usuário:", usuario.id);
+	
+console.log("ID do usuário:", usuario.idUsuario);
 console.log("Objeto usuario:", usuario);
+	
+function listarPresencas() {
 
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
       acao: 'listarMinhasPresencas',
-      idUsuario: usuario.id
+      idUsuario: usuario.idUsuario
     })
   })
   .then(r => r.json())

@@ -1,47 +1,94 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-  <title>Minhas Presenças - CT Gerivaldo Silva</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="assets/css/main.css" />
-</head>
+	<head>
+		<title>Minhas presenças - CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
 
-<body>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Header -->
+			<header id="header">
+				<div class="inner">
+					<!-- Logo -->
+					<a href="index.html" class="logo">
+						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
+					</a>
 
-<div id="wrapper">
-  <div id="main">
-    <div class="inner">
+					<!-- Nav -->
+					<nav>
+						<ul>
+							<li><a href="#menu">Menu</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
 
-      <h1>Minhas Presenças</h1>
+			<!-- MENU -->
+			  <nav id="menu">
+				<h2>Menu</h2>
+				 <ul id="menuLinks"></ul>
+				<input type="button" value="Sair" class="primary" onclick="logout()" />
+			</nav>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Tipo de Treino</th>
-            <th>Avaliação</th>
-          </tr>
-        </thead>
-        <tbody id="listaPresencas"></tbody>
-      </table>
-
-    </div>
-  </div>
-</div>
+      <div id="wrapper">
+        <div id="main">
+          <div class="inner">
+      
+            <h1>Minhas Presenças</h1>
+      
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Tipo de Treino</th>
+                  <th>Avaliação</th>
+                </tr>
+              </thead>
+              <tbody id="listaPresencas"></tbody>
+            </table>
+      
+          </div>
+        </div>
+      </div>
 
 <script>
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbzltvuE5HYLEzGNCNwEaq0kXjxp4GwHcYDUcaqYxR4DL8hD8BM4qe9xZiWzsGjYY5PKSg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzB4s91Qtia9YZx7Dt97pqmv8tb9hnaLUlrtNorDIdFS3ljsQwcq5yb6KQYIKn1XaxAZg/exec';
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-if (!usuario || usuario.tipo !== 'aluno') {
-  window.location.href = 'index.html';
-}
+/* =========================
+			   INIT
+			========================= */
+			document.addEventListener('DOMContentLoaded', init);
+			
+			function init(){
+				configurarMenu();
+			}
 
 document.addEventListener('DOMContentLoaded', () => {
   listarPresencas();
 });
+
+  function configurarMenu() {
+				  const menu = document.getElementById('menuLinks');
+				  menu.innerHTML = '';
+				
+				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+          menu.innerHTML += `<li><a href="minhas-presencas.html">Relatórios</a></li>`;
+					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+				
+				  if (usuario.tipo === 'professor') {
+				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+				    <li><a href="professor.html">Painel do professor</a></li>
+				    `;
+				  }
+				}
 
 function listarPresencas() {
 
@@ -91,6 +138,14 @@ function formatarData(dataISO) {
   const data = new Date(dataISO);
   return data.toLocaleDateString('pt-BR');
 }
+
+  /* =========================
+			   LOGOUT
+			========================= */
+			function logout() {
+			  localStorage.removeItem('usuario');
+			  window.location.href = 'index.html';
+			}
 
 </script>
 

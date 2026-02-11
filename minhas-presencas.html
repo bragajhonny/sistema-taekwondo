@@ -1,10 +1,11 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-  <title>Minhas presenças - CT Gerivaldo Silva</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="assets/css/main.css" />
+	<head>
+		<title>Histórico de Presença - CT Gerivaldo Silva</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
   <style>
     .modal {
@@ -45,22 +46,46 @@
   </style>
 </head>
 
-<body>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Header -->
+			<header id="header">
+				<div class="inner">
+					<!-- Logo -->
+					<a href="index.html" class="logo">
+						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
+					</a>
 
-<div id="main">
-  <h1>Minhas Presenças</h1>
+					<!-- Nav -->
+					<nav>
+						<ul>
+							<li><a href="#menu">Menu</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Tipo de Treino</th>
-        <th>Avaliação</th>
-      </tr>
-    </thead>
-    <tbody id="listaPresencas"></tbody>
-  </table>
-</div>
+			<!-- MENU -->
+			  <nav id="menu">
+				<h2>Menu</h2>
+				 <ul id="menuLinks"></ul>
+				<input type="button" value="Sair" class="primary" onclick="logout()" />
+			</nav>
+      <div id="main">
+        <h1>Minhas Presenças</h1>
+      
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Tipo de Treino</th>
+              <th>Avaliação</th>
+            </tr>
+          </thead>
+          <tbody id="listaPresencas"></tbody>
+        </table>
+      </div>
 
 <script>
 

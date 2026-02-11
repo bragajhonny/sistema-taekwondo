@@ -7,301 +7,294 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 		<style>
-	    .modal {
-	      display: none;
-	      position: fixed;
-	      z-index: 999;
-	      left: 0;
-	      top: 0;
-	      width: 100%;
-	      height: 100%;
-	      background: rgba(0,0,0,0.6);
-	    }
-	
-	    .modal-content {
-	      background: #fff;
-	      margin: 5% auto;
-	      padding: 20px;
-	      width: 95%;
-	      max-width: 600px;
-	      border-radius: 8px;
-	      max-height: 85vh;
-	      overflow-y: auto;
-	    }
-	
-	    .fechar {
-	      float: right;
-	      font-size: 22px;
-	      cursor: pointer;
-	    }
-	
-	    .pergunta {
-	      margin-bottom: 15px;
-	    }
-	
-	    .escala label {
-	      margin-right: 10px;
-	    }
-	  </style>
+			.modal {
+				display: none;
+				position: fixed;
+				z-index: 999;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,0.6);
+			}
+			
+			.modal-content {
+				background: #fff;
+				margin: 5% auto;
+				padding: 20px;
+				width: 95%;
+				max-width: 600px;
+				border-radius: 8px;
+				max-height: 85vh;
+				overflow-y: auto;
+			}
+			
+			.fechar {
+				float: right;
+				font-size: 22px;
+				cursor: pointer;
+			}
+			
+			.pergunta {
+				margin-bottom: 15px;
+			}
+			
+			.escala label {
+				margin-right: 10px;
+			}
+		</style>
 	</head>
 
-	<body class="is-preload">
-		<!-- Wrapper -->
+	<body>
 		<div id="wrapper">
-			<!-- Header -->
 			<header id="header">
 				<div class="inner">
-					<!-- Logo -->
 					<a href="index.html" class="logo">
-						<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">CT Gerivaldo Silva</span>
+						<span class="symbol"><img src="images/logo.svg" alt="" /></span>
+						<span class="title">CT Gerivaldo Silva</span>
 					</a>
-
-					<!-- Nav -->
-					<nav>
-						<ul>
-							<li><a href="#menu">Menu</a></li>
-						</ul>
-					</nav>
 				</div>
+	
+				<nav>
+					<ul>
+						<li><a href="#menu">Menu</a></li>
+					</ul>
+				</nav>
 			</header>
-
-			  <!-- MENU -->
-			  <nav id="menu">
-			  	<h2>Menu</h2>
-			 	 <ul id="menuLinks"></ul>
-			  	<input type="button" value="Sair" class="primary" onclick="logout()" />
+	
+			<!-- MENU -->
+			<nav>
+				<h2>Menu</h2>
+				<ul id="menuLinks"></ul>
+				<input type="button" value="Sair" class="primary" onclick="logout()" />
 			</nav>
-
+	
 			<!-- Main -->
 			<div id="main">
 				<div class="inner">
-					<h1>Minhas presenças</h1>
-					<table>
-			          <thead>
-			            <tr>
-			              <th>Data</th>
-			              <th>Tipo de Treino</th>
-			              <th>Avaliação</th>
-			            </tr>
-			          </thead>
-			          <tbody id="listaPresencas"></tbody>
-			        </table>
+					<section>
+						<h1>Minhas presenças</h1>
+						<table>
+							<thead>
+								<tr>
+									<th>Data</th>
+									<th>Tipo de Treino</th>
+									<th>Avaliação</th>
+								</tr>
+							</thead>
+							<tbody id="listaPresencas"></tbody>
+						</table>
+					</section>
 				</div>
 			</div>
-
-		<!-- Scripts -->
+	
+			<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/browser.min.js"></script>
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-
+			
 			<script>
 				const API_URL = 'https://script.google.com/macros/s/AKfycbxAAPLWqmKrbuyOT4KgaFlM0IFEPPNVkVlEFq8UZEXSZDw2gunsXSFqevwjt-oWIK2F-w/exec';
 				const usuario = JSON.parse(localStorage.getItem('usuario'));
-				
+			
 				let dataSelecionada = '';
 				let tipoTreinoSelecionado = '';
-				
+
+				/* =========================
+				   INIT
+				========================= */
 				document.addEventListener('DOMContentLoaded', () => {
-				
-				  if (!usuario) {
-				    window.location.href = 'index.html';
-				    return;
-				  }
-					configurarMenu();
+				  configurarMenu();
 				  listarPresencas();
-				
-				  // Gerar escalas automaticamente
-				  document.querySelectorAll(".escala").forEach(div => {
-				    const nome = div.getAttribute("data-name");
-				    for (let i = 1; i <= 5; i++) {
-				      div.innerHTML += `
-				        <label>
-				          <input type="radio" name="${nome}" value="${i}" required> ${i}
-				        </label>
-				      `;
-				    }
-				  });
-				
-				  document.getElementById('formQuestionario')
-				    .addEventListener('submit', salvarFormulario);
 				});
-				
+
+				/* =========================
+				   GERAR ESCALA DE 1 A 5
+				========================= */
+				document.addEventListener('DOMContentLoaded', () => {
+					if (!usuario) { //verifica se o usuário está logado
+						window.location.href = 'index.html';
+						return;
+					}
+					
+					// Gerar escalas automaticamente
+					document.querySelectorAll(".escala").forEach(div => {
+						const nome = div.getAttribute("data-name");
+						for (let i = 1; i <= 5; i++) {
+							div.innerHTML += `
+							<label>
+							<input type="radio" name="${nome}" value="${i}" required> ${i}
+							</label>
+							`;
+						}
+					});
+					document.getElementById('formQuestionario').addEventListener('submit', salvarFormulario);
+				});
+			
 				function listarPresencas() {
-				
-				  fetch(API_URL, {
-				    method: 'POST',
-				    body: new URLSearchParams({
-				      acao: 'listarMinhasPresencas',
-				      idUsuario: usuario.idUsuario
-				    })
-				  })
-				  .then(r => r.json())
-				  .then(res => {
-				
-				    const tbody = document.getElementById('listaPresencas');
-				    tbody.innerHTML = '';
-				
-				    if (!res.dados || res.dados.length === 0) {
-				      tbody.innerHTML = '<tr><td colspan="3">Nenhuma presença encontrada</td></tr>';
-				      return;
-				    }
-				
-				    res.dados.forEach(item => {
-				
-				      tbody.innerHTML += `
-				        <tr>
-				          <td>${formatarData(item.data)}</td>
-				          <td>${item.tipoTreino || '-'}</td>
-				          <td>
-				            ${item.respondido
-				              ? '✅ Respondido'
-				              : `<button onclick="abrirModal('${item.data}', '${item.tipoTreino || ''}')">Responder</button>`
-				            }
-				          </td>
-				        </tr>
-				      `;
-				    });
-				  });
+					fetch(API_URL, {
+						method: 'POST',
+						body: new URLSearchParams({
+							acao: 'listarMinhasPresencas',
+							idUsuario: usuario.idUsuario
+						})
+					})
+					.then(r => r.json())
+					.then(res => {
+					
+						const tbody = document.getElementById('listaPresencas');
+						tbody.innerHTML = '';
+						
+						if (!res.dados || res.dados.length === 0) {
+							tbody.innerHTML = '<tr><td colspan="3">Nenhuma presença encontrada</td></tr>';
+							return;
+						}
+						res.dados.forEach(item => {
+							tbody.innerHTML += `
+							<tr>
+								<td>${formatarData(item.data)}</td>
+								<td>${item.tipoTreino || '-'}</td>
+								<td>
+								${item.respondido
+								? '✅ Respondido'
+								: `<button onclick="abrirModal('${item.data}', '${item.tipoTreino || ''}')">Responder</button>`
+								}
+								</td>
+							</tr>
+							`;
+						});
+					});
 				}
-				
+			
 				function abrirModal(data, tipoTreino) {
-				
-				  dataSelecionada = data;
-				  tipoTreinoSelecionado = tipoTreino.toLowerCase();
-				
-				  document.getElementById("modalQuestionario").style.display = "block";
-				
-				  document.getElementById("blocoPoomsae").style.display =
-				    tipoTreinoSelecionado.includes("poomsae") ? "block" : "none";
-				
-				  document.getElementById("blocoKyorugui").style.display =
-				    tipoTreinoSelecionado.includes("kyorugui") ? "block" : "none";
+					dataSelecionada = data;
+					tipoTreinoSelecionado = tipoTreino.toLowerCase();
+					document.getElementById("modalQuestionario").style.display = "block";
+					document.getElementById("blocoPoomsae").style.display =
+					tipoTreinoSelecionado.includes("poomsae") ? "block" : "none";
+					document.getElementById("blocoKyorugui").style.display =
+					tipoTreinoSelecionado.includes("kyorugui") ? "block" : "none";
 				}
-				
+			
 				function fecharModal() {
-				  document.getElementById("modalQuestionario").style.display = "none";
+					document.getElementById("modalQuestionario").style.display = "none";
 				}
 				
 				function salvarFormulario(e) {
-				
-				  e.preventDefault();
-				
-				  const formData = new FormData(e.target);
-				  const respostas = {};
-				
-				  for (let [key, value] of formData.entries()) {
-				    respostas[key] = value;
-				  }
-				
-				  fetch(API_URL, {
-				    method: 'POST',
-				    body: new URLSearchParams({
-				      acao: 'salvarAvaliacao',
-				      idUsuario: usuario.idUsuario,
-				      data: dataSelecionada,
-				      tipoTreino: tipoTreinoSelecionado,
-				      respostas: JSON.stringify(respostas)
-				    })
-				  })
-				  .then(r => r.json())
-				  .then(res => {
-				
-				    if (res.status === 'sucesso') {
-				      alert("Avaliação salva com sucesso!");
-				      fecharModal();
-				      listarPresencas();
-				    } else {
-				      alert("Erro ao salvar avaliação.");
-				    }
-				  });
+					e.preventDefault();
+					const formData = new FormData(e.target);
+					const respostas = {};
+					for (let [key, value] of formData.entries()) {
+						respostas[key] = value;
+					}
+					
+					fetch(API_URL, {
+						method: 'POST',
+						body: new URLSearchParams({
+							acao: 'salvarAvaliacao',
+							idUsuario: usuario.idUsuario,
+							data: dataSelecionada,
+							tipoTreino: tipoTreinoSelecionado,
+							respostas: JSON.stringify(respostas)
+						})
+					})
+					.then(r => r.json())
+					.then(res => {
+						if (res.status === 'sucesso') {
+							alert("Avaliação salva com sucesso!");
+							fecharModal();
+							listarPresencas();
+						} else {
+							alert("Erro ao salvar avaliação.");
+						}
+					});
 				}
 				
 				function formatarData(dataISO) {
-				  const data = new Date(dataISO);
-				  return data.toLocaleDateString('pt-BR');
+					const data = new Date(dataISO);
+					return data.toLocaleDateString('pt-BR');
 				}
-				
-					/* =========================
-				   MENU DINÂMICO
+			
+				/* =========================
+				MENU DINÂMICO
 				========================= */
 				function configurarMenu() {
-				  const menu = document.getElementById('menuLinks');
-				  menu.innerHTML = '';
-				
-				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-				  menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-				  menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>`;
-				  menu.innerHTML += `<li><a href="professor.html">Painel do professor</a></li>`;
+					const menu = document.getElementById('menuLinks');
+					menu.innerHTML = '';
+					menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+					menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+					menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>`;
+					menu.innerHTML += `<li><a href="professor.html">Painel do professor</a></li>`;
 				}
 				
-					/* =========================
-				   LOGOUT
+				/* =========================
+				LOGOUT
 				========================= */
 				function logout() {
-				  localStorage.removeItem('usuario');
-				  window.location.href = 'index.html';
+					localStorage.removeItem('usuario');
+					window.location.href = 'index.html';
 				}
-				
-				</script>
-				
-				<!-- ================= MODAL ================= -->
-				
-				<div id="modalQuestionario" class="modal">
-				  <div class="modal-content">
-				    <span class="fechar" onclick="fecharModal()">&times;</span>
-				
-				    <h2>Autoavaliação do Treino</h2>
-				    <p>Escala: 1 (Muito fraco) até 5 (Excelente)</p>
-				
-				    <form id="formQuestionario">
-				
-				      <h3>🦵 Chutes</h3>
-				      <div class="pergunta"><label>Executei os chutes com boa técnica.</label><div class="escala" data-name="ch1"></div></div>
-				      <div class="pergunta"><label>Mantive equilíbrio após os chutes.</label><div class="escala" data-name="ch2"></div></div>
-				      <div class="pergunta"><label>Usei corretamente a perna de base.</label><div class="escala" data-name="ch3"></div></div>
-				      <div class="pergunta"><label>Mantive altura e direção adequadas.</label><div class="escala" data-name="ch4"></div></div>
-				      <div class="pergunta"><label>Demonstrei evolução nos chutes hoje.</label><div class="escala" data-name="ch5"></div></div>
-				
-				      <h3>🧍 Base e Postura</h3>
-				      <div class="pergunta"><label>Mantive bases firmes.</label><div class="escala" data-name="b1"></div></div>
-				      <div class="pergunta"><label>Ajustei corretamente os pés.</label><div class="escala" data-name="b2"></div></div>
-				      <div class="pergunta"><label>Mantive postura adequada.</label><div class="escala" data-name="b3"></div></div>
-				      <div class="pergunta"><label>Fiz boas transições de base.</label><div class="escala" data-name="b4"></div></div>
-				      <div class="pergunta"><label>Demonstrei segurança nas bases.</label><div class="escala" data-name="b5"></div></div>
-				
-				      <div id="blocoPoomsae" style="display:none;">
-				        <h3>🥋 Poomsae</h3>
-				        <div class="pergunta"><label>Executei com precisão.</label><div class="escala" data-name="p1"></div></div>
-				        <div class="pergunta"><label>Mantive ritmo adequado.</label><div class="escala" data-name="p2"></div></div>
-				        <div class="pergunta"><label>Boa coordenação.</label><div class="escala" data-name="p3"></div></div>
-				        <div class="pergunta"><label>Mantive foco na sequência.</label><div class="escala" data-name="p4"></div></div>
-				        <div class="pergunta"><label>Demonstrei evolução no poomsae.</label><div class="escala" data-name="p5"></div></div>
-				      </div>
-				
-				      <div id="blocoKyorugui" style="display:none;">
-				        <h3>🥊 Kyorugui</h3>
-				        <div class="pergunta"><label>Mantive guarda adequada.</label><div class="escala" data-name="k1"></div></div>
-				        <div class="pergunta"><label>Usei chutes com estratégia.</label><div class="escala" data-name="k2"></div></div>
-				        <div class="pergunta"><label>Mantive controle emocional.</label><div class="escala" data-name="k3"></div></div>
-				        <div class="pergunta"><label>Apliquei técnicas treinadas.</label><div class="escala" data-name="k4"></div></div>
-				        <div class="pergunta"><label>Demonstrei evolução na luta.</label><div class="escala" data-name="k5"></div></div>
-				      </div>
-				
-				      <h3>🧠 Disciplina</h3>
-				      <div class="pergunta"><label>Mantive disciplina.</label><div class="escala" data-name="d1"></div></div>
-				      <div class="pergunta"><label>Segui orientações.</label><div class="escala" data-name="d2"></div></div>
-				      <div class="pergunta"><label>Demonstrei dedicação.</label><div class="escala" data-name="d3"></div></div>
-				      <div class="pergunta"><label>Mantive concentração.</label><div class="escala" data-name="d4"></div></div>
-				      <div class="pergunta"><label>Dei meu melhor.</label><div class="escala" data-name="d5"></div></div>
-				
-				      <br>
-				      <button type="submit">Salvar Avaliação</button>
-				
-				    </form>
-				  </div>
+			</script>
+	
+			<!-- =================
+			MODAL
+			================= -->
+	
+			<div id="modalQuestionario" class="modal">
+				<div class="modal-content">
+					<span class="fechar" onclick="fecharModal()">&times;</span>
+	
+					<h2>Autoavaliação do Treino</h2>
+					<p>Escala: 1 (Muito fraco) até 5 (Excelente)</p>
+	
+					<form id="formQuestionario">
+						<h3>🦵 Chutes</h3>
+							<div class="pergunta"><label>Executei os chutes com boa técnica.</label><div class="escala" data-name="ch1"></div></div>
+							<div class="pergunta"><label>Mantive equilíbrio após os chutes.</label><div class="escala" data-name="ch2"></div></div>
+							<div class="pergunta"><label>Usei corretamente a perna de base.</label><div class="escala" data-name="ch3"></div></div>
+							<div class="pergunta"><label>Mantive altura e direção adequadas.</label><div class="escala" data-name="ch4"></div></div>
+							<div class="pergunta"><label>Demonstrei evolução nos chutes hoje.</label><div class="escala" data-name="ch5"></div></div>
+	
+						<h3>🧍 Base e Postura</h3>
+							<div class="pergunta"><label>Mantive bases firmes.</label><div class="escala" data-name="b1"></div></div>
+							<div class="pergunta"><label>Ajustei corretamente os pés.</label><div class="escala" data-name="b2"></div></div>
+							<div class="pergunta"><label>Mantive postura adequada.</label><div class="escala" data-name="b3"></div></div>
+							<div class="pergunta"><label>Fiz boas transições de base.</label><div class="escala" data-name="b4"></div></div>
+							<div class="pergunta"><label>Demonstrei segurança nas bases.</label><div class="escala" data-name="b5"></div></div>
+
+						<div id="blocoPoomsae" style="display:none;">
+							<h3>🥋 Poomsae</h3>
+								<div class="pergunta"><label>Executei com precisão.</label><div class="escala" data-name="p1"></div></div>
+								<div class="pergunta"><label>Mantive ritmo adequado.</label><div class="escala" data-name="p2"></div></div>
+								<div class="pergunta"><label>Boa coordenação.</label><div class="escala" data-name="p3"></div></div>
+								<div class="pergunta"><label>Mantive foco na sequência.</label><div class="escala" data-name="p4"></div></div>
+								<div class="pergunta"><label>Demonstrei evolução no poomsae.</label><div class="escala" data-name="p5"></div></div>
+						</div>
+	
+						<div id="blocoKyorugui" style="display:none;">
+							<h3>🥊 Kyorugui</h3>
+								<div class="pergunta"><label>Mantive guarda adequada.</label><div class="escala" data-name="k1"></div></div>
+								<div class="pergunta"><label>Usei chutes com estratégia.</label><div class="escala" data-name="k2"></div></div>
+								<div class="pergunta"><label>Mantive controle emocional.</label><div class="escala" data-name="k3"></div></div>
+								<div class="pergunta"><label>Apliquei técnicas treinadas.</label><div class="escala" data-name="k4"></div></div>
+								<div class="pergunta"><label>Demonstrei evolução na luta.</label><div class="escala" data-name="k5"></div></div>
+						</div>
+	
+						<h3>🧠 Disciplina</h3>
+							<div class="pergunta"><label>Mantive disciplina.</label><div class="escala" data-name="d1"></div></div>
+							<div class="pergunta"><label>Segui orientações.</label><div class="escala" data-name="d2"></div></div>
+							<div class="pergunta"><label>Demonstrei dedicação.</label><div class="escala" data-name="d3"></div></div>
+							<div class="pergunta"><label>Mantive concentração.</label><div class="escala" data-name="d4"></div></div>
+							<div class="pergunta"><label>Dei meu melhor.</label><div class="escala" data-name="d5"></div></div>
+
+						<br>
+						<button type="submit">Salvar Avaliação</button>
+	
+					</form>
 				</div>
+			</div>
 	</body>
 </html>

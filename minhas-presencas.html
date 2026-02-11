@@ -111,6 +111,23 @@
 				});
 
 				/* =========================
+				   MENU DINÂMICO
+				========================= */
+				function configurarMenu() {
+					const menu = document.getElementById('menuLinks');
+					menu.innerHTML = '';
+					menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+					menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+					
+					if (usuario.tipo === 'professor') {
+						menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+						<li><a href="professor.html">Painel do professor</a></li>
+					`;
+					}
+				}
+
+				/* =========================
 				   GERAR ESCALA DE 1 A 5
 				========================= */
 				document.addEventListener('DOMContentLoaded', () => {

@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'index.html';
     return;
   }
-
+configurarMenu();
   listarPresencas();
 
   // Gerar escalas automaticamente
@@ -213,6 +213,28 @@ function salvarFormulario(e) {
 function formatarData(dataISO) {
   const data = new Date(dataISO);
   return data.toLocaleDateString('pt-BR');
+}
+
+	/* =========================
+   MENU DINÂMICO
+========================= */
+function configurarMenu() {
+  const menu = document.getElementById('menuLinks');
+  menu.innerHTML = '';
+
+  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+  menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
+  menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>`;
+  menu.innerHTML += `<li><a href="professor.html">Painel do professor</a></li>`;
+}
+
+	/* =========================
+   LOGOUT
+========================= */
+function logout() {
+  localStorage.removeItem('usuario');
+  window.location.href = 'index.html';
 }
 
 </script>

@@ -103,14 +103,6 @@
 				let tipoTreinoSelecionado = '';
 
 				/* =========================
-				   INIT
-				========================= */
-				document.addEventListener('DOMContentLoaded', () => {
-				  configurarMenu();
-				  listarPresencas();
-				});
-
-				/* =========================
 				   MENU DINÂMICO
 				========================= */
 				function configurarMenu() {
@@ -135,6 +127,9 @@
 						window.location.href = 'index.html';
 						return;
 					}
+
+					configurarMenu();
+					listarPresencas();
 					
 					// Gerar escalas automaticamente
 					document.querySelectorAll(".escala").forEach(div => {
@@ -187,7 +182,7 @@
 			
 				function abrirModal(data, tipoTreino) {
 					dataSelecionada = data;
-					tipoTreinoSelecionado = tipoTreino.toLowerCase();
+					tipoTreinoSelecionado = (tipoTreino || '').toLowerCase();
 					document.getElementById("modalQuestionario").style.display = "block";
 					document.getElementById("blocoPoomsae").style.display =
 					tipoTreinoSelecionado.includes("poomsae") ? "block" : "none";
@@ -232,19 +227,6 @@
 				function formatarData(dataISO) {
 					const data = new Date(dataISO);
 					return data.toLocaleDateString('pt-BR');
-				}
-			
-				/* =========================
-				MENU DINÂMICO
-				========================= */
-				function configurarMenu() {
-					const menu = document.getElementById('menuLinks');
-					menu.innerHTML = '';
-					menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-					menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-					menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>`;
-					menu.innerHTML += `<li><a href="professor.html">Painel do professor</a></li>`;
 				}
 				
 				/* =========================

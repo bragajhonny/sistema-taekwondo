@@ -40,8 +40,22 @@
 				<div class="inner">
 					<h1>Presença</h1>
 					<ul>
-						<input type="date" id="dataAula">
+						<li>
+							<label>Data da aula</label>
+							<input type="date" id="dataAula">
+						</li>
+					
+						<li>
+							<label>Tipo de treino</label>
+							<select id="tipoTreino">
+								<option value="">Selecione</option>
+								<option value="Poomsae">Poomsae</option>
+								<option value="Kyorugui">Kyorugui</option>
+								<option value="Misto">Misto (Poomsae + Kyorugui)</option>
+							</select>
+						</li>
 					</ul>
+
 					
 					<table>
         					<thead>
@@ -178,6 +192,11 @@ function salvarPresenca() {
     alert('Selecione a data');
     return;
   }
+
+	if (!tipoTreino) {
+		alert('Selecione a modalidade do treino');
+		return;
+	}
 
   const registros = {};
 

@@ -205,8 +205,12 @@
 				    const tipoLower = tipoTreinoSelecionado.toLowerCase();
 				    const blocoPoomsae = document.getElementById("blocoPoomsae");
 				    const blocoKyorugui = document.getElementById("blocoKyorugui");
-				    const mostrarPoomsae = tipoLower.includes("poomsae");
-				    const mostrarKyorugui = tipoLower.includes("kyorugui");
+				    const ehPoomsae = tipoLower.includes("poomsae");
+					const ehKyorugui = tipoLower.includes("kyorugui");
+					const ehMisto = tipoLower.includes("misto");
+					
+					const mostrarPoomsae = ehPoomsae || ehMisto;
+					const mostrarKyorugui = ehKyorugui || ehMisto;
 				    blocoPoomsae.style.display = mostrarPoomsae ? "block" : "none";
 				    blocoKyorugui.style.display = mostrarKyorugui ? "block" : "none";
 				    // 🔥 CONTROLAR REQUIRED AUTOMATICAMENTE
@@ -290,31 +294,31 @@
 							<div class="pergunta"><label>Fiz boas transições de base.</label><div class="escala" data-name="Q9"></div></div>
 							<div class="pergunta"><label>Demonstrei segurança nas bases.</label><div class="escala" data-name="Q10"></div></div>
 
+						<h3>🧠 Disciplina</h3>
+							<div class="pergunta"><label>Mantive disciplina.</label><div class="escala" data-name="Q11"></div></div>
+							<div class="pergunta"><label>Segui orientações.</label><div class="escala" data-name="Q12"></div></div>
+							<div class="pergunta"><label>Demonstrei dedicação.</label><div class="escala" data-name="Q13"></div></div>
+							<div class="pergunta"><label>Mantive concentração.</label><div class="escala" data-name="Q14"></div></div>
+							<div class="pergunta"><label>Dei meu melhor.</label><div class="escala" data-name="Q15"></div></div>
+						
 						<div id="blocoPoomsae" style="display:none;">
 							<h3>🥋 Poomsae</h3>
-								<div class="pergunta"><label>Executei com precisão.</label><div class="escala" data-name="Q11"></div></div>
-								<div class="pergunta"><label>Mantive ritmo adequado.</label><div class="escala" data-name="Q12"></div></div>
-								<div class="pergunta"><label>Boa coordenação.</label><div class="escala" data-name="Q13"></div></div>
-								<div class="pergunta"><label>Mantive foco na sequência.</label><div class="escala" data-name="Q14"></div></div>
-								<div class="pergunta"><label>Demonstrei evolução no poomsae.</label><div class="escala" data-name="Q15"></div></div>
+								<div class="pergunta"><label>Executei com precisão.</label><div class="escala" data-name="Q16"></div></div>
+								<div class="pergunta"><label>Mantive ritmo adequado.</label><div class="escala" data-name="Q17"></div></div>
+								<div class="pergunta"><label>Boa coordenação.</label><div class="escala" data-name="Q18"></div></div>
+								<div class="pergunta"><label>Mantive foco na sequência.</label><div class="escala" data-name="Q19"></div></div>
+								<div class="pergunta"><label>Demonstrei evolução no poomsae.</label><div class="escala" data-name="Q20"></div></div>
 						</div>
 	
 						<div id="blocoKyorugui" style="display:none;">
 							<h3>🥊 Kyorugui</h3>
-								<div class="pergunta"><label>Mantive guarda adequada.</label><div class="escala" data-name="Q16"></div></div>
-								<div class="pergunta"><label>Usei chutes com estratégia.</label><div class="escala" data-name="Q17"></div></div>
-								<div class="pergunta"><label>Mantive controle emocional.</label><div class="escala" data-name="Q18"></div></div>
-								<div class="pergunta"><label>Apliquei técnicas treinadas.</label><div class="escala" data-name="Q19"></div></div>
-								<div class="pergunta"><label>Demonstrei evolução na luta.</label><div class="escala" data-name="Q20"></div></div>
+								<div class="pergunta"><label>Mantive guarda adequada.</label><div class="escala" data-name="Q21"></div></div>
+								<div class="pergunta"><label>Usei chutes com estratégia.</label><div class="escala" data-name="Q22"></div></div>
+								<div class="pergunta"><label>Mantive controle emocional.</label><div class="escala" data-name="Q23"></div></div>
+								<div class="pergunta"><label>Apliquei técnicas treinadas.</label><div class="escala" data-name="Q24"></div></div>
+								<div class="pergunta"><label>Demonstrei evolução na luta.</label><div class="escala" data-name="Q25"></div></div>
 						</div>
 	
-						<h3>🧠 Disciplina</h3>
-							<div class="pergunta"><label>Mantive disciplina.</label><div class="escala" data-name="Q21"></div></div>
-							<div class="pergunta"><label>Segui orientações.</label><div class="escala" data-name="Q22"></div></div>
-							<div class="pergunta"><label>Demonstrei dedicação.</label><div class="escala" data-name="Q23"></div></div>
-							<div class="pergunta"><label>Mantive concentração.</label><div class="escala" data-name="Q24"></div></div>
-							<div class="pergunta"><label>Dei meu melhor.</label><div class="escala" data-name="Q25"></div></div>
-
 						<br>
 						<button type="submit">Salvar Avaliação</button>
 	

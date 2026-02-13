@@ -3428,3 +3428,20 @@ input, select, textarea {
   border-radius: 50%;
   object-fit: cover;
 }
+
+.linha-form {
+    display: flex;
+    gap: 20px;
+}
+
+.campo {
+    flex: 1; /* cada um ocupa 50% */
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 600px) {
+    .linha-form {
+        flex-direction: column;
+    }
+}

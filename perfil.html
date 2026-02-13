@@ -90,7 +90,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyHeniztA9TghTkzgJDXgwAcYiAFyFyx8Abewk8k8ORhYOhm9rQqeHjZGBjyln_U5UQGA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbymmQ_M0X4GCH3W3Cp-zETzx0UbBIo523qwrFoEMtDLkyDpa6kSk5k5zvetApcBSZ6CHA/exec';
 
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 if (!usuario) {
@@ -109,19 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
    MENU DINÂMICO
 ========================= */
 			function configurarMenu() {
-				  const menu = document.getElementById('menuLinks');
-				  menu.innerHTML = '';
-				
-				  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-				  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-					menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-				
-				  if (usuario.tipo === 'professor') {
-				    menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
-				    <li><a href="professor.html">Painel do professor</a></li>
-				    `;
-				  }
+				const menu = document.getElementById('menuLinks');
+				menu.innerHTML = '';
+				menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+				menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+				menu.innerHTML += `<li><a href="minhas-presencas.html">Questionario</a></li>`;
+				if (usuario.tipo === 'professor') {
+					menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+					<li><a href="historico-aluno.html">Histórico de presença</a></li>
+					<li><a href="professor.html">Painel do professor</a></li>
+					`;
 				}
+			}
 
 /* =========================
    CARREGAR DADOS

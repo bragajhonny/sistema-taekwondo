@@ -55,23 +55,6 @@
 								</select>
 							</div>
 						</div>
-					
-					<!-- <ul>
-						<li>
-							<label>Data da aula</label>
-							<input type="date" id="dataAula">
-						</li>
-					
-						<li>
-							<label>Tipo de treino</label>
-							<select id="tipoTreino">
-								<option value="">Selecione</option>
-								<option value="Poomsae">Poomsae</option>
-								<option value="Kyorugui">Kyorugui</option>
-								<option value="Misto">Misto (Poomsae + Kyorugui)</option>
-							</select>
-						</li>
-					</ul> -->
 
 					<table>
         					<thead>
@@ -100,7 +83,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyii2mxnvfSd63Xt9E5shdkyP3HdOJNDbpvQb_0AacPRTDrY2Dbbvo0MU3uJ0u8DZ9mHQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbymmQ_M0X4GCH3W3Cp-zETzx0UbBIo523qwrFoEMtDLkyDpa6kSk5k5zvetApcBSZ6CHA/exec';
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 
 if (!usuario || usuario.tipo !== 'professor') {
@@ -119,16 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================
    MENU DINÂMICO
 ========================= */
-function configurarMenu() {
-  const menu = document.getElementById('menuLinks');
-  menu.innerHTML = '';
-
-  menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
-  menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
-  menu.innerHTML += `<li><a href="historico-aluno.html">Histórico de presença</a></li>`;
-  menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>`;
-  menu.innerHTML += `<li><a href="professor.html">Painel do professor</a></li>`;
-}
+			function configurarMenu() {
+				const menu = document.getElementById('menuLinks');
+				menu.innerHTML = '';
+				menu.innerHTML += `<li><a href="perfil.html">Meu perfil</a></li>`;
+				menu.innerHTML += `<li><a href="editar-dados.html">Editar dados</a></li>`;
+				menu.innerHTML += `<li><a href="minhas-presencas.html">Questionario</a></li>`;
+				if (usuario.tipo === 'professor') {
+					menu.innerHTML += `<li><a href="presenca.html">Presença</a></li>
+					<li><a href="historico-aluno.html">Histórico de presença</a></li>
+					<li><a href="professor.html">Painel do professor</a></li>
+					`;
+				}
+			}
 
 /* =========================
    DATA LOCAL

@@ -96,7 +96,7 @@
 			<script src="assets/js/main.js"></script>
 			
 			<script>
-				const API_URL = 'https://script.google.com/macros/s/AKfycbxt6bGZAeauJzSNMdBm2Oicn9YYYXVd_zyjcp6-0rYpIagX7Y9WiyQSnW2n3z2B3Jg_MA/exec';
+				const API_URL = 'https://script.google.com/macros/s/AKfycbymmQ_M0X4GCH3W3Cp-zETzx0UbBIo523qwrFoEMtDLkyDpa6kSk5k5zvetApcBSZ6CHA/exec';
 				const usuario = JSON.parse(localStorage.getItem('usuario'));
 			
 				let dataSelecionada = '';
@@ -182,12 +182,13 @@
 			
 				function abrirModal(data, tipoTreino) {
 					dataSelecionada = data;
-					tipoTreinoSelecionado = (tipoTreino || '').toLowerCase();
+					tipoTreinoSelecionado = tipoTreino || '';
+					const tipoLower = tipoTreinoSelecionado.toLowerCase();
 					document.getElementById("modalQuestionario").style.display = "block";
 					document.getElementById("blocoPoomsae").style.display =
-					tipoTreinoSelecionado.includes("poomsae") ? "block" : "none";
+					tipoLower.includes("poomsae") ? "block" : "none";
 					document.getElementById("blocoKyorugui").style.display =
-					tipoTreinoSelecionado.includes("kyorugui") ? "block" : "none";
+					tipoLower.includes("kyorugui") ? "block" : "none";
 				}
 			
 				function fecharModal() {
@@ -208,7 +209,7 @@
 							acao: 'salvarAvaliacao',
 							idUsuario: usuario.idUsuario,
 							data: dataSelecionada,
-							tipoTreino: tipoTreinoSelecionado,
+							tipoTreino: tipoTreinoSelecionado.charAt(0).toUpperCase() + tipoTreinoSelecionado.slice(1),
 							respostas: JSON.stringify(respostas)
 						})
 					})

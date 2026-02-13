@@ -130,18 +130,6 @@
 
 					configurarMenu();
 					listarPresencas();
-					
-					// Gerar escalas automaticamente
-					document.querySelectorAll(".escala").forEach(div => {
-						const nome = div.getAttribute("data-name");
-						for (let i = 1; i <= 5; i++) {
-							div.innerHTML += `
-							<label>
-							<input type="radio" name="${nome}" value="${i}" required> ${i}
-							</label>
-							`;
-						}
-					});
 					document.getElementById('formQuestionario').addEventListener('submit', salvarFormulario);
 				});
 			
@@ -179,16 +167,34 @@
 						});
 					});
 				}
+
+				function gerarEscalas() {
+				    document.querySelectorAll(".escala").forEach(div => {
+				
+				        // Evita duplicar caso abra mais de uma vez
+				        if (div.innerHTML.trim() !== '') return;
+				
+				        const nome = div.getAttribute("data-name");
+				
+				        for (let i = 1; i <= 5; i++) {
+				            div.innerHTML += `
+				                <label style="cursor:pointer;">
+				                    <input type="radio" name="${nome}" value="${i}" required>
+				                    ${i}
+				                </label>
+				            `;
+				        }
+				    });
+				}
 			
 				function abrirModal(data, tipoTreino) {
-					dataSelecionada = data;
-					tipoTreinoSelecionado = tipoTreino || '';
-					const tipoLower = tipoTreinoSelecionado.toLowerCase();
-					document.getElementById("modalQuestionario").style.display = "block";
-					document.getElementById("blocoPoomsae").style.display =
-					tipoLower.includes("poomsae") ? "block" : "none";
-					document.getElementById("blocoKyorugui").style.display =
-					tipoLower.includes("kyorugui") ? "block" : "none";
+					gerarEscalas(); // 🔥 Gera os radios aqui
+				    dataSelecionada = data;
+				    tipoTreinoSelecionado = tipoTreino || '';
+				    const tipoLower = tipoTreinoSelecionado.toLowerCase();
+				    document.getElementById("modalQuestionario").style.display = "block";
+				    document.getElementById("blocoPoomsae").style.display = tipoLower.includes("poomsae") ? "block" : "none";
+				    document.getElementById("blocoKyorugui").style.display = tipoLower.includes("kyorugui") ? "block" : "none";
 				}
 			
 				function fecharModal() {

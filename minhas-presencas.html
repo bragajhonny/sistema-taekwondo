@@ -186,16 +186,35 @@
 				        }
 				    });
 				}
+
+				function controlarRequired(bloco, ativar) {
+				    const inputs = bloco.querySelectorAll("input[type='radio']");
+				    inputs.forEach(input => {
+				        if (ativar) {
+				            input.setAttribute("required", "required");
+				        } else {
+				            input.removeAttribute("required");
+				        }
+				    });
+				}
 			
 				function abrirModal(data, tipoTreino) {
-					gerarEscalas(); // 🔥 Gera os radios aqui
+				    gerarEscalas();
 				    dataSelecionada = data;
 				    tipoTreinoSelecionado = tipoTreino || '';
 				    const tipoLower = tipoTreinoSelecionado.toLowerCase();
+				    const blocoPoomsae = document.getElementById("blocoPoomsae");
+				    const blocoKyorugui = document.getElementById("blocoKyorugui");
+				    const mostrarPoomsae = tipoLower.includes("poomsae");
+				    const mostrarKyorugui = tipoLower.includes("kyorugui");
+				    blocoPoomsae.style.display = mostrarPoomsae ? "block" : "none";
+				    blocoKyorugui.style.display = mostrarKyorugui ? "block" : "none";
+				    // 🔥 CONTROLAR REQUIRED AUTOMATICAMENTE
+				    controlarRequired(blocoPoomsae, mostrarPoomsae);
+				    controlarRequired(blocoKyorugui, mostrarKyorugui);
 				    document.getElementById("modalQuestionario").style.display = "block";
-				    document.getElementById("blocoPoomsae").style.display = tipoLower.includes("poomsae") ? "block" : "none";
-				    document.getElementById("blocoKyorugui").style.display = tipoLower.includes("kyorugui") ? "block" : "none";
 				}
+
 			
 				function fecharModal() {
 					document.getElementById("modalQuestionario").style.display = "none";

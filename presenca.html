@@ -84,7 +84,7 @@
 /* =========================
    CONFIG
 ========================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyHeniztA9TghTkzgJDXgwAcYiAFyFyx8Abewk8k8ORhYOhm9rQqeHjZGBjyln_U5UQGA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyii2mxnvfSd63Xt9E5shdkyP3HdOJNDbpvQb_0AacPRTDrY2Dbbvo0MU3uJ0u8DZ9mHQ/exec';
 const usuario = JSON.parse(localStorage.getItem('usuario'));
 
 if (!usuario || usuario.tipo !== 'professor') {
@@ -187,6 +187,7 @@ function listarUsuarios() {
 function salvarPresenca() {
 
   const data = document.getElementById('dataAula').value;
+	const tipoTreino = document.getElementById('tipoTreino').value;
 
   if (!data) {
     alert('Selecione a data');
@@ -204,9 +205,9 @@ function salvarPresenca() {
     .forEach(cb => {
 
       registros[cb.dataset.id] = {
-        nome: cb.dataset.nome,
-        tipo: cb.dataset.tipo,
-        presente: cb.checked
+		  nome: cb.dataset.nome,
+		  presente: cb.checked,
+		  tipoTreino: tipoTreino
       };
 
     });
@@ -214,10 +215,12 @@ function salvarPresenca() {
   fetch(API_URL, {
     method: 'POST',
     body: new URLSearchParams({
-      acao: 'salvarPresenca',
-      data: data,
-      registros: JSON.stringify(registros)
-    })
+	  acao: 'salvarPresenca',
+	  data: data,
+	  tipoTreino: tipoTreino,
+	  registros: JSON.stringify(registros)
+	})
+
   })
   .then(r => r.json())
   .then(res => {
